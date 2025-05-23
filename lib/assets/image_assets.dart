@@ -1,0 +1,78 @@
+class ImageAssets {
+  static const notFound = "assets/images/404notfound.png";
+  static const frame1 = "assets/images/frame1.png";
+  static const frame2 = "assets/images/frame2.png";
+  static const frame3 = "assets/images/frame3.png";
+
+  static const restoringPage = "assets/images/restoring_page.png";
+  static const copySimple = "assets/icons/CopySimple.png";
+  static const bellIcon = "assets/images/bell_icon.png";
+  static const bellIconDark = "assets/images/Bellicondark.png";
+  static const brendingLogo = "assets/images/brending_logo.png";
+  static const fullLogo = "assets/images/full_logo.png";
+  static const png_logo = "assets/images/png_logo.png";
+  static const manat = "assets/icons/manat.png";
+  static const caretRight = "assets/icons/CaretRight.png";
+  static const distanceIcon = "assets/icons/distance.png";
+
+  static const linkedinIcon = "assets/icons/linkedin.png";
+  static const linkSimpleIcon = "assets/icons/LinkSimple.png";
+  static const whatsappIcon = "assets/icons/whatsapp.png";
+  static const phoneCallIcon = "assets/icons/PhoneCall.png";
+  static const facebookIcon = "assets/icons/facebook.png";
+  static const starIcon = "assets/icons/Star.png";
+  static const directionIcon = "assets/icons/direction.png";
+  static const phoneCallIconDark = "assets/icons/PhoneCallDark.png";
+  static const boltIcon = "assets/icons/bolt.png";
+  static const wazeIcon = "assets/icons/waze.png";
+  static const googleMapsIcon = "assets/icons/googlemaps.png";
+  static const uberIcon = "assets/icons/Uber.png";
+  static const addressBook = "assets/icons/AddressBook.png";
+  static const cardholder = "assets/icons/Cardholder.png";
+
+  static const bell = "assets/icons/BellP.png";
+  static const funnel = "assets/icons/FunnelP.png";
+  static const gearSixInactive = "assets/icons/GearSixInactiveP.png";
+  static const gearSix = "assets/icons/GearSixP.png";
+  static const heartStraight = "assets/icons/HeartStraightP.png";
+  static const house = "assets/icons/HouseP.png";
+  static const mapTrifold = "assets/icons/MapTrifoldP.png";
+  static const scan = "assets/icons/ScanP.png";
+  static const searchNormal = "assets/icons/Search NormalP.png";
+  static const sortAscending = "assets/icons/SortAscendingP.png";
+  static const trophy = "assets/icons/TrophyP.png";
+  static const walletInactive = "assets/icons/WalletInactiveP.png";
+  static const wallet = "assets/icons/WalletP.png";
+  static const walletActive = "assets/icons/WalletActiveP.png";
+  static const mapTrifoldInactive = "assets/icons/MapTrifoldInactive.png";
+
+  static const vibrate = "assets/icons/Vibrate.png";
+  static const trash = "assets/icons/Trash.png";
+  static const tick_circle = "assets/icons/tick-circle.png";
+  static const signout = "assets/icons/SignOut.png";
+  static const question = "assets/icons/Question.png";
+  static const qrcode = "assets/icons/QrCode.png";
+  static const pencil = "assets/icons/PencilSimpleLine.png";
+  static const locckey = "assets/icons/LockKey.png";
+  static const headset = "assets/icons/Headset.png";
+  static const globe = "assets/icons/Globe.png";
+  static const envelope = "assets/icons/Envelope.png";
+  static const bellringing = "assets/icons/BellRinging.png";
+  static const barcode = "assets/icons/Barcode@2x.png";
+  static const trash2 = "assets/icons/Trash2.png";
+  static const careddown = "assets/icons/CaretDown.png";
+  static const envelope2 = "assets/icons/Envelope2.png";
+  static const dropdown = "assets/icons/DotsThreeVertical.png";
+  static const phoneCall = "assets/icons/PhoneCall.png";
+  static const emptyMemberLight = "assets/images/empty_member_light.png";
+  static const emptyMemberDark = "assets/images/empty_member_dark.png";
+  static const dayBackContainer = "assets/images/day_back_container.png";
+
+  // Bottom navigation bar icons
+  static const homeInactive = "assets/icons/House1.png";
+  static const homeActive = "assets/icons/House.png";
+  static const bellInactive = "assets/icons/Bell.png";
+  static const bellActive = "assets/icons/Bell0.png";
+  static const settingsInactive = "assets/icons/GearSix.png";
+  static const settingsActive = "assets/icons/GearSix0.png";
+}

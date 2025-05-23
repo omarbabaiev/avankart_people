@@ -1,0 +1,62 @@
+[
+    {
+      "title": "Yemək kartı",
+      "subtitle": "Yemək kartı, sizlərin restoran və kafelərdə rahat və sürətli ödəniş etməniz üçündür.",
+      "icon": "0xe56c",
+      "color": "0xffFFBC0D"
+    },
+    {
+      "title": "Yanacaq kartı",
+      "subtitle": "Yanacaq kartı ilə yanacaq doldurma məntəqələrində rahat və endirimli ödəniş edin.",
+      "icon": "0xe546",
+      "color": "0xff32B5AC"
+    },
+    {
+      "title": "Market kartı",
+      "subtitle": "Market kartı gündəlik alış-verişlər üçün sürətli və təhlükəsiz ödəniş imkanı verir.",
+      "icon": "0xe8cc",
+      "color": "0xff4CAF50"
+    },
+    {
+      "title": "Əyləncə kartı",
+      "subtitle": "Kinoteatr və əyləncə mərkəzlərində istifadə edilə bilər.",
+      "icon": "0xe40f",
+      "color": "0xff9C27B0"
+    },
+    {
+      "title": "Səyahət kartı",
+      "subtitle": "Səyahət zamanı otel və nəqliyyat üçün endirim imkanı təqdim edir.",
+      "icon": "0xe539",
+      "color": "0xff03A9F4"
+    },
+    {
+      "title": "Təhsil kartı",
+      "subtitle": "Kitab, kurs və təhsil platformalarında endirimli ödənişlər üçün.",
+      "icon": "0xe80c",
+      "color": "0xff00A3FF"
+    },
+    {
+      "title": "Sağlamlıq kartı",
+      "subtitle": "Aptek və klinikalarda ödəniş zamanı istifadə üçün nəzərdə tutulub.",
+      "icon": "0xe3e5",
+      "color": "0xffE91E63"
+    },
+    {
+      "title": "Geyim kartı",
+      "subtitle": "Geyim mağazalarında endirimli alış-veriş üçün.",
+      "icon": "0xf582",
+      "color": "0xff795548"
+    },
+    {
+      "title": "Mobil və İnternet kartı",
+      "subtitle": "Mobil və internet xidmətlərinin ödənişini asanlaşdırır.",
+      "icon": "0xe1bc",
+      "color": "0xff607D8B"
+    },
+    {
+      "title": "Xeyriyyə kartı",
+      "subtitle": "Xeyriyyə fondlarına asan dəstək vermək imkanı təqdim edir.",
+      "icon": "0xe89f",
+      "color": "0xff8BC34A"
+    }
+  ]

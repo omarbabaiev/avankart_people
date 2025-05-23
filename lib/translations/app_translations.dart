@@ -1,0 +1,278 @@
+import 'package:get/get.dart';
+
+class AppTranslations extends Translations {
+  @override
+  Map<String, Map<String, String>> get keys => {
+        'en': {},
+        'az': {
+          // Login Screen
+          'welcome_emoji': '👋',
+          'welcome': 'Xoş gəlmisiniz!',
+          'login_subtitle': 'Hesabınıza daxil olun və işlərinizə davam edin.',
+          'email': 'Email',
+          'enter_email': 'Email adresinizi daxil edin',
+          'password': 'Şifrə',
+          'enter_password': 'Şifrənizi daxil edin',
+          'remember_me': 'Şifrəni xatırla',
+          'login': 'Daxil ol',
+          'forgot_password': 'Şifrəni unutmusunuz?',
+          'or': 'VƏ YA',
+          'no_account': 'Avankart hesabınız yoxdur?',
+          'create_account': 'Yeni hesab aç',
+          'terms_and_conditions': 'İstifadəçi qaydaları ilə tanış olun',
+          'email_empty': 'Zəhmət olmasa e-poçt ünvanınızı daxil edin',
+          'invalid_email': 'Zəhmət olmasa düzgün e-poçt ünvanı daxil edin',
+          'password_empty': 'Zəhmət olmasa şifrənizi daxil edin',
+
+          'intro_text1': 'Yaxınlığınızdakı məkanları kəşf edin',
+          'intro_text2': 'Sizə yaxın məkanlar bir addımlığınızda!',
+          'intro_text3': 'Bütün imtiyazlarınızı bir yerdən idarə edin!',
+          // Register Screen
+          'new_account': 'Yeni Hesab',
+          'first_name': 'Ad',
+          'enter_first_name': 'Adınızı daxil edin',
+          'first_name_empty': 'Zəhmət olmasa adınızı daxil edin',
+          'last_name': 'Soyad',
+          'enter_last_name': 'Soyadınızı daxil edin',
+          'last_name_empty': 'Zəhmət olmasa soyadınızı daxil edin',
+          'birth_date': 'Doğum tarixi',
+          'enter_birth_date': 'Doğum tarixinizi daxil edin',
+          'birth_date_empty': 'Zəhmət olmasa doğum tarixinizi daxil edin',
+          'phone_number': 'Telefon nömrəsi',
+          'enter_phone_number': 'Telefon nömrənizi daxil edin',
+          'phone_number_empty': 'Zəhmət olmasa telefon nömrənizi daxil edin',
+          'gender': 'Cins',
+          'select_gender': 'Cins seçin',
+          'male': 'Kişi',
+          'female': 'Qadın',
+          'other': 'Digər',
+          'confirm_password': 'Şifrəni təsdiqləyin',
+          'enter_confirm_password': 'Şifrənizi təkrar daxil edin',
+          'confirm_password_empty': 'Zəhmət olmasa şifrənizi təsdiqləyin',
+          'passwords_dont_match': 'Şifrələr uyğun gəlmir',
+          'minimum_chars': 'Minimum 8 simvol',
+          'minimum_special_char': 'Ən azı bir xüsusi simvol',
+          'agree_to_terms1': 'İstifadəçi qaydaları',
+          'agree_to_terms2': 'ilə tanış oldum',
+          'please_accept_terms':
+              'Zəhmət olmasa Şərtlər və Qaydaları qəbul edin',
+          'create_new_account': 'Yeni Hesab Yarat',
+          'already_have_account': 'Artıq hesabınız var?',
+          'sign_in': 'Daxil ol',
+
+          // Forgot Password Screen
+          'forgot_password_title': 'Şifrəni Unutmusunuz',
+          'forgot_password_subtitle':
+              'Şifrənizi sıfırlamaq üçün e-poçt ünvanınızı daxil edin',
+          'reset_code_sent': 'Sıfırlama kodu e-poçt ünvanınıza göndərildi',
+          'next': 'İrəli',
+
+          // OTP Verification Screen
+          'otp_verification': 'OTP Təsdiqi',
+          'otp_subtitle': 'Göndərilən təsdiq kodunu daxil edin',
+          'verify': 'Təsdiqlə',
+          'invalid_otp': 'Zəhmət olmasa düzgün təsdiq kodu daxil edin',
+          'didnt_receive_code': 'Kodu almadınız?',
+          'resend': 'Yenidən göndər',
+          'code_resent': 'Təsdiq kodu yenidən göndərildi',
+
+          'cards': "Kartlar",
+          'using_cards': 'İstifadə edəcəyiniz imtiyaz kartlarınızı seçin',
+          'skip': "Keç",
+          'selected_cards_activate':
+              "Seçilən kartları aktivləşdirmək istədiyinizə əminsiniz?",
+          'selected_cards_activate_info':
+              'Kartlarınız Avankart tərəfindən təsdiqləndikdən sonra aktiv ediləcək',
+
+          // Reset Password Screen
+          'reset_password': 'Şifrəni Sıfırla',
+          'reset_password_subtitle': 'Hesabınız üçün yeni şifrə yaradın',
+          'new_password': 'Yeni Şifrə',
+          'enter_new_password': 'Yeni şifrə daxil edin',
+          'reset_password_button': 'Şifrəni Sıfırla',
+          'password_reset_success': 'Şifrə uğurla sıfırlandı',
+
+          // Settings Screen
+          'settings': 'Tənzimləmələr',
+          'profile': 'Profil',
+          'notifications': 'Bildirişlər',
+          'language': 'Dil',
+          'theme': 'Ekran rejimi',
+          'support': 'Dəstək',
+          'terms': 'İstifadə Qaydaları',
+          'logout': 'Hesabdan çıxış et',
+          'logout_confirm': 'Hesabdan çıxış etmək istədiyinizə əminsiniz?',
+          'yes_logout': 'Bəli, çıxış et',
+          'light_mode': 'İşıqlı Rejim',
+          'dark_mode': 'Qaranlıq Rejim',
+          'system_mode': 'Sistem Rejimi',
+          'select_theme': 'Tema Seçin',
+          'select_language': 'Dil Seçin',
+
+          // Profile Screen
+          'edit_profile': 'Profili Redaktə Et',
+          'save': 'Yadda Saxla',
+          'profile_updated': 'Profil uğurla yeniləndi',
+
+          // Change Password Screen
+          'change_password': 'Şifrəni Dəyiş',
+          'current_password': 'Cari Şifrə',
+          'enter_current_password': 'Cari şifrəni daxil edin',
+          'current_password_empty': 'Zəhmət olmasa cari şifrəni daxil edin',
+          'password_changed': 'Şifrə uğurla dəyişdirildi',
+
+          // Support Screen
+          'support_subtitle': 'Biz buradayıq, sizə necə kömək edə bilərik?',
+          'hotline': 'Qaynar xətt',
+
+          // FAQ Screen
+          'faq_screen_title': 'Sıkça Sorulan Suallar',
+          'faq_question_1': 'Ödəniş necə işləyir?',
+          'faq_answer_1':
+              'Kredit/debet kartları, bank köçürmələri və ya tətbiqin inteqrasiya edilmiş ödəniş sistemləri vasitəsilə ödəniş edə bilərsiniz.',
+          'faq_question_2': 'Hesabımı necə dəyişə bilərəm?',
+          'faq_answer_2':
+              'Tətbiqin Profil bölməsində hesab məlumatlarınızı dəyişə bilərsiniz.',
+          'faq_question_3': 'Məlumatlarım təhlükəsizdir?',
+          'faq_answer_3':
+              'Bəli, məlumatlarınızı qorumaq və məxfilik qaydalarına uyğun olmaq üçün sənaye standartı şifrələmədən istifadə edirik.',
+          'faq_question_4':
+              'Müşteri hizmetleriyle nasıl iletişime geçebilirim?',
+          'faq_answer_4':
+              'Müşteri hizmetleri komandamızla e-poçt, telefon və ya tətbiqin dəstək bölməsi vasitəsilə əlaqə saxlaya bilərsiniz.',
+          'faq_question_5': 'Şifrəmi necə sıfırlaya bilərəm?',
+          'faq_answer_5':
+              'Giriş ekranında "Şifrəmi unuttum" düyməsini basaraq və e-poçtunuza göndərilən təlimatlara əməl edərək şifrənizi sıfırlaya bilərsiniz.',
+          'other_questions': 'Başka sualınız varsa, bizimlə əlaqə saxlayın',
+          'support_button': 'Dəstək',
+
+          // Payment Status Screen
+          'payment_status': 'Ödəniş Statusu',
+          'payment_success': 'Ödəniş uğurlu!',
+          'payment_failed': 'Ödəniş uğursuz!',
+          'payment_success_description': 'Ödənişiniz uğurla həyata keçirildi.',
+          'payment_failed_description': 'Ödənişiniz uğursuz oldu.',
+          'transaction_id': 'Tranzaksiya ID',
+          'card_type': 'Kart növü',
+          'merchant_name': 'Ödənişi alan müəssisə',
+          'merchant_id': 'Ödənişi alan ID',
+          'completed': 'Tamamlandı',
+          'date': 'Tarix',
+          'back_to_home': 'Ana Səhifəyə Qayıt',
+
+          // Notifications Screen
+          'all': 'Hamısı',
+          'read': 'Oxunmuş',
+          'unread': 'Oxunmamış',
+          'no_notifications': 'Hələ bildiriş yoxdur',
+          'notification_updates': 'Yeniləmələr gələndə sizi bilgilendireceğiz!',
+          'reject': 'Rədd et',
+          'accept': 'Qəbul et',
+          'update': 'Yenilə',
+          'dismiss': 'Yox say',
+
+          // Notification Types
+          'restaurant_invitation': 'Müəssisəmiz tərfindən dəvət olundunuz',
+          'system_update':
+              'Yeni versiya mövcuddur, sistemi yeniləyə bilərsiniz',
+          'qr_code_created': 'Ödəniş üçün yeni QR kod yaratdınız',
+          'payment_successful': 'Ödəniş uğurla həyata keçdi',
+          'password_updated': 'Şifrəniz uğurla dəyişdirildi',
+
+          // Common
+          'error': 'Xəta',
+          'success': 'Uğurlu',
+          'info': 'Məlumat',
+          'warning': 'Xəbərdarlıq',
+          'cancel': 'Ləğv et',
+          'ok': 'Tamam',
+          'yes': 'Bəli',
+          'no': 'Xeyr',
+          'search': 'Axtar',
+          'id': 'ID',
+          'email_sent_to': 'email ünvanına göndərilən',
+          'enter_verification_code': '6 rəqəmli şifrəni daxil edin',
+          'legal_provisions': 'Qanuni Hökmler',
+          'legal_provisions_content':
+              'Bu Qaydalar Azərbaycan Respublikasının qanunlarına uyğun olaraq tənzimlənir və hər hansı bir mübahisə yarandıqda, Azərbaycan məhkəmələri və ya alternativ mübahisə həll üsulları tətbiq oluna bilər.',
+          'support_email': 'support@avankart.az',
+          'support_phone': '*0000',
+
+          // Countries
+          'azerbaijan': 'Azərbaycan',
+          'turkey': 'Türkiyə',
+          'russia': 'Rusiya',
+          'ukraine': 'Ukrayna',
+          'united_kingdom': 'Böyük Britaniya',
+          'united_states': 'Amerika Birləşmiş Ştatları',
+          'germany': 'Almaniya',
+          'france': 'Fransa',
+          'italy': 'İtaliya',
+          'spain': 'İspaniya',
+          'china': 'Çin',
+          'japan': 'Yaponiya',
+          'south_korea': 'Cənubi Koreya',
+          'india': 'Hindistan',
+          'indonesia': 'İndoneziya',
+          'malaysia': 'Malayziya',
+          'singapore': 'Sinqapur',
+          'thailand': 'Tayland',
+          'vietnam': 'Vyetnam',
+          'australia': 'Avstraliya',
+          'new_zealand': 'Yeni Zelandiya',
+          'south_africa': 'Cənubi Afrika',
+          'egypt': 'Misir',
+          'morocco': 'Mərakeş',
+          'nigeria': 'Nigeriya',
+          'brazil': 'Braziliya',
+          'argentina': 'Argentina',
+          'chile': 'Çili',
+          'colombia': 'Kolumbiya',
+          'mexico': 'Meksika',
+          'netherlands': 'Niderland',
+          'belgium': 'Belçika',
+          'switzerland': 'İsveçrə',
+          'austria': 'Avstriya',
+          'sweden': 'İsveç',
+          'norway': 'Norveç',
+          'denmark': 'Danimarka',
+          'finland': 'Finlandiya',
+          'poland': 'Polşa',
+          'czech_republic': 'Çexiya',
+          'hungary': 'Macarıstan',
+          'greece': 'Yunanıstan',
+          'romania': 'Rumıniya',
+          'bulgaria': 'Bolqarıstan',
+          'portugal': 'Portuqaliya',
+          'ireland': 'İrlandiya',
+          'israel': 'İsrail',
+          'uae': 'BƏƏ',
+          'saudi_arabia': 'Səudiyyə Ərəbistanı',
+          'qatar': 'Qətər',
+          'kuwait': 'Küveyt',
+          'personal_info': 'Şəxsi məlumatlar',
+          'full_name': 'Ad Soyad',
+          'birth_date': 'Doğum tarixi',
+          'phone_number': 'Telefon',
+          'security': 'Təhlükəsizlik',
+          'email': 'E-poçt',
+          'password': 'Şifrə',
+          'account_delete': 'Hesabı sil',
+          'account_delete_confirmation':
+              'Hesabı silmək istədiyinizə əminsiniz?',
+          'full_name_change': 'Ad və soyadını dəyiş',
+          'birth_date_change': 'Doğum tarixini dəyiş',
+          'phone_number_change': 'Telefon nömrəsini dəyiş',
+          'email_change': 'Email dəyiş',
+          'confirm_change': 'Dəyişikliyi təsdiqlə',
+          'confirm_password_change':
+              'Şifrənizi dəyişmək istədiyinizə əminsiniz?',
+          'otp': 'OTP',
+          'password_min_length': 'Minimum 8 simvol',
+          'password_complexity': 'Minimum 1 qeyri əlifba simvolu',
+        },
+        'ru': {
+          // ... existing translations (if any) ...
+        },
+      };
+}
