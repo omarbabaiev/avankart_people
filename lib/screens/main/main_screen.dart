@@ -14,6 +14,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:avankart_people/widgets/payment/payment_bottom_sheet.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key}) {
@@ -25,6 +26,9 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
+    final Color selectedColor = Theme.of(context).colorScheme.onBackground;
+    final Color unselectedColor =
+        Theme.of(context).colorScheme.onBackground.withOpacity(.7);
 
     return WillPopScope(
       // Geri tuşuna basıldığında
@@ -60,7 +64,7 @@ class MainScreen extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           onPressed: () {
-            _showPaymentBottomSheet(context);
+            PaymentBottomSheet.show(context);
           },
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
           elevation: 0.5,
@@ -75,79 +79,58 @@ class MainScreen extends StatelessWidget {
 
         // Bottom navigation bar
         bottomNavigationBar: BottomAppBar(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          elevation: 0.5,
+          elevation: 0.8,
           height: 83,
           notchMargin: 4,
-          shape: const CircularNotchedRectangle(),
+          shape: AutomaticNotchedShape(
+            RoundedRectangleBorder(),
+            StadiumBorder(),
+          ),
           color: Theme.of(context).colorScheme.onPrimary,
           child: Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Sol taraftaki ikonlar
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(
-                        context: context,
-                        icon: ImageAssets.homeInactive,
-                        activeIcon: ImageAssets.homeActive,
-                        label: 'Əsas səhifə',
-                        index: 0,
-                        selected: controller.isSpecialPage
-                            ? controller.previousIndex == 0
-                            : controller.selectedIndex == 0,
-                        onTap: () => controller.onItemTapped(0),
-                      ),
-                      _buildNavItem(
-                        context: context,
-                        icon: ImageAssets.mapTrifoldInactive,
-                        activeIcon: ImageAssets.mapTrifold,
-                        label: 'Xəritə',
-                        index: 1,
-                        selected: controller.isSpecialPage
-                            ? controller.previousIndex == 1
-                            : controller.selectedIndex == 1,
-                        onTap: () => controller.onItemTapped(1),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Orta boşluk (FAB için)
-
-                // Sağ taraftaki ikonlar
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(
-                        context: context,
-                        icon: ImageAssets.walletInactive,
-                        activeIcon: ImageAssets.wallet,
-                        label: 'Kartlarım',
-                        index: 2,
-                        selected: controller.isSpecialPage
-                            ? controller.previousIndex == 2
-                            : controller.selectedIndex == 2,
-                        onTap: () => controller.onItemTapped(2),
-                      ),
-                      _buildNavItem(
-                        context: context,
-                        icon: ImageAssets.settingsInactive,
-                        activeIcon: ImageAssets.settingsActive,
-                        label: 'Tənzimləmələr',
-                        index: 3,
-                        selected: controller.isSpecialPage
-                            ? controller.previousIndex == 3
-                            : controller.selectedIndex == 3,
-                        onTap: () => controller.onItemTapped(3),
-                      ),
-                    ],
-                  ),
-                ),
+            () => BottomNavigationBar(
+              currentIndex: controller.selectedIndex,
+              onTap: (index) {
+                controller.onItemTapped(index);
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              selectedItemColor: selectedColor,
+              unselectedItemColor: unselectedColor,
+              selectedLabelStyle: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+              elevation: 0,
+              items: [
+                BottomNavigationBarItem(
+                    activeIcon: Image.asset(ImageAssets.homeActive,
+                        height: 24, width: 24),
+                    icon: Image.asset(ImageAssets.homeInactive,
+                        height: 24, width: 24),
+                    label: 'Əsas səhifə'),
+                BottomNavigationBarItem(
+                    activeIcon: Image.asset(ImageAssets.mapTrifold,
+                        height: 24, width: 24),
+                    icon: Image.asset(ImageAssets.mapTrifoldInactive,
+                        height: 24, width: 24),
+                    label: 'Xəritə'),
+                BottomNavigationBarItem(
+                    activeIcon:
+                        Image.asset(ImageAssets.wallet, height: 24, width: 24),
+                    icon: Image.asset(ImageAssets.walletInactive,
+                        height: 24, width: 24),
+                    label: 'Kartlarım'),
+                BottomNavigationBarItem(
+                    activeIcon: Image.asset(ImageAssets.settingsActive,
+                        height: 24, width: 24),
+                    icon: Image.asset(ImageAssets.settingsInactive,
+                        height: 24, width: 24),
+                    label: 'Tənzimləmələr'),
               ],
             ),
           ),
@@ -170,22 +153,27 @@ class MainScreen extends StatelessWidget {
     final Color unselectedColor =
         Theme.of(context).colorScheme.onBackground.withOpacity(.7);
 
-    return InkWell(
-      onTap: onTap,
-      customBorder: const CircleBorder(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          InkWell(
+            splashColor: AppTheme.primaryColor.withOpacity(.4),
+            onTap: onTap,
+            child: Image.asset(
               selected ? activeIcon : icon,
               color: selected ? selectedColor : unselectedColor,
               width: 24,
               height: 24,
             ),
-            Text(
+          ),
+          SizedBox(height: 4),
+          InkWell(
+            splashColor: Colors.transparent,
+            onTap: onTap,
+            child: Text(
               label,
               style: TextStyle(
                 color: selected ? selectedColor : unselectedColor,
@@ -193,172 +181,7 @@ class MainScreen extends StatelessWidget {
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPaymentBottomSheet(BuildContext context) {
-    final controller = Get.find<CardController>();
-    context.showPerformantBottomSheet(
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              context.buildBottomSheetHandle(),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Ödəniş edəcəyiniz kartı seçin",
-                  style: GoogleFonts.poppins(
-                      fontSize: 17, fontWeight: FontWeight.w600),
-                ),
-              ),
-              SizedBox(height: 20),
-              Obx(() {
-                // Seçili indeksi anlık olarak görmek için bir print ve Text ekleyelim
-                print(
-                    "Bottom Sheet Obx rebuilding. Selected Index: ${controller.selectedIndex.value}");
-                return SizedBox(
-                  child: Skeletonizer(
-                    enableSwitchAnimation: true,
-                    enabled: controller.cards.isEmpty,
-                    child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemCount: controller.cards.length,
-                      itemBuilder: (context, index) {
-                        final card = controller.cards[index];
-                        final isSelected =
-                            controller.selectedIndex.value == index;
-                        return InkWell(
-                            onTap: () => controller.selectedIndex.value = index,
-                            child: _buildCardTitle(
-                              context,
-                              card['title'] as String,
-                              (card['balance'] as double).toStringAsFixed(2),
-                              card['icon'] as String,
-                              card['color'] as Color,
-                              isSelected,
-                            ));
-                      },
-                    ),
-                  ),
-                );
-              }),
-              SizedBox(
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.qrPayment);
-                  },
-                  style: AppTheme.primaryButtonStyle(
-                    backgroundColor: AppTheme.primaryColor,
-                  ),
-                  child: Text(
-                    'next'.tr,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextButton(
-                onPressed: () => Get.back(),
-                child: Text(
-                  'cancel'.tr,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).unselectedWidgetColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCardTitle(BuildContext context, String title, String balance,
-      String icon, Color color, bool isSelected) {
-    return Container(
-      padding: EdgeInsets.all(2),
-      margin: EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? color.withOpacity(0.1)
-            : Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.circular(50),
-        border: isSelected
-            ? Border.all(color: color, width: 2)
-            : Border.all(color: Colors.transparent, width: 2),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: color,
-                radius: 20,
-                child: Image.asset(
-                  icon,
-                  width: 20,
-                  height: 20,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.onBackground
-                        : Theme.of(context).unselectedWidgetColor),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                "Balans:",
-                style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).unselectedWidgetColor),
-              ),
-              SizedBox(width: 5),
-              Text(
-                balance,
-                style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onBackground),
-              ),
-              SizedBox(width: 5),
-            ],
-          )
         ],
       ),
     );

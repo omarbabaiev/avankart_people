@@ -3,6 +3,7 @@ class ImageAssets {
   static const frame1 = "assets/images/frame1.png";
   static const frame2 = "assets/images/frame2.png";
   static const frame3 = "assets/images/frame3.png";
+  static const splashLottie = "assets/lotties/splash_lottie.json";
 
   static const restoringPage = "assets/images/restoring_page.png";
   static const copySimple = "assets/icons/CopySimple.png";
@@ -29,6 +30,13 @@ class ImageAssets {
   static const uberIcon = "assets/icons/Uber.png";
   static const addressBook = "assets/icons/AddressBook.png";
   static const cardholder = "assets/icons/Cardholder.png";
+  static const faceId = "assets/icons/Face ID.png";
+  static const telegram = "assets/icons/logos_telegram.png";
+  static const fingerprintSimple = "assets/icons/FingerprintSimple.png";
+  static const hourglassMedium = "assets/icons/HourglassMedium.png";
+  static const lockKeyOpen = "assets/icons/LockKeyOpen.png";
+  static const password = "assets/icons/Password.png";
+  static const trash = "assets/icons/Trash.png";
 
   static const bell = "assets/icons/BellP.png";
   static const funnel = "assets/icons/FunnelP.png";
@@ -47,7 +55,6 @@ class ImageAssets {
   static const mapTrifoldInactive = "assets/icons/MapTrifoldInactive.png";
 
   static const vibrate = "assets/icons/Vibrate.png";
-  static const trash = "assets/icons/Trash.png";
   static const tick_circle = "assets/icons/tick-circle.png";
   static const signout = "assets/icons/SignOut.png";
   static const question = "assets/icons/Question.png";

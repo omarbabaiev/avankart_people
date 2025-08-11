@@ -1,3 +1,5 @@
+import 'package:avankart_people/widgets/appbar/adaptive_appbar.dart';
+
 import '../../../routes/app_routes.dart';
 import '../../assets/image_assets.dart';
 import '../../../utils/snackbar_utils.dart';
@@ -500,27 +502,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: Container(
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground
-                          .withOpacity(.1)))),
-          child: AppBar(
-            backgroundColor: Theme.of(context).shadowColor.withOpacity(.1),
-            shadowColor: Theme.of(context).shadowColor.withOpacity(.1),
-            title: Text(
-              'new_account'.tr,
-              style: GoogleFonts.poppins(
-                  fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Get.back(),
-            ),
-          ),
-        ),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(.1)))),
+            child: AdaptiveAppBar(title: "new_account".tr)),
       ),
       body: SingleChildScrollView(
         child: Padding(

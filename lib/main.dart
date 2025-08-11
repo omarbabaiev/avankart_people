@@ -1,6 +1,6 @@
 import 'routes/app_routes.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/initial/splash_screen.dart';
+import 'screens/auth/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';

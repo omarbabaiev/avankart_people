@@ -19,6 +19,7 @@ class SecurityScreen extends StatelessWidget {
       appBar: AppBar(
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        centerTitle: false,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
@@ -61,7 +62,7 @@ class SecurityScreen extends StatelessWidget {
               ),
               child: _buildSecureTile(
                 icon: ImageAssets.pencil,
-                iconLeading: ImageAssets.locckey,
+                iconLeading: ImageAssets.lockKeyOpen,
                 title: "Şifrə",
                 context: context,
                 isSwitch: false,
@@ -76,7 +77,7 @@ class SecurityScreen extends StatelessWidget {
               ),
               child: _buildSecureTile(
                 icon: ImageAssets.caretRight,
-                iconLeading: ImageAssets.locckey,
+                iconLeading: ImageAssets.hourglassMedium,
                 title: "Hesabı dondur",
                 context: context,
                 isSwitch: false,
@@ -91,8 +92,8 @@ class SecurityScreen extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: _buildSecureTile(
-                iconLeading: ImageAssets.locckey,
-                title: "Hesabı ",
+                iconLeading: ImageAssets.faceId,
+                title: "Face ID",
                 context: context,
                 isSwitch: false,
               ),
@@ -105,8 +106,8 @@ class SecurityScreen extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: _buildSecureTile(
-                iconLeading: ImageAssets.locckey,
-                title: "Hesabı ",
+                iconLeading: ImageAssets.fingerprintSimple,
+                title: "Barmaq izi",
                 context: context,
                 isSwitch: false,
               ),
@@ -122,8 +123,8 @@ class SecurityScreen extends StatelessWidget {
                 onTap: () {
                   Get.toNamed(AppRoutes.setPinCode);
                 },
-                iconLeading: ImageAssets.locckey,
-                title: "Hesabı ",
+                iconLeading: ImageAssets.password,
+                title: "PIN kod",
                 context: context,
                 isSwitch: false,
               ),
@@ -137,8 +138,8 @@ class SecurityScreen extends StatelessWidget {
                 onTap: () {
                   Get.toNamed(AppRoutes.twoFactorAuthentication);
                 },
-                iconLeading: ImageAssets.locckey,
-                title: "Hesabı ",
+                iconLeading: ImageAssets.lockKeyOpen,
+                title: "2 addımlı doğrulama",
                 context: context,
                 isSwitch: false,
                 icon: ImageAssets.caretRight,

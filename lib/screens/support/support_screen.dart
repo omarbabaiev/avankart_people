@@ -61,16 +61,16 @@ class SupportScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SupportSocialCard(
-                      icon: Icons.facebook,
-                      title: 'facebook'.tr,
+                      icon: ImageAssets.whatsappIcon,
+                      title: 'whatsapp'.tr,
                       onTap: () => Get.to(() => const FAQScreen()),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: SupportSocialCard(
-                      icon: Icons.facebook,
-                      title: 'facebook'.tr,
+                      icon: ImageAssets.telegram,
+                      title: 'telegram'.tr,
                       onTap: () => Get.to(() => const FAQScreen()),
                     ),
                   ),

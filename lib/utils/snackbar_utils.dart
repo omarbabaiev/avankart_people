@@ -24,9 +24,54 @@ class SnackbarUtils {
   /// [textColor] yazı rengi (varsayılan: Colors.white)
   /// [duration] gösterim süresi (varsayılan: 3 saniye)
   /// [position] pozisyon (varsayılan: SnackPosition.TOP)
-  static void showSnackbar(
+  static void showSuccessSnackbar(
     String message, {
     Color backgroundColor = AppTheme.snackBarSuccesColor,
+    Color textColor = Colors.white,
+    Duration? duration,
+    SnackPosition position = SnackPosition.BOTTOM,
+  }) {
+    final screenWidth = Get.width;
+    final snackbarWidth = 343.0; // Sabit 343px genişlik
+
+    Get.snackbar(
+      '', // Başlık yok
+      '',
+      backgroundColor: backgroundColor,
+      colorText: textColor,
+      borderRadius: 12,
+      margin: EdgeInsets.symmetric(
+        horizontal: (screenWidth - snackbarWidth) / 2,
+        vertical: 16,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      messageText: Container(
+        height: 50, // Sabit 50px yükseklik
+        alignment: Alignment.center,
+        child: Text(
+          message,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+      titleText: const SizedBox.shrink(), // Başlık olmayacak
+      snackPosition: position,
+      duration: duration ?? const Duration(seconds: 3),
+      isDismissible: true,
+      dismissDirection: DismissDirection.up,
+      forwardAnimationCurve: Curves.easeOutCubic,
+      reverseAnimationCurve: Curves.easeInCubic,
+      snackStyle: SnackStyle.FLOATING,
+    );
+  }
+
+  static void showErrorSnackbar(
+    String message, {
+    Color backgroundColor = AppTheme.errorColor,
     Color textColor = Colors.white,
     Duration? duration,
     SnackPosition position = SnackPosition.BOTTOM,

@@ -23,7 +23,7 @@ import '../screens/auth/register_screen.dart';
 import '../screens/support/terms_of_use_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../screens/initial/splash_screen.dart';
+import '../screens/auth/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/email_verification_screen.dart';
 

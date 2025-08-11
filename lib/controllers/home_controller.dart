@@ -1,4 +1,6 @@
+import 'package:avankart_people/screens/main/card_screen.dart';
 import 'package:avankart_people/screens/main/home_screen.dart';
+import 'package:avankart_people/screens/main/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../screens/support/support_screen.dart';
@@ -111,13 +113,13 @@ class HomeController extends GetxController
         newPage = const HomeScreen();
         break;
       case 1:
-        newPage = const HomeScreen();
+        newPage = const CardScreen();
         break;
       case 2:
-        newPage = const HomeScreen();
+        newPage = Container();
         break;
       default:
-        newPage = const HomeScreen();
+        newPage = const SettingsScreen();
     }
 
     _animatePageChange(newPage);

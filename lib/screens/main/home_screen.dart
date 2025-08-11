@@ -62,11 +62,14 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(width: 4),
             IconButton.filledTonal(
-              icon: Image.asset(
-                ImageAssets.bellInactive,
-                width: 24,
-                height: 24,
-                color: Theme.of(context).colorScheme.onBackground,
+              icon: Badge(
+                padding: EdgeInsets.zero,
+                child: Image.asset(
+                  ImageAssets.bellInactive,
+                  width: 24,
+                  height: 24,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
               onPressed: () {
                 Get.toNamed(AppRoutes.benefits);

@@ -42,7 +42,7 @@ class SupportContactCard extends StatelessWidget {
               ),
               child: Image.asset(
                 icon,
-                height: 26,
+                height: 32,
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
@@ -55,7 +55,7 @@ class SupportContactCard extends StatelessWidget {
                   title.tr,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
@@ -80,7 +80,7 @@ class SupportContactCard extends StatelessWidget {
 }
 
 class SupportSocialCard extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String title;
   final VoidCallback onTap;
   final Color iconBackgroundColor;
@@ -110,17 +110,17 @@ class SupportSocialCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            Image.asset(
               icon,
-              size: 40,
-              color: Theme.of(context).colorScheme.onBackground,
+              height: 40,
+              width: 40,
             ),
             const SizedBox(width: 10),
             Text(
               title.tr,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             ),

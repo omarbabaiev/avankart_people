@@ -33,7 +33,6 @@ class MembershipListScreen extends GetView<MembershipController> {
         ),
       ),
       body: Obx(() {
-        // Əgər loadingdirsə və data hələ gəlməyibsə, shimmer effekti göstər
         final isLoading = controller.isLoading.value;
         final isEmpty = controller.memberships.isEmpty;
 
@@ -83,61 +82,70 @@ class MembershipListScreen extends GetView<MembershipController> {
                   ),
                 ),
               )
-            : RefreshIndicator(
-                onRefresh: controller.fetchMemberships,
-                child: Skeletonizer(
-                  enableSwitchAnimation: true,
-                  enabled: isLoading,
-                  child: ListView.builder(
-                    itemCount: isLoading
-                        ? 5
-                        : isEmpty
-                            ? 1
-                            : controller.memberships.length,
-                    itemBuilder: (context, index) {
-                      if (isLoading) {
-                        // Fake shimmer item
-                        return _buildMembershipTile(
-                          context,
-                          {
-                            'id': '1',
-                            'name': 'Veysəloğlu MMC',
-                            'imageLink':
-                                'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-                            'startDate': '14.08.2024',
-                            'endDate': null,
-                            'isEnd': false
-                          },
-                        );
-                      }
-
-                      if (isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 64),
-                            child: Column(
-                              children: [
-                                Icon(Icons.business_center_outlined,
-                                    size: 64, color: Colors.grey[400]),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Üzvlük tapılmadı',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      final membership = controller.memberships[index];
-                      return _buildMembershipTile(context, membership);
-                    },
+            : CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: controller.fetchMemberships,
                   ),
-                ),
+                  SliverToBoxAdapter(
+                    child: Skeletonizer(
+                      enableSwitchAnimation: true,
+                      enabled: isLoading,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: isLoading
+                            ? 5
+                            : isEmpty
+                                ? 1
+                                : controller.memberships.length,
+                        itemBuilder: (context, index) {
+                          if (isLoading) {
+                            return _buildMembershipTile(
+                              context,
+                              {
+                                'id': '1',
+                                'name': 'Veysəloğlu MMC',
+                                'imageLink':
+                                    'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
+                                'startDate': '14.08.2024',
+                                'endDate': null,
+                                'isEnd': false
+                              },
+                            );
+                          }
+
+                          if (isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 64),
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.business_center_outlined,
+                                        size: 64, color: Colors.grey[400]),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Üzvlük tapılmadı',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+
+                          final membership = controller.memberships[index];
+                          return _buildMembershipTile(context, membership);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               );
       }),
     );

@@ -144,6 +144,7 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Text(
                 "Halhazırda aktiv olan kartlarınızı görə və idarə edə bilərsiniz.",
+                textAlign: TextAlign.start,
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
