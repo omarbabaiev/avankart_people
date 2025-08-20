@@ -1,8 +1,7 @@
-import '../../../utils/snackbar_utils.dart';
+import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../utils/app_theme.dart';
 import 'login_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -54,7 +53,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     style: AppTheme.subheadingStyle,
                   ),
                   const SizedBox(height: 32),
-
                   Text(
                     'new_password'.tr,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -92,7 +90,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-
                   Text(
                     'confirm_password'.tr,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -130,12 +127,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     },
                   ),
                   const SizedBox(height: 40),
-
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        SnackbarUtils.showSnackbar('password_reset_success'.tr);
-                        Get.offAll(() => const LoginScreen());
+                        SnackbarUtils.showSuccessSnackbar(
+                            'password_reset_success'.tr);
+                        Get.offAll(() => LoginScreen());
                       }
                     },
                     style: AppTheme.primaryButtonStyle(),

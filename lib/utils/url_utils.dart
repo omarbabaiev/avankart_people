@@ -1,17 +1,19 @@
+import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:avankart_people/utils/debug_logger.dart';
 import 'dart:io' show Platform;
 
 class UrlUtils {
   static Future<void> launchEmail(String email) async {
-    debugPrint('Email launch requested for: $email');
+    DebugLogger.urlLaunch(email, 'email');
 
     // iOS ve Android için farklı yaklaşımlar kullanın
     if (Platform.isIOS) {
       try {
         // iOS'ta doğrudan Mail uygulamasına yönlendirme
         final Uri emailUri = Uri.parse('mailto:$email');
-        debugPrint('iOS email URI: $emailUri');
+        DebugLogger.debug(LogCategory.url, 'iOS email URI: $emailUri');
 
         // Forceyle açmayı deneyin
         if (await canLaunchUrl(emailUri)) {
@@ -19,29 +21,32 @@ class UrlUtils {
             emailUri,
             mode: LaunchMode.externalNonBrowserApplication,
           );
-          debugPrint('iOS email launch result: $result');
+          DebugLogger.debug(
+              LogCategory.url, 'iOS email launch result: $result');
         } else {
           // Alternatif yöntem
           final Uri fallbackUri = Uri(scheme: 'mailto', path: email);
-          debugPrint('iOS fallback email URI: $fallbackUri');
+          DebugLogger.debug(
+              LogCategory.url, 'iOS fallback email URI: $fallbackUri');
           await launchUrl(fallbackUri);
         }
       } catch (e) {
-        debugPrint('iOS email launch error: $e');
+        DebugLogger.urlLaunch(email, 'email', error: e);
       }
     } else {
       // Android ve diğer platformlar için standart yöntem
       try {
         final Uri emailUri = Uri(scheme: 'mailto', path: email);
-        debugPrint('Non-iOS email URI: $emailUri');
+        DebugLogger.debug(LogCategory.url, 'Non-iOS email URI: $emailUri');
 
         if (await canLaunchUrl(emailUri)) {
           await launchUrl(emailUri);
         } else {
-          debugPrint('Could not launch email: $email');
+          DebugLogger.warning(
+              LogCategory.url, 'Could not launch email: $email');
         }
       } catch (e) {
-        debugPrint('Error launching email: $e');
+        DebugLogger.urlLaunch(email, 'email', error: e);
       }
     }
   }
@@ -49,7 +54,7 @@ class UrlUtils {
   static Future<void> launchPhone(String phone) async {
     // Telefon numarasının temizlenmesi
     String cleanedPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
-    debugPrint('Cleaned phone number: $cleanedPhone');
+    DebugLogger.debug(LogCategory.url, 'Cleaned phone number: $cleanedPhone');
 
     // Numara formatını düzenle
     if (!cleanedPhone.startsWith('+')) {
@@ -60,7 +65,7 @@ class UrlUtils {
       }
     }
 
-    debugPrint('Formatted phone number: $cleanedPhone');
+    DebugLogger.debug(LogCategory.url, 'Formatted phone number: $cleanedPhone');
 
     // iOS ve Android için farklı yaklaşımlar
     if (Platform.isIOS) {
@@ -68,45 +73,48 @@ class UrlUtils {
         // iOS için basit telli URI
         final String urlString = 'tel:$cleanedPhone';
         final Uri telUri = Uri.parse(urlString);
-        debugPrint('iOS tel URI: $telUri');
+        DebugLogger.debug(LogCategory.url, 'iOS tel URI: $telUri');
 
         final bool canOpen = await canLaunchUrl(telUri);
-        debugPrint('Can launch on iOS: $canOpen');
+        DebugLogger.debug(LogCategory.url, 'Can launch on iOS: $canOpen');
 
         if (canOpen) {
           final bool result = await launchUrl(
             telUri,
             mode: LaunchMode.externalNonBrowserApplication,
           );
-          debugPrint('iOS tel launch result: $result');
+          DebugLogger.debug(LogCategory.url, 'iOS tel launch result: $result');
         } else {
           // Alternatif iOS yaklaşımı
           final String encPhone = Uri.encodeComponent(cleanedPhone);
           final Uri altUri = Uri.parse('telprompt:$encPhone');
-          debugPrint('iOS alternative tel URI: $altUri');
+          DebugLogger.debug(
+              LogCategory.url, 'iOS alternative tel URI: $altUri');
 
           if (await canLaunchUrl(altUri)) {
             await launchUrl(altUri);
           } else {
-            debugPrint('iOS cannot launch any phone URI');
+            DebugLogger.warning(
+                LogCategory.url, 'iOS cannot launch any phone URI');
           }
         }
       } catch (e) {
-        debugPrint('iOS phone launch error: $e');
+        DebugLogger.urlLaunch(cleanedPhone, 'phone', error: e);
       }
     } else {
       // Android için standart yaklaşım
       try {
         final Uri phoneUri = Uri.parse('tel:$cleanedPhone');
-        debugPrint('Android phone URI: $phoneUri');
+        DebugLogger.debug(LogCategory.url, 'Android phone URI: $phoneUri');
 
         if (await canLaunchUrl(phoneUri)) {
           await launchUrl(phoneUri);
         } else {
-          debugPrint('Android cannot launch phone URI');
+          DebugLogger.warning(
+              LogCategory.url, 'Android cannot launch phone URI');
         }
       } catch (e) {
-        debugPrint('Android phone launch error: $e');
+        DebugLogger.urlLaunch(cleanedPhone, 'phone', error: e);
       }
     }
   }
@@ -117,7 +125,7 @@ class UrlUtils {
     }
 
     final Uri webUri = Uri.parse(url);
-    debugPrint('Web URI: $webUri');
+    DebugLogger.debug(LogCategory.url, 'Web URI: $webUri');
 
     try {
       if (await canLaunchUrl(webUri)) {
@@ -125,9 +133,9 @@ class UrlUtils {
           webUri,
           mode: LaunchMode.externalApplication,
         );
-        debugPrint('Web launch result: $result');
+        DebugLogger.debug(LogCategory.url, 'Web launch result: $result');
       } else {
-        debugPrint('Could not launch web URL: $url');
+        DebugLogger.warning(LogCategory.url, 'Could not launch web URL: $url');
 
         // Alternatif olarak, iOS Safari'yi açmayı dene
         if (Platform.isIOS) {
@@ -138,7 +146,7 @@ class UrlUtils {
         }
       }
     } catch (e) {
-      debugPrint('Web launch error: $e');
+      DebugLogger.urlLaunch(url, 'web', error: e);
     }
   }
 
@@ -208,6 +216,56 @@ class UrlUtils {
         }
       } catch (e) {
         debugPrint('Android maps launch error: $e');
+      }
+    }
+  }
+
+  /// Platforma uygun store'a yönlendirme (App Store veya Google Play Store)
+  static Future<void> launchStore() async {
+    debugPrint('Store launch requested');
+
+    if (Platform.isIOS) {
+      try {
+        // iOS için App Store - APP_ID'yi gerçek App Store ID'niz ile değiştirin
+        const String appStoreId =
+            'YOUR_APP_STORE_ID'; // Bu değeri gerçek App Store ID'niz ile değiştirin
+        final String appStoreUrl = 'https://apps.apple.com/app/id$appStoreId';
+        final Uri appStoreUri = Uri.parse(appStoreUrl);
+        debugPrint('iOS App Store URL: $appStoreUrl');
+
+        if (await canLaunchUrl(appStoreUri)) {
+          final bool result = await launchUrl(
+            appStoreUri,
+            mode: LaunchMode.externalApplication,
+          );
+          debugPrint('iOS App Store launch result: $result');
+        } else {
+          debugPrint('iOS cannot launch App Store URL');
+        }
+      } catch (e) {
+        debugPrint('iOS store launch error: $e');
+      }
+    } else {
+      // Android için Google Play Store
+      try {
+        // Android package name - AndroidManifest.xml'deki package ile aynı
+        const String packageName = 'com.avankart.partner';
+        final String playStoreUrl =
+            'https://play.google.com/store/apps/details?id=$packageName';
+        final Uri playStoreUri = Uri.parse(playStoreUrl);
+        debugPrint('Android Play Store URL: $playStoreUrl');
+
+        if (await canLaunchUrl(playStoreUri)) {
+          final bool result = await launchUrl(
+            playStoreUri,
+            mode: LaunchMode.externalApplication,
+          );
+          debugPrint('Android Play Store launch result: $result');
+        } else {
+          debugPrint('Android cannot launch Play Store URL');
+        }
+      } catch (e) {
+        debugPrint('Android store launch error: $e');
       }
     }
   }

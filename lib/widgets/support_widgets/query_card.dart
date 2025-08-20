@@ -1,6 +1,6 @@
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class QueryCard extends StatelessWidget {
   final String id;
@@ -35,7 +35,8 @@ class QueryCard extends StatelessWidget {
           children: [
             Text(
               id,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: Theme.of(context).unselectedWidgetColor,
@@ -44,7 +45,8 @@ class QueryCard extends StatelessWidget {
             SizedBox(height: 4),
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -52,7 +54,8 @@ class QueryCard extends StatelessWidget {
             SizedBox(height: 4),
             Text(
               description,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 11,
                 fontWeight: FontWeight.w400,
                 color: Theme.of(context).unselectedWidgetColor,
@@ -80,7 +83,8 @@ class QueryCard extends StatelessWidget {
                       SizedBox(width: 4),
                       Text(
                         date,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground,
@@ -104,12 +108,13 @@ class QueryCard extends StatelessWidget {
                     SizedBox(width: 4),
                     Text(
                       switch (status) {
-                        "pending" => "Gözləmədə",
-                        "solved" => "Həll edildi",
-                        "draft" => "Qaralama",
-                        _ => "Status tapılmadı",
+                        "pending" => "pending".tr,
+                        "solved" => "solved".tr,
+                        "draft" => "draft".tr,
+                        _ => "status_not_found".tr,
                       },
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: switch (status) {

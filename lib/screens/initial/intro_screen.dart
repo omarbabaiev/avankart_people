@@ -3,7 +3,6 @@ import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -78,7 +77,8 @@ class _IntroScreenState extends State<IntroScreen> {
               child: Text(
                 _introTexts[_currentPage],
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,

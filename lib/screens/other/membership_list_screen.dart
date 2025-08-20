@@ -6,7 +6,6 @@ import 'package:avankart_people/widgets/restaurant_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MembershipListScreen extends GetView<MembershipController> {
@@ -19,13 +18,15 @@ class MembershipListScreen extends GetView<MembershipController> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
+        centerTitle: false,
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             'Üzvlük',
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -53,7 +54,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                       SizedBox(height: 16),
                       Text(
                         'Şirkət tapılmadı !',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 16,
                           color: Theme.of(context).colorScheme.onBackground,
                           fontWeight: FontWeight.w600,
@@ -62,7 +64,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                       SizedBox(height: 8),
                       Text(
                         'Daha əvvəl heç bir şirkətə üzv olmadınız',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 14,
                           color: Theme.of(context).unselectedWidgetColor,
                         ),
@@ -72,7 +75,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                         onPressed: () {},
                         child: Text(
                           'Üzv ol',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
@@ -128,7 +132,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                                     SizedBox(height: 16),
                                     Text(
                                       'Üzvlük tapılmadı',
-                                      style: GoogleFonts.poppins(
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
                                         fontSize: 16,
                                         color: Colors.grey[600],
                                       ),
@@ -188,8 +193,10 @@ class MembershipListScreen extends GetView<MembershipController> {
                   membership['name'].isNotEmpty
                       ? membership['name']
                       : "Loading...",
-                  style: GoogleFonts.poppins(
-                      fontSize: 15, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -206,7 +213,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                   ),
                   child: Text(
                     membership['isEnd'] ? 'Ayrılıb' : 'Davam edir',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                       color: membership['isEnd']
@@ -222,7 +230,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                 Row(
                   children: [
                     Text("Üzv tarixi:",
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                           color: Theme.of(context).unselectedWidgetColor,
@@ -230,7 +239,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                     SizedBox(width: 4),
                     Text(
                       membership['startDate'],
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
+                          fontFamily: 'Roboto',
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground),
@@ -242,7 +252,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                   Row(
                     children: [
                       Text("Ayrılma tarixi:",
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: Theme.of(context).unselectedWidgetColor,
@@ -250,7 +261,8 @@ class MembershipListScreen extends GetView<MembershipController> {
                       SizedBox(width: 4),
                       Text(
                         membership['endDate'],
-                        style: GoogleFonts.roboto(
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onBackground),

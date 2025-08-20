@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SearchCompanyScreen extends StatefulWidget {
   @override
@@ -88,7 +87,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                         }
                                       },
                                       decoration: InputDecoration(
-                                        hintStyle: GoogleFonts.poppins(
+                                        hintStyle: TextStyle(
+    fontFamily: 'Poppins',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 14,
                                           color: Theme.of(context)
@@ -104,7 +104,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                         errorBorder: InputBorder.none,
                                         focusedErrorBorder: InputBorder.none,
                                       ),
-                                      style: GoogleFonts.poppins(
+                                      style: TextStyle(
+    fontFamily: 'Poppins',
                                         fontWeight: FontWeight.w500,
                                         color: Theme.of(context)
                                             .bottomNavigationBarTheme
@@ -126,7 +127,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                           },
                           child: Text(
                             'Ləğv et',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(
+    fontFamily: 'Poppins',
                               fontWeight: FontWeight.w500,
                               fontSize: 13,
                               color: Theme.of(context).unselectedWidgetColor,
@@ -161,7 +163,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text('Axtarış keçmişi',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
                             color: Theme.of(context).unselectedWidgetColor,
@@ -171,7 +174,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text('Restoran',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -189,7 +193,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text('Özsüt',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -207,7 +212,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text('Borani Restoraunt',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,

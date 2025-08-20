@@ -6,7 +6,6 @@ import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 
 class BenefitsScreen extends GetView<BenefitsController> {
@@ -49,7 +48,8 @@ class BenefitsScreen extends GetView<BenefitsController> {
             children: [
               Text(
                 'Xərclədikcə Qazan',
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.white,
@@ -58,7 +58,8 @@ class BenefitsScreen extends GetView<BenefitsController> {
               SizedBox(height: 4),
               Text(
                 'Qazanılıb 2/24',
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                   color: AppTheme.white.withOpacity(0.65),
@@ -88,7 +89,8 @@ class BenefitsScreen extends GetView<BenefitsController> {
                   indicatorColor: Colors.transparent,
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.white,
-                  labelStyle: GoogleFonts.poppins(
+                  labelStyle: TextStyle(
+    fontFamily: 'Poppins',
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -181,7 +183,8 @@ class BenefitsScreen extends GetView<BenefitsController> {
                 SizedBox(height: 8),
                 Text(
                   '20 dəfə ye ${index + 1} qazan',
-                  style: GoogleFonts.roboto(
+                  style: TextStyle(
+    fontFamily: 'Roboto',
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,

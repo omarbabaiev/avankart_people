@@ -1,6 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantInfoWidget extends StatelessWidget {
   final String name;
@@ -29,7 +28,8 @@ class RestaurantInfoWidget extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -80,7 +80,8 @@ class RestaurantInfoWidget extends StatelessWidget {
           SizedBox(height: 16),
           Text(
             description,
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 14,
               color: Theme.of(context).hintColor,
               height: 1.5,

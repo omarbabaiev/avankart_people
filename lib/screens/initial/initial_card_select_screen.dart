@@ -6,7 +6,6 @@ import 'package:avankart_people/widgets/initial_card_tile_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 class InitialCardScreen extends StatefulWidget {
@@ -131,7 +130,8 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                 children: [
                   Text(
                     "cards".tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -139,7 +139,8 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                   ),
                   Text(
                     "using_cards".tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).unselectedWidgetColor,
@@ -238,7 +239,8 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
               Text(
                 "selected_cards_activate".tr,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -250,7 +252,8 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                 child: Text(
                   "selected_cards_activate_info".tr,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                     fontSize: 15,
                     color: Theme.of(context).unselectedWidgetColor,
                   ),

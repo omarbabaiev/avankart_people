@@ -4,7 +4,6 @@ import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CardScreen extends GetView<CardController> {
   const CardScreen({super.key});
@@ -59,8 +58,9 @@ class CardScreen extends GetView<CardController> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Tranzaksiyalar',
-                                  style: GoogleFonts.poppins(
+                                  'transactions'.tr,
+                                  style: TextStyle(
+    fontFamily: 'Poppins',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500),
                                 ),
@@ -134,7 +134,8 @@ class CardScreen extends GetView<CardController> {
                                               left: 16, bottom: 8),
                                           child: Text(
                                             transaction['date'],
-                                            style: GoogleFonts.poppins(
+                                            style: TextStyle(
+    fontFamily: 'Poppins',
                                                 fontSize: 13,
                                                 color: Colors.black54),
                                           ),
@@ -210,7 +211,8 @@ class CardScreen extends GetView<CardController> {
                       children: [
                         Text(
                           card['title'],
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -221,7 +223,8 @@ class CardScreen extends GetView<CardController> {
                           scale: controller.textSizeAnimation,
                           child: Text(
                             card['balance'].toString(),
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
+    fontFamily: 'Inter',
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
                               color: Theme.of(context).colorScheme.onBackground,
@@ -282,7 +285,8 @@ class CardScreen extends GetView<CardController> {
             Text(
               label,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 13,
                 color: Theme.of(context).colorScheme.onBackground,
                 fontWeight: FontWeight.w500,
@@ -309,14 +313,16 @@ class CardScreen extends GetView<CardController> {
       ),
       title: Text(
         transaction['title'],
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+    fontFamily: 'Poppins',
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
       ),
       subtitle: Text(
         transaction['subtitle'],
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+    fontFamily: 'Poppins',
           fontSize: 12,
           color: Colors.black54,
         ),
@@ -327,7 +333,8 @@ class CardScreen extends GetView<CardController> {
         children: [
           Text(
             transaction['amount'],
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: transaction['isPositive']

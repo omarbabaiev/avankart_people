@@ -1,186 +1,264 @@
-import 'package:avankart_people/routes/app_routes.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/app_theme.dart';
-import 'login_screen.dart';
+import '../../utils/app_theme.dart';
+import '../../controllers/login_controller.dart';
 
-class NewPasswordScreen extends StatefulWidget {
+class NewPasswordScreen extends GetView<LoginController> {
   const NewPasswordScreen({super.key});
 
   @override
-  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
-}
-
-class _NewPasswordScreenState extends State<NewPasswordScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _resetPassword() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Implement password reset logic
-      Get.offAll(() => const LoginScreen());
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var _w = MediaQuery.of(context).size.width;
-    var _h = MediaQuery.of(context).size.height;
+    // Arguments'ı al ve controller'ı initialize et
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      controller.initializeNewPassword(
+        args['email'] ?? '',
+        args['token'] ?? '',
+      );
+    }
+
+    final formKey = GlobalKey<FormState>();
+    final isFormValid = false.obs;
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
           onPressed: () => Get.back(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Form(
-            key: _formKey,
+            key: formKey,
+            onChanged: () {
+              // Form değiştiğinde validasyon kontrolü yap
+              final newPassword = controller.newPasswordController.text;
+              final confirmPassword = controller.confirmPasswordController.text;
+
+              final isNewPasswordValid = newPassword.isNotEmpty &&
+                  newPassword.length >= 8 &&
+                  RegExp(r'[!@\-_$?]').hasMatch(newPassword);
+
+              final isConfirmPasswordValid =
+                  confirmPassword.isNotEmpty && confirmPassword == newPassword;
+
+              isFormValid.value = isNewPasswordValid && isConfirmPasswordValid;
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('enter_new_password'.tr, style: AppTheme.headingStyle),
-                const SizedBox(height: 8),
+                // Başlık
                 Text(
-                  'reset_password_subtitle'.tr,
-                  style: AppTheme.subheadingStyle,
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  'new_password'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                  'Yeni şifrə',
+                  style: TextStyle(fontFamily: "Poppins", 
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: AppTheme.inputDecoration(
-                    'enter_new_password'.tr,
-                    Get.isDarkMode,
-                  ).copyWith(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        AppTheme.adaptiveVisibilityIcon(!_obscurePassword),
-                        color: AppTheme.hintColor,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
+
+                // Açıklama
+                Text(
+                  'Yeni şifrənizi təyin edin',
+                  style: TextStyle(fontFamily: "Poppins", 
+                    fontSize: 15,
+                    color: Theme.of(context).unselectedWidgetColor,
                   ),
+                ),
+                const SizedBox(height: 40),
+
+                // Yeni şifre
+                _PasswordFieldWidget(
+                  controller: controller.newPasswordController,
+                  label: 'Yeni şifrə',
+                  hint: 'Şifrənizi təyin edin',
+                  onChanged: () {
+                    // Form onChanged çağrısını tetikle
+                    formKey.currentState?.validate();
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'password_empty'.tr;
+                      return 'Şifrə boş ola bilməz';
                     }
                     if (value.length < 8) {
-                      return 'password_min_length'.tr;
+                      return 'Şifrə ən azı 8 simvol olmalıdır';
                     }
-                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                      return 'password_complexity'.tr;
+                    if (!RegExp(r'[!@\-_$?]').hasMatch(value)) {
+                      return 'Minimum 1 qeyri əlifba simvolu (!, @, -, _, \$, ?) olmalıdır';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'confirm_password'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: AppTheme.inputDecoration(
-                    'enter_confirm_password'.tr,
-                    Get.isDarkMode,
-                  ).copyWith(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        AppTheme.adaptiveVisibilityIcon(
-                          !_obscureConfirmPassword,
-                        ),
-                        color: AppTheme.hintColor,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                  ),
+
+                // Şifre təsdiqi
+                _PasswordFieldWidget(
+                  controller: controller.confirmPasswordController,
+                  label: 'Şifrə təsdiqi',
+                  hint: 'Şifrənizi təsdiqləyin',
+                  onChanged: () {
+                    // Form onChanged çağrısını tetikle
+                    formKey.currentState?.validate();
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'confirm_password_empty'.tr;
+                      return 'Şifrə təsdiqi boş ola bilməz';
                     }
-                    if (value != _passwordController.text) {
-                      return 'passwords_dont_match'.tr;
+                    if (value != controller.newPasswordController.text) {
+                      return 'Şifrələr uyğun gəlmir';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+
+                const SizedBox(height: 24),
+                // Şifre gereksinimleri
                 Text(
-                  'minimum_chars'.tr,
-                  style: TextStyle(fontSize: 13, color: AppTheme.hintColor),
+                  'Minimum 8 simvol',
+                  style: TextStyle(fontFamily: "Poppins", 
+                    fontSize: 13,
+                    color: Theme.of(context).hintColor,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'minimum_special_char'.tr,
-                  style: TextStyle(fontSize: 13, color: AppTheme.hintColor),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: _resetPassword,
-                  style: AppTheme.primaryButtonStyle(),
-                  child: Text(
-                    'reset_password_button'.tr,
-                    style: AppTheme.buttonTextStyle,
+                  'Minimum 1 qeyri əlifba simvolu (!, @, -, _, \$, ?)',
+                  style: TextStyle(fontFamily: "Poppins", 
+                    fontSize: 13,
+                    color: Theme.of(context).hintColor,
                   ),
                 ),
-                SizedBox(height: _h / 4),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.toNamed(AppRoutes.terms);
-                    },
-                    child: Text(
-                      'terms_and_conditions'.tr,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color.fromARGB(158, 29, 34, 43),
-                        decoration: TextDecoration.underline,
+                const SizedBox(height: 40),
+
+                // Təsdiqlə butonu
+                Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : (isFormValid.value
+                                ? () => controller.submitNewPassword()
+                                : null),
+                        style: AppTheme.primaryButtonStyle(),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'Təsdiqlə',
+                                style: TextStyle(fontFamily: "Poppins", 
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
-                    ),
-                  ),
-                ),
+                    )),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PasswordFieldWidget extends StatefulWidget {
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final String? Function(String?)? validator;
+  final VoidCallback? onChanged;
+
+  const _PasswordFieldWidget({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    this.validator,
+    this.onChanged,
+  });
+
+  @override
+  State<_PasswordFieldWidget> createState() => _PasswordFieldWidgetState();
+}
+
+class _PasswordFieldWidgetState extends State<_PasswordFieldWidget> {
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: TextStyle(fontFamily: "Poppins", 
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: widget.controller,
+          obscureText: _obscureText,
+          onChanged: (value) {
+            if (widget.onChanged != null) {
+              widget.onChanged!();
+            }
+          },
+          style: TextStyle(fontFamily: "Poppins", 
+            fontSize: 15,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+          decoration: InputDecoration(
+            fillColor: Colors.transparent,
+            hintText: widget.hint,
+            hintStyle: TextStyle(fontFamily: "Poppins", 
+              fontSize: 15,
+              color: Theme.of(context).hintColor,
+            ),
+            contentPadding: const EdgeInsets.only(left: 15),
+            suffixIcon: IconButton(
+              icon: Icon(
+                AppTheme.adaptiveVisibilityIcon(!_obscureText),
+                color: Theme.of(context).colorScheme.onBackground,
+                size: 22,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).shadowColor,
+                width: 1,
+              ),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.primaryColor, width: 1),
+            ),
+          ),
+          validator: widget.validator,
+        ),
+      ],
     );
   }
 }

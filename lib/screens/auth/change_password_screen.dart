@@ -1,12 +1,14 @@
+import 'package:avankart_people/assets/image_assets.dart';
+
 import 'login_screen.dart';
-import '../../assets/image_assets.dart';
-import '../../../utils/snackbar_utils.dart';
+import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/app_theme.dart';
+import '../../utils/app_theme.dart';
 import 'dart:async';
-import '../../../utils/bottom_sheet_extension.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../utils/bottom_sheet_extension.dart';
+import '../../widgets/bottom_sheets/verification_bottom_sheet.dart';
+import '../../controllers/profile_controller.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -16,6 +18,7 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final ProfileController _profileController = Get.find<ProfileController>();
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -75,7 +78,40 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     });
   }
 
-  void _changePassword() {
+  void _changePassword() async {
+    if (_formKey.currentState!.validate()) {
+      final success = await _profileController.sendPasswordChangeOTP(
+        _currentPasswordController.text,
+        _newPasswordController.text,
+        _confirmPasswordController.text,
+      );
+
+      if (success) {
+        _showVerificationBottomSheet();
+      }
+    }
+  }
+
+  void _showVerificationBottomSheet() {
+    VerificationBottomSheet.show(
+      context,
+      title: 'Şifre doğrulaması',
+      subtitle:
+          'Şifre değişikliğinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+      showTimer: true,
+      onVerify: (otp) async {
+        final success = await _profileController.verifyPasswordChangeOTP(otp);
+        if (success) {
+          Get.off(() => const LoginScreen());
+        }
+      },
+      onResend: () async {
+        await _profileController.resendOTP();
+      },
+    );
+  }
+
+  void _oldChangePassword() {
     if (_formKey.currentState!.validate()) {
       context.showPerformantBottomSheet(
         backgroundColor: Colors.transparent,
@@ -114,7 +150,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'confirm_change'.tr,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: "Poppins",
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -180,7 +217,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Get.back();
-                          _showVerificationBottomSheet();
+                          VerificationBottomSheet.show(
+                            context,
+                            title: 'otp'.tr,
+                            subtitle:
+                                '${'email_sent_to'.tr} omarbaba007@gmail.com\n${'enter_verification_code'.tr}',
+                            onVerify: (code) {
+                              // OTP doğrulama işlemi
+                              if (code == "123456") {
+                                // Örnek doğrulama
+                                SnackbarUtils.showSuccessSnackbar(
+                                    'Şifre başarıyla değiştirildi');
+                                Get.off(() => LoginScreen());
+                              } else {
+                                SnackbarUtils.showErrorSnackbar(
+                                    'Geçersiz doğrulama kodu');
+                              }
+                            },
+                          );
                           // Şifre kontrolü
                           //   if (_confirmationPasswordController.text ==
                           //       _currentPasswordController.text) {
@@ -197,7 +251,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         style: AppTheme.primaryButtonStyle(),
                         child: Text(
                           'Təsdiqlə',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+                            fontFamily: "Poppins",
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -210,7 +265,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       onPressed: () => Get.back(),
                       child: Text(
                         'Ləğv et',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).unselectedWidgetColor,
@@ -226,188 +282,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         },
       );
     }
-  }
-
-  void _showVerificationBottomSheet() {
-    _startTimer();
-    context.showPerformantBottomSheet(
-      backgroundColor: Colors.transparent,
-      isScrollControlled: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 10),
-                  context.buildBottomSheetHandle(),
-                  const SizedBox(height: 10),
-                  Text(
-                    'otp'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.onBackground,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  RichText(
-                    text: TextSpan(
-                      text: '${'email_sent_to'.tr} ',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "omarbaba007@gmail.com",
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'enter_verification_code'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onBackground,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: ValueListenableBuilder<int>(
-                      valueListenable: _remainingTimeNotifier,
-                      builder: (context, value, child) {
-                        return Text(
-                          _formattedTime,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () {
-                      _startTimer();
-                      // TODO: Implement resend logic
-                    },
-                    child: Text(
-                      'Yenidən göndər',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                      6,
-                      (index) => SizedBox(
-                        width: 50,
-                        child: TextFormField(
-                          style: GoogleFonts.poppins(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                          controller: _otpControllers[index],
-                          focusNode: _otpFocusNodes[index],
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          maxLength: 1,
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              if (index < 5) {
-                                _otpFocusNodes[index + 1].requestFocus();
-                              } else {
-                                _otpFocusNodes[index].unfocus();
-                              }
-                            }
-                          },
-                          decoration: InputDecoration(
-                            fillColor: Colors.transparent,
-                            counterText: '',
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).hintColor,
-                              ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _timer?.cancel();
-                        Get.back();
-                        // _showSuccessScreen();
-                      },
-                      style: AppTheme.primaryButtonStyle(),
-                      child: Text(
-                        'Təsdiqlə',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () {
-                      _timer?.cancel();
-                      Get.back();
-                    },
-                    child: Text(
-                      'Ləğv et',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: Theme.of(context).unselectedWidgetColor,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
   }
 
   void _showSuccessScreen() {
@@ -468,7 +342,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   onPressed: () {
                     Get.back();
 
-                    SnackbarUtils.showSnackbar('Şifrəniz uğurla dəyişdirildi');
+                    SnackbarUtils.showSuccessSnackbar(
+                        'Şifrəniz uğurla dəyişdirildi');
                   },
                   style: AppTheme.primaryButtonStyle(),
                   child: const Text(
@@ -653,22 +528,34 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _changePassword,
-                    style: AppTheme.primaryButtonStyle(),
-                    child: Text(
-                      'confirm_change'.tr,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _profileController.isOtpSending.value
+                            ? null
+                            : _changePassword,
+                        style: AppTheme.primaryButtonStyle(),
+                        child: _profileController.isOtpSending.value
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'confirm_change'.tr,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
-                    ),
-                  ),
-                ),
+                    )),
               ],
             ),
           ),

@@ -1,6 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantSocialMediaWidget extends StatelessWidget {
   const RestaurantSocialMediaWidget({Key? key}) : super(key: key);
@@ -15,7 +14,8 @@ class RestaurantSocialMediaWidget extends StatelessWidget {
         children: [
           Text(
             "Sosial Media",
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               color: Theme.of(context).hintColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,

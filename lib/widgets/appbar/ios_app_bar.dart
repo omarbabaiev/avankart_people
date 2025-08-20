@@ -46,7 +46,8 @@ class IosAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       title: Text(
         title,
-        style: TextStyle(fontFamily: "Poppins", 
+        style: TextStyle(
+          fontFamily: "Poppins",
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: titleColor ?? Theme.of(context).colorScheme.onBackground,

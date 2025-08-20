@@ -1,7 +1,7 @@
 import 'package:avankart_people/assets/image_assets.dart';
-import 'package:avankart_people/utils/conts_texts.dart';
-import '../../controllers/splash_controller.dart';
+
 import '../../utils/conts_texts.dart';
+import '../../controllers/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -46,12 +46,12 @@ class SplashScreen extends StatelessWidget {
             ),
           ),
           // Merkezi retry overlay
-          // Obx(() => RetryDialogWidget(
-          //       showDialog: controller.showRetryButton.value,
-          //       customMessage: controller.retryMessage.value,
-          //       isLoading: controller.isRetrying.value,
-          //       onRetry: controller.retryAuth,
-          //     )),
+          Obx(() => RetryDialogWidget(
+                showDialog: controller.showRetryButton.value,
+                customMessage: controller.retryMessage.value,
+                isLoading: controller.isRetrying.value,
+                onRetry: controller.retryAuth,
+              )),
         ],
       ),
     );

@@ -1,95 +1,83 @@
+import 'package:avankart_people/controllers/notifications_controller.dart';
+
+import 'screens/empty_state/not_found_screen.dart';
+import 'utils/conts_texts.dart';
+import 'utils/debug_logger.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'routes/app_routes.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/splash_screen.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'screens/main/main_screen.dart';
 import 'utils/app_theme.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/language_controller.dart';
 import 'translations/app_translations.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/services.dart';
+import 'bindings/initial_binding.dart';
+import 'assets/image_assets.dart';
+import 'services/firebase_service.dart';
 
 void main() async {
-  // WidgetsBinding'i başlat
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  // Splash screen'i koru
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // GetStorage'ı başlat
+  try {
+    await Firebase.initializeApp();
+    DebugLogger.firebase('initialize',
+        data: 'Firebase initialized successfully');
+
+    // Firebase Messaging'i initialize et
+    final firebaseService = FirebaseService();
+    await firebaseService.initialize();
+    DebugLogger.firebase('messaging',
+        data: 'Firebase Messaging initialized successfully');
+  } catch (e) {
+    DebugLogger.firebase('initialize', error: e);
+  }
+
   await GetStorage.init();
 
-  // Controller'ları başlat
-  final themeController = Get.put(ThemeController(), permanent: true);
+  Get.put(ThemeController(), permanent: true);
   Get.put(LanguageController(), permanent: true);
+  Get.put(NotificationsController(), permanent: true);
 
-  // Status bar ve navigation bar renklerini ayarla
-  _updateSystemUIOverlayStyle(themeController.theme);
+  // // API konfigürasyon bilgilerini yazdır
+  // ApiConfig.printDebugInfo();
 
-  // Tema değişikliğini dinle
-  ever(themeController.rxTheme, (ThemeMode themeMode) {
-    _updateSystemUIOverlayStyle(themeMode);
-  });
+  // // Network durumunu kontrol et
+  // NetworkUtils.printNetworkDebugInfo();
 
-  // Uygulamayı başlat
-  runApp(const MyApp());
+  runApp(const AvankartPeople());
 }
 
-void _updateSystemUIOverlayStyle(ThemeMode themeMode) {
-  final isDark = themeMode == ThemeMode.dark;
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: !isDark ? Brightness.light : Brightness.dark,
-      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness:
-          isDark ? Brightness.light : Brightness.dark,
-      systemNavigationBarDividerColor: Colors.transparent,
-    ),
-  );
-
-  // Blur efekti için ek ayarlar
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.edgeToEdge,
-    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-  );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AvankartPeople extends StatelessWidget {
+  const AvankartPeople({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Splash screen'i kaldır
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
     });
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Avankart People',
+      title: ConstTexts.appName,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: Get.find<ThemeController>().theme,
       defaultTransition: Transition.cupertino,
       translations: AppTranslations(),
       locale: Get.find<LanguageController>().locale,
-      fallbackLocale: const Locale('az', 'AZ'),
-
-      // GetX Router Ayarları
+      fallbackLocale: const Locale('en', 'US'),
+      initialBinding: InitialBinding(),
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.routes,
-
-      // Rota oluşturma ve analiz etme
-      unknownRoute: GetPage(
-        name: '/not-found',
-        page: () =>
-            const Scaffold(body: Center(child: Text('Sayfa bulunamadı'))),
-      ),
+      unknownRoute: AppRoutes.routes.first,
     );
   }
 }

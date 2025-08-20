@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantAddressWidget extends StatelessWidget {
   final String address;
@@ -23,7 +22,8 @@ class RestaurantAddressWidget extends StatelessWidget {
           ),
           Text(
             "Ünvan",
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               color: Theme.of(context).hintColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -32,7 +32,8 @@ class RestaurantAddressWidget extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             address,
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,
@@ -44,7 +45,8 @@ class RestaurantAddressWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               "Xəritədə aç",
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w500,

@@ -1,7 +1,6 @@
 import '../assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CreateQrWidget extends StatelessWidget {
   final VoidCallback onPressed;
@@ -52,7 +51,8 @@ class CreateQrWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'QR kod yarat',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onBackground,

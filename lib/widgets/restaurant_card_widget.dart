@@ -4,7 +4,6 @@ import 'package:avankart_people/screens/other/restoraunt_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantCard extends StatelessWidget {
   final String name;
@@ -141,7 +140,8 @@ class RestaurantCard extends StatelessWidget {
                       Text(
                         name,
                         textAlign: TextAlign.left,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground,
@@ -151,7 +151,8 @@ class RestaurantCard extends StatelessWidget {
                       Text(
                         location,
                         textAlign: TextAlign.left,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 12,
                           color: Theme.of(context).unselectedWidgetColor,
                         ),
@@ -242,7 +243,7 @@ class RestaurantCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          isOpen ? 'Açıq' : 'Bağlı',
+                          isOpen ? 'open'.tr : 'closed'.tr,
                           style: TextStyle(
                             color: isOpen
                                 ? Colors.green

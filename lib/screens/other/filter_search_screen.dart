@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class FilterSearchScreen extends GetView<FilterController> {
   final FilterController controller = Get.put(FilterController());
@@ -22,7 +21,8 @@ class FilterSearchScreen extends GetView<FilterController> {
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Text(
           'Filter',
-          style: GoogleFonts.poppins(
+          style: TextStyle(
+    fontFamily: 'Poppins',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onBackground,
@@ -34,7 +34,8 @@ class FilterSearchScreen extends GetView<FilterController> {
               ? CupertinoButton(
                   child: Text(
                     "Filterləri təmizlə",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                         color: AppTheme.primaryColor,
                         fontSize: 13,
                         fontWeight: FontWeight.w500),
@@ -51,7 +52,8 @@ class FilterSearchScreen extends GetView<FilterController> {
               ),
               child: Text(
                 "Filterlə",
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -106,7 +108,8 @@ class FilterSearchScreen extends GetView<FilterController> {
                                   }
                                 },
                                 decoration: InputDecoration(
-                                  hintStyle: GoogleFonts.poppins(
+                                  hintStyle: TextStyle(
+    fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 13,
                                     color: Theme.of(context)
@@ -122,7 +125,8 @@ class FilterSearchScreen extends GetView<FilterController> {
                                   errorBorder: InputBorder.none,
                                   focusedErrorBorder: InputBorder.none,
                                 ),
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(
+    fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w400,
                                   color: Theme.of(context)
                                       .bottomNavigationBarTheme
@@ -160,7 +164,8 @@ class FilterSearchScreen extends GetView<FilterController> {
                         EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
                     child: Text(
                       category['header'] as String,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).unselectedWidgetColor,
@@ -185,7 +190,8 @@ class FilterSearchScreen extends GetView<FilterController> {
                             SizedBox(width: 5),
                             Text(
                               item['title'] as String,
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
+    fontFamily: 'Poppins',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                                 color:

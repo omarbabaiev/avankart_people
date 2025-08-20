@@ -4,7 +4,7 @@ class ImageAssets {
   static const frame2 = "assets/images/frame2.png";
   static const frame3 = "assets/images/frame3.png";
   static const splashLottie = "assets/lotties/splash_lottie.json";
-
+  static const brightness = "assets/icons/LightbulbFilament.png";
   static const restoringPage = "assets/images/restoring_page.png";
   static const copySimple = "assets/icons/CopySimple.png";
   static const bellIcon = "assets/images/bell_icon.png";

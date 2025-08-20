@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 
@@ -193,12 +192,15 @@ class AppTheme {
   ) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.poppins(
-          color: Theme.of(context).hintColor.withOpacity(.4), fontSize: 14),
+      hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Theme.of(context).hintColor.withOpacity(.4),
+          fontSize: 14),
       filled: false,
       fillColor: Colors.grey[50],
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      errorStyle: GoogleFonts.poppins(
+      errorStyle: TextStyle(
+        fontFamily: 'Poppins',
         color: Theme.of(context).colorScheme.error,
       ),
       enabledBorder: UnderlineInputBorder(
@@ -232,13 +234,15 @@ class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         dividerColor: Color(0x16000000),
         iconTheme: IconThemeData(color: primaryTextColor),
-        textTheme: GoogleFonts.poppinsTextTheme().apply(
+        textTheme: TextTheme().apply(
           bodyColor: primaryTextColor,
           displayColor: primaryTextColor,
+          fontFamily: 'Poppins',
         ),
-        primaryTextTheme: GoogleFonts.poppinsTextTheme().apply(
+        primaryTextTheme: TextTheme().apply(
           bodyColor: primaryTextColor,
           displayColor: primaryTextColor,
+          fontFamily: 'Poppins',
         ),
         useMaterial3: true,
         colorScheme: ColorScheme.light(
@@ -311,7 +315,7 @@ class AppTheme {
             backgroundColor: Colors.transparent,
           ),
         ),
-        tabBarTheme: TabBarTheme(
+        tabBarTheme: TabBarThemeData(
           labelColor: primaryColor,
           unselectedLabelColor: secondaryTextColor,
           indicatorColor: primaryColor,
@@ -351,12 +355,12 @@ class AppTheme {
           }),
         ),
         dividerTheme: DividerThemeData(color: settingsDivider, thickness: 1),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: white,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           backgroundColor: white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -378,13 +382,15 @@ class AppTheme {
   static ThemeData get darkTheme => ThemeData(
         dividerColor: Color(0x15FFFFFF),
         iconTheme: IconThemeData(color: primaryTextColor),
-        textTheme: GoogleFonts.poppinsTextTheme().apply(
+        textTheme: TextTheme().apply(
           bodyColor: primaryTextColor,
           displayColor: primaryTextColor,
+          fontFamily: 'Poppins',
         ),
-        primaryTextTheme: GoogleFonts.poppinsTextTheme().apply(
+        primaryTextTheme: TextTheme().apply(
           bodyColor: primaryTextColor,
           displayColor: primaryTextColor,
+          fontFamily: 'Poppins',
         ),
         useMaterial3: true,
         colorScheme: ColorScheme.light(
@@ -415,7 +421,8 @@ class AppTheme {
           shadowColor: Colors.transparent,
           scrolledUnderElevation: 0,
           iconTheme: IconThemeData(color: white),
-          titleTextStyle: GoogleFonts.poppins(
+          titleTextStyle: TextStyle(
+            fontFamily: 'Poppins',
             color: white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -456,7 +463,7 @@ class AppTheme {
             backgroundColor: Colors.transparent,
           ),
         ),
-        tabBarTheme: TabBarTheme(
+        tabBarTheme: TabBarThemeData(
           labelColor: primaryColor,
           unselectedLabelColor: secondaryTextColor,
           indicatorColor: primaryColor,
@@ -496,12 +503,12 @@ class AppTheme {
           }),
         ),
         dividerTheme: DividerThemeData(color: settingsDivider, thickness: 1),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: white,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           backgroundColor: white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -660,32 +667,37 @@ class AppTheme {
   }
 
   // Default text styles
-  static TextStyle get defaultTextStyle => GoogleFonts.poppins(
+  static TextStyle get defaultTextStyle => TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 14,
         color: textColor,
         fontWeight: FontWeight.w400,
       );
 
   // Metin stilleri
-  static TextStyle get headingStyle => GoogleFonts.poppins(
+  static TextStyle get headingStyle => TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: textColor,
       );
 
-  static TextStyle get subheadingStyle => GoogleFonts.poppins(
+  static TextStyle get subheadingStyle => TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 13,
         color: hintColor,
         fontWeight: FontWeight.w400,
       );
 
-  static TextStyle get buttonTextStyle => GoogleFonts.poppins(
+  static TextStyle get buttonTextStyle => TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: white,
       );
 
-  static TextStyle get linkStyle => GoogleFonts.poppins(
+  static TextStyle get linkStyle => TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 14,
         color: primaryColor,
         fontWeight: FontWeight.w500,
@@ -713,7 +725,7 @@ class AppTheme {
       filled: false,
       fillColor: isDark ? surfaceColor : Colors.grey[50],
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      errorStyle: GoogleFonts.poppins(color: errorColor),
+      errorStyle: TextStyle(fontFamily: 'Poppins', color: errorColor),
       enabledBorder: const UnderlineInputBorder(
         borderSide: BorderSide(
           color: blackTransparent10, // Siyah renk %10 opaklık

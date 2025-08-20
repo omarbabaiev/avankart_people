@@ -2,7 +2,7 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class RestaurantActionButtonsWidget extends StatelessWidget {
   const RestaurantActionButtonsWidget({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                       height: 5,
                     ),
                     Text(
-                      "İstiqamətlən",
+                      "get_directions".tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -74,8 +74,9 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                       height: 5,
                     ),
                     Text(
-                      "Zəng et",
-                      style: GoogleFonts.poppins(
+                      "call".tr,
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
                           fontSize: 14),
@@ -108,8 +109,9 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                       height: 5,
                     ),
                     Text(
-                      "WhatsApp",
-                      style: GoogleFonts.poppins(
+                      "whatsapp".tr,
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -159,7 +161,8 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     SizedBox(width: 12),
                     Text(
                       "Bolt ilə davam et",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -190,7 +193,8 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     SizedBox(width: 12),
                     Text(
                       "Uber ilə davam et",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -221,7 +225,8 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     SizedBox(width: 12),
                     Text(
                       "Wolt ilə davam et",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -252,7 +257,8 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     SizedBox(width: 12),
                     Text(
                       "Google map ilə davam et",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),

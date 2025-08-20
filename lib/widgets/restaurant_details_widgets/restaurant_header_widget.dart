@@ -1,6 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantHeaderWidget extends StatelessWidget {
   final String imageUrl;
@@ -51,7 +50,8 @@ class RestaurantHeaderWidget extends StatelessWidget {
               SizedBox(width: 4),
               Text(
                 distance,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.w500,

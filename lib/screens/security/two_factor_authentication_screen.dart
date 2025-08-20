@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class TwoFactorAuthenticationScreen extends StatelessWidget {
   const TwoFactorAuthenticationScreen({super.key});
@@ -21,7 +20,8 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             'Təhlükəsizlik',
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -43,7 +43,8 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                 children: [
                   Text(
                     "2 addımlı doğrulama",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onBackground),
@@ -52,7 +53,8 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                   Text(
                     "Hesabınızın təhlükəsizliyi bizim üçün önəmlidir. İki addımlı doğrulama ilə hesabınıza girişləri tam idarə edin.",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor),
@@ -132,7 +134,8 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+    fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Theme.of(context).colorScheme.onBackground,
@@ -140,7 +143,8 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle,
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+    fontFamily: 'Poppins',
           fontSize: 10,
           fontWeight: FontWeight.w400,
           color: Theme.of(context).unselectedWidgetColor,

@@ -1,12 +1,13 @@
-import 'package:avankart_people/screens/main/main_screen.dart';
-
-import '../../../routes/app_routes.dart';
+import '../../routes/app_routes.dart';
+import '../support/terms_of_use_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../utils/app_theme.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
+import '../main/main_screen.dart';
+import '../../controllers/login_controller.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,15 +18,32 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final LoginController controller;
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    // Controller'ı güvenli şekilde initialize et - eğer yoksa oluştur
+    if (Get.isRegistered<LoginController>()) {
+      controller = Get.find<LoginController>();
+    } else {
+      controller = Get.put(LoginController());
+    }
+
+    // Login ekranı açıldığında eski token ve rememberMe flag'ini temizle
+    _storage.delete(key: 'token');
+    _storage.delete(key: 'rememberMe');
+
+    // Password field'ını da temizle (güvenlik için)
+    controller.passwordController.clear();
+  }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    // Controller dispose'ını GetX'e bırak
     super.dispose();
   }
 
@@ -45,21 +63,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 40),
                   Text(
                     'welcome_emoji'.tr,
-                    style: GoogleFonts.poppins(fontSize: 40),
+                    style: TextStyle(
+                      fontFamily: "Poppins",
+                      fontSize: 40,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'welcome'.tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'login_subtitle'.tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).unselectedWidgetColor,
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -69,24 +92,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'email'.tr,
                     style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
-                    controller: _emailController,
+                    controller: controller.emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: AppTheme.registerInputDecoration(
-                      "enter_email".tr,
-                      context,
-                    ),
+                        "enter_email".tr, context),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'email_empty'.tr;
@@ -103,24 +126,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'password'.tr,
                     style: TextStyle(
+                      fontFamily: "Poppins",
                       fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
-                    controller: _passwordController,
+                    controller: controller.passwordController,
                     obscureText: _obscurePassword,
                     decoration: AppTheme.registerInputDecoration(
-                      "enter_password".tr,
-                      context,
-                    ).copyWith(
+                            "enter_password".tr, context)
+                        .copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
                           AppTheme.adaptiveVisibilityIcon(!_obscurePassword),
@@ -143,18 +167,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      AppTheme.adaptiveCheckbox(
-                        value: _rememberMe,
-                        onChanged: (value) {
-                          setState(() {
-                            _rememberMe = value ?? false;
-                          });
-                        },
-                      ),
+                      Obx(() => AppTheme.adaptiveCheckbox(
+                            value: controller.rememberMe.value,
+                            onChanged: (value) {
+                              controller.rememberMe.value = value ?? false;
+                            },
+                          )),
                       const SizedBox(width: 8),
                       Text(
                         'remember_me'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 15,
                           color: Theme.of(context).hintColor,
                         ),
@@ -162,25 +185,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // TODO: Implement login logic
-                        Get.offAll(
-                          () => MainScreen(),
-                        ); // Tüm stack'i temizleyip ana sayfaya yönlendir
-                      }
-                    },
-                    style: AppTheme.primaryButtonStyle(),
-                    child: Text('login'.tr, style: AppTheme.buttonTextStyle),
-                  ),
+                  Obx(() => ElevatedButton(
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate()) {
+                                  controller.login();
+                                }
+                              },
+                        style: AppTheme.primaryButtonStyle(),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Text('login'.tr, style: AppTheme.buttonTextStyle),
+                      )),
                   const SizedBox(height: 16),
                   Center(
                     child: TextButton(
-                      onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
+                      onPressed: () =>
+                          Get.to(() => const ForgotPasswordScreen()),
                       child: Text(
                         'forgot_password'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryColor,
@@ -197,6 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'or'.tr,
                           style: TextStyle(
+                            fontFamily: "Poppins",
                             fontSize: 12,
                             color: Theme.of(context).unselectedWidgetColor,
                           ),
@@ -213,6 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           'no_account'.tr,
                           style: TextStyle(
+                            fontFamily: "Poppins",
                             fontSize: 13,
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
@@ -222,6 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             'create_account'.tr,
                             style: TextStyle(
+                              fontFamily: "Poppins",
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
@@ -235,12 +269,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.terms);
+                        Get.to(() => TermsOfUseScreen());
                       },
                       child: Text(
                         'terms_and_conditions'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 12,
                           color: Theme.of(context).unselectedWidgetColor,
                           decoration: TextDecoration.underline,

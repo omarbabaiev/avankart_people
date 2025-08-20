@@ -1,7 +1,6 @@
 import 'package:avankart_people/controllers/pin_code_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SetPinCodeScreen extends GetView<PinCodeController> {
@@ -21,7 +20,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
           // Title
           Text(
             'PIN kod',
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 24,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.onBackground,
@@ -34,7 +34,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
                 controller.isConfirmScreen.value
                     ? 'PIN kodu yenidən yazaraq təsdiqləyin'
                     : '4 rəqəmli PIN kod təyin edin',
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: Theme.of(context).unselectedWidgetColor,
@@ -146,7 +147,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
           child: Center(
             child: Text(
               number,
-              style: GoogleFonts.roboto(
+              style: TextStyle(
+    fontFamily: 'Roboto',
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Theme.of(context).colorScheme.onBackground,

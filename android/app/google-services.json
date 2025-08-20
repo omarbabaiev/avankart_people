@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "368607788248",
+    "project_id": "avankart-cbb4e",
+    "storage_bucket": "avankart-cbb4e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368607788248:android:a7ec52bc9e80b5bb156bad",
+        "android_client_info": {
+          "package_name": "com.avankart.partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5RWf9JtfD6-6v1ILIuURAtDP5GZxYwBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368607788248:android:99658f366a9e13bb156bad",
+        "android_client_info": {
+          "package_name": "com.avankart.people"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5RWf9JtfD6-6v1ILIuURAtDP5GZxYwBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

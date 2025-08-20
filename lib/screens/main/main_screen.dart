@@ -12,20 +12,33 @@ import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:avankart_people/widgets/payment/payment_bottom_sheet.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
 
-class MainScreen extends StatelessWidget {
-  MainScreen({super.key}) {
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  late HomeController controller;
+  DateTime? _lastBackPressTime;
+  bool _showingExitToast = false;
+
+  @override
+  void initState() {
+    super.initState();
     // HomeController'ı sınıf oluşturulduğunda başlat
     // permanent: true parametresi ekleyerek controller'ın kalıcı olmasını sağlayalım
-    Get.put(HomeController(), permanent: true);
+    controller = Get.put(HomeController(), permanent: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomeController>();
     final Color selectedColor = Theme.of(context).colorScheme.onBackground;
     final Color unselectedColor =
         Theme.of(context).colorScheme.onBackground.withOpacity(.7);
@@ -38,8 +51,9 @@ class MainScreen extends StatelessWidget {
           controller.backToMainScreens();
           return false; // Navigasyonu engelle, kendi işlemimizi yapıyoruz
         }
-        // Ana sayfalardan birindeyse uygulamadan çık
-        return true;
+
+        // Ana sayfalardan birindeyse geri tuşu işlevselliğini uygula
+        return _handleBackPress();
       },
       child: Scaffold(
         extendBody: true,
@@ -51,7 +65,7 @@ class MainScreen extends StatelessWidget {
               index: controller.selectedIndex,
               children: [
                 HomeScreen(),
-                Container(child: Center(child: Text('Xəritə'))),
+                Container(child: Center(child: Text('map'.tr))),
                 CardScreen(),
                 SettingsScreen()
               ],
@@ -112,31 +126,72 @@ class MainScreen extends StatelessWidget {
                         height: 24, width: 24),
                     icon: Image.asset(ImageAssets.homeInactive,
                         height: 24, width: 24),
-                    label: 'Əsas səhifə'),
+                    label: 'home'.tr),
                 BottomNavigationBarItem(
                     activeIcon: Image.asset(ImageAssets.mapTrifold,
                         height: 24, width: 24),
                     icon: Image.asset(ImageAssets.mapTrifoldInactive,
                         height: 24, width: 24),
-                    label: 'Xəritə'),
+                    label: 'map'.tr),
                 BottomNavigationBarItem(
                     activeIcon:
                         Image.asset(ImageAssets.wallet, height: 24, width: 24),
                     icon: Image.asset(ImageAssets.walletInactive,
                         height: 24, width: 24),
-                    label: 'Kartlarım'),
+                    label: 'my_cards'.tr),
                 BottomNavigationBarItem(
                     activeIcon: Image.asset(ImageAssets.settingsActive,
                         height: 24, width: 24),
                     icon: Image.asset(ImageAssets.settingsInactive,
                         height: 24, width: 24),
-                    label: 'Tənzimləmələr'),
+                    label: 'settings'.tr),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  // Geri tuşu işlevselliği
+  Future<bool> _handleBackPress() async {
+    // Eğer Home sayfasında değilsek, Home sayfasına dön
+    if (controller.selectedIndex != 0) {
+      controller.onItemTapped(0);
+      return false; // Navigasyonu engelle
+    }
+
+    // Home sayfasındaysak, çıkış işlevselliğini uygula
+    DateTime now = DateTime.now();
+
+    // İlk kez basıldıysa veya 2 saniyeden fazla geçtiyse
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!).inSeconds > 2) {
+      _lastBackPressTime = now;
+
+      // Toast mesajı göster
+      if (!_showingExitToast) {
+        _showingExitToast = true;
+        Fluttertoast.showToast(
+          msg: "exit_confirmation".tr,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Theme.of(context).colorScheme.onBackground,
+          textColor: Theme.of(context).scaffoldBackgroundColor,
+          fontSize: 16.0,
+        );
+
+        // 2 saniye sonra toast flag'ini sıfırla
+        Timer(const Duration(seconds: 2), () {
+          _showingExitToast = false;
+        });
+      }
+
+      return false; // Navigasyonu engelle
+    }
+
+    // İkinci kez basıldıysa uygulamadan çık
+    return true;
   }
 
   // Navigation bar öğeleri için yardımcı metod

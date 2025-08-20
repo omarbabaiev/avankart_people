@@ -1,9 +1,12 @@
-import 'email_verification_screen.dart';
-import '../../../utils/snackbar_utils.dart';
+import '../../routes/app_routes.dart';
+
+import 'otp_screen.dart';
+import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
-import '../../../utils/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../utils/app_theme.dart';
 import 'package:get/get.dart';
+import '../../services/auth_service.dart';
+import '../../controllers/login_controller.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -24,6 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final LoginController controller = Get.put(LoginController());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -45,7 +49,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   // Başlık
                   Text(
                     'forgot_password_title'.tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 23,
@@ -56,7 +61,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   // Alt başlık
                   Text(
                     'forgot_password_subtitle'.tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       fontSize: 15,
                       color: Theme.of(context).unselectedWidgetColor,
                     ),
@@ -74,7 +80,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: "Poppins",
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -98,22 +105,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   const SizedBox(height: 40),
 
                   // İrəli butonu
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        SnackbarUtils.showSnackbar('reset_code_sent'.tr);
-
-                        Get.to(
-                          () => EmailVerificationForNewUserScreen(
-                            email: _emailController.text,
-                          ),
-                          transition: Transition.cupertino,
-                        );
-                      }
-                    },
-                    style: AppTheme.primaryButtonStyle(),
-                    child: Text('next'.tr, style: AppTheme.buttonTextStyle),
-                  ),
+                  Obx(() => ElevatedButton(
+                        onPressed: controller.forgotPasswordLoading.value
+                            ? null
+                            : () async {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    final response =
+                                        await controller.forgotPassword(
+                                            email:
+                                                _emailController.text.trim());
+                                    SnackbarUtils.showSuccessSnackbar(
+                                        'reset_code_sent'.tr);
+                                    Get.toNamed(AppRoutes.otp, arguments: {
+                                      'email': _emailController.text.trim(),
+                                      'token': response.token,
+                                      'forgotPasswordToken': response.token,
+                                      'isForgotPassword': true,
+                                    });
+                                  } catch (e) {
+                                    SnackbarUtils.showErrorSnackbar(
+                                        e.toString());
+                                  }
+                                }
+                              },
+                        style: AppTheme.primaryButtonStyle(),
+                        child: controller.forgotPasswordLoading.value
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text('next'.tr, style: AppTheme.buttonTextStyle),
+                      )),
                 ],
               ),
             ),

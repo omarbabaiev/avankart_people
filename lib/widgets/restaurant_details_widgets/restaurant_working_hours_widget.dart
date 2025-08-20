@@ -1,6 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 
 class RestaurantWorkingHoursWidget extends StatelessWidget {
@@ -19,7 +18,8 @@ class RestaurantWorkingHoursWidget extends StatelessWidget {
           ),
           Text(
             "İş günləri",
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               color: Theme.of(context).hintColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,

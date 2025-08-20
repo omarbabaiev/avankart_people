@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -28,7 +27,8 @@ class QueryDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             query["id"],
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -43,7 +43,8 @@ class QueryDetailScreen extends StatelessWidget {
             ),
             label: Text(
               "Chat",
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: AppTheme.primaryColor),
@@ -69,7 +70,8 @@ class QueryDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       "Sorğu",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 12,
                           color: Theme.of(context).unselectedWidgetColor,
                           fontWeight: FontWeight.w500),
@@ -94,7 +96,8 @@ class QueryDetailScreen extends StatelessWidget {
                             "draft" => "Qaralama",
                             _ => "Status tapılmadı",
                           },
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: switch (query["status"]) {
@@ -115,7 +118,8 @@ class QueryDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   query["title"],
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 13,
                       fontWeight: FontWeight.w500),
@@ -125,7 +129,8 @@ class QueryDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   query["description"],
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       color: Theme.of(context).unselectedWidgetColor,
                       fontSize: 11,
                       fontWeight: FontWeight.w400),
@@ -135,7 +140,8 @@ class QueryDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   "Sorğu kategoriyası",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       color: Theme.of(context).unselectedWidgetColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w500),
@@ -145,7 +151,8 @@ class QueryDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   "Hesab problemi",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 12,
                       fontWeight: FontWeight.w500),
@@ -155,7 +162,8 @@ class QueryDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   "Problemin səbəbləri",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       color: Theme.of(context).unselectedWidgetColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w500),
@@ -177,7 +185,8 @@ class QueryDetailScreen extends StatelessWidget {
                         ),
                         Text(
                           _reasonList[index],
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                               color: Theme.of(context).colorScheme.onBackground,
                               fontSize: 13,
                               fontWeight: FontWeight.w500),
@@ -258,7 +267,8 @@ class QueryDetailScreen extends StatelessWidget {
         ),
         title: Text(
           fileName,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
+    fontFamily: 'Poppins',
             fontSize: 13,
             color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.w500,
@@ -266,7 +276,8 @@ class QueryDetailScreen extends StatelessWidget {
         ),
         subtitle: Text(
           url,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
+    fontFamily: 'Poppins',
             fontSize: 11,
             color: Theme.of(context).unselectedWidgetColor,
           ),
@@ -308,7 +319,8 @@ class QueryDetailScreen extends StatelessWidget {
                     children: [
                       Text(
                         now,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).splashColor,
@@ -358,7 +370,8 @@ class QueryDetailScreen extends StatelessWidget {
                           focusedBorder: InputBorder.none,
                           focusedErrorBorder: InputBorder.none,
                           hintText: "Mesajınız...",
-                          hintStyle: GoogleFonts.poppins(
+                          hintStyle: TextStyle(
+    fontFamily: 'Poppins',
                               color: Theme.of(context)
                                   .unselectedWidgetColor
                                   .withOpacity(.3),
@@ -453,7 +466,8 @@ class QueryDetailScreen extends StatelessWidget {
                 child: Text(
                   message,
                   textAlign: isUser ? TextAlign.right : TextAlign.left,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 13,
                       color: Theme.of(context)
                           .colorScheme

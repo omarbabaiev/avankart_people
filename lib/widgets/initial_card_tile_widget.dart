@@ -3,7 +3,6 @@ import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class InitialCardTileWidget extends StatelessWidget {
   final String title;
@@ -63,7 +62,8 @@ class InitialCardTileWidget extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -72,7 +72,8 @@ class InitialCardTileWidget extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).unselectedWidgetColor,
@@ -173,7 +174,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                     Text(
                                       title,
                                       textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
                                         color: Theme.of(
@@ -189,7 +191,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                       child: Text(
                                         subtitle,
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
                                           fontSize: 15,
                                           color: Theme.of(
                                             context,
@@ -207,7 +210,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         "Yemək kartının aktivasiya şərtləri",
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
                                           fontSize: 12,
                                           color: Theme.of(context).splashColor,
                                           fontWeight: FontWeight.w500,
@@ -235,7 +239,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                         SizedBox(width: 8),
                                         Text(
                                           "Şərtləri oxudum və qəbul etdim",
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
                                             fontSize: 15,
                                             color: Theme.of(
                                               context,
@@ -275,7 +280,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                     Text(
                                       title,
                                       textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
                                         color: Theme.of(
@@ -291,7 +297,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                       child: Text(
                                         subtitle,
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
                                           fontSize: 15,
                                           color: Theme.of(
                                             context,
@@ -309,7 +316,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         "Yemək kartının istifadə qaydası",
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
                                           fontSize: 12,
                                           color: Theme.of(context).splashColor,
                                           fontWeight: FontWeight.w500,
@@ -352,7 +360,8 @@ class InitialCardTileWidget extends StatelessWidget {
                                         SizedBox(width: 8),
                                         Text(
                                           "Qaydaları oxudum və qəbul etdim",
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
                                             fontSize: 15,
                                             color: Theme.of(
                                               context,
@@ -452,7 +461,8 @@ class InitialCardTileWidget extends StatelessWidget {
           tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           title: Text(
             title,
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,

@@ -65,7 +65,7 @@ class BenefitsController extends GetxController
                     Image.asset("assets/images/Silver.png", height: 60),
                     SizedBox(height: 16),
                     Text(
-                      "Ən çox yemək yeyən",
+                      "most_food_eaten".tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -74,7 +74,7 @@ class BenefitsController extends GetxController
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "10/10 dəfə yemək ye",
+                      "eat_food_10_times".tr,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.65),
                         fontSize: 13,
@@ -91,7 +91,7 @@ class BenefitsController extends GetxController
                   Get.back();
                 },
                 child: Text(
-                  "Mükafatı al",
+                  "claim_reward".tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,

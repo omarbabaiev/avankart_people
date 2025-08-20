@@ -5,7 +5,6 @@ import 'package:avankart_people/widgets/card_tile_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 class CardSelectScreen extends StatefulWidget {
@@ -126,11 +125,18 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         toolbarHeight: 80,
         centerTitle: false,
         title: Text(
-          "Kartlar",
-          style: GoogleFonts.poppins(
+          "cards".tr,
+          style: TextStyle(
+            fontFamily: 'Poppins',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onBackground,
@@ -143,9 +149,10 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Text(
-                "Halhazırda aktiv olan kartlarınızı görə və idarə edə bilərsiniz.",
+                "manage_active_cards".tr,
                 textAlign: TextAlign.start,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                   color: Theme.of(context).unselectedWidgetColor,

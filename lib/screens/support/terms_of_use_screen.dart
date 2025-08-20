@@ -1,7 +1,8 @@
+import 'package:avankart_people/widgets/appbar/adaptive_appbar.dart';
+
 import '../../utils/conts_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/url_utils.dart';
 
@@ -11,35 +12,9 @@ class TermsOfUseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(.1))),
-          ),
-          child: AppBar(
-            backgroundColor: Theme.of(context).shadowColor.withOpacity(.1),
-            shadowColor: Theme.of(context).shadowColor.withOpacity(.1),
-            centerTitle: false,
-            title: Text(
-              'terms_of_use'.tr,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Get.back(),
-            ),
-          ),
-        ),
+      appBar: AdaptiveAppBar(
+        title: 'terms_of_use'.tr,
+        onBackPressed: () => Get.back(),
       ),
       body: SingleChildScrollView(
         child: Padding(

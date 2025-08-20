@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../utils/app_theme.dart';
 
 class FAQScreen extends StatelessWidget {
@@ -16,7 +15,8 @@ class FAQScreen extends StatelessWidget {
         ),
         title: Text(
           'faq_screen_title'.tr,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
+    fontFamily: 'Poppins',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onBackground,
@@ -31,7 +31,8 @@ class FAQScreen extends StatelessWidget {
             children: [
               Text(
                 'faq'.tr,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -40,7 +41,8 @@ class FAQScreen extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 'support_subtitle'.tr,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 14,
                   color: Theme.of(context).unselectedWidgetColor,
                 ),
@@ -100,7 +102,8 @@ class FAQScreen extends StatelessWidget {
           tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           title: Text(
             title,
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,

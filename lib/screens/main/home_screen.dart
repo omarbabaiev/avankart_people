@@ -3,7 +3,6 @@ import 'package:avankart_people/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:avankart_people/widgets/restaurant_card_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -22,29 +21,30 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               'Baku, Azerbaijan',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
           actions: [
-            IconButton.filledTonal(
-              icon: Image.asset(
-                ImageAssets.trophy,
-                width: 24,
-                height: 24,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-              onPressed: () {
-                Get.toNamed(AppRoutes.benefits);
-              },
-              style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                fixedSize: Size(44, 44),
-              ),
-            ),
-            SizedBox(width: 4),
+            // IconButton.filledTonal(
+            //   icon: Image.asset(
+            //     ImageAssets.trophy,
+            //     width: 24,
+            //     height: 24,
+            //     color: Theme.of(context).colorScheme.onBackground,
+            //   ),
+            //   onPressed: () {
+            //     Get.toNamed(AppRoutes.benefits);
+            //   },
+            //   style: IconButton.styleFrom(
+            //     backgroundColor: Theme.of(context).colorScheme.secondary,
+            //     fixedSize: Size(44, 44),
+            //   ),
+            // ),
+            // SizedBox(width: 4),
             IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -62,17 +62,14 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(width: 4),
             IconButton.filledTonal(
-              icon: Badge(
-                padding: EdgeInsets.zero,
-                child: Image.asset(
-                  ImageAssets.bellInactive,
-                  width: 24,
-                  height: 24,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
+              icon: Image.asset(
+                ImageAssets.bellInactive,
+                width: 24,
+                height: 24,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
               onPressed: () {
-                Get.toNamed(AppRoutes.benefits);
+                Get.toNamed(AppRoutes.notifications);
               },
               style: IconButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -127,8 +124,9 @@ class HomeScreen extends StatelessWidget {
                                 SizedBox(width: 8),
                                 Material(
                                   child: Text(
-                                    'Restoran, müəssisə...',
-                                    style: GoogleFonts.poppins(
+                                    'search_placeholder'.tr,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w500,
                                       color: Theme.of(context)
                                           .bottomNavigationBarTheme
@@ -176,8 +174,9 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Müəssisələr',
-                      style: GoogleFonts.poppins(
+                      'establishments'.tr,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -197,8 +196,9 @@ class HomeScreen extends StatelessWidget {
                             PopupMenuItem(
                               value: 0,
                               child: Text(
-                                'A-Z',
-                                style: GoogleFonts.poppins(
+                                'a_to_z'.tr,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onBackground,
@@ -210,8 +210,9 @@ class HomeScreen extends StatelessWidget {
                             PopupMenuItem(
                               value: 1,
                               child: Text(
-                                'Məsafəyə görə',
-                                style: GoogleFonts.poppins(
+                                'by_distance'.tr,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onBackground,
@@ -230,8 +231,9 @@ class HomeScreen extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onBackground,
                       ),
                       label: Text(
-                        'Sırala',
-                        style: GoogleFonts.poppins(
+                        'sort'.tr,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
                           color: Theme.of(context).colorScheme.onBackground,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,

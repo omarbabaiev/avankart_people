@@ -4,7 +4,6 @@ import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 
@@ -32,7 +31,8 @@ class PaymentBottomSheet {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Ödəniş edəcəyiniz kartı seçin",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 17, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -154,7 +154,8 @@ class PaymentCardTitle extends StatelessWidget {
               SizedBox(width: 10),
               Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: isSelected
@@ -167,7 +168,8 @@ class PaymentCardTitle extends StatelessWidget {
             children: [
               Text(
                 "Balans:",
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     color: Theme.of(context).unselectedWidgetColor),
@@ -175,7 +177,8 @@ class PaymentCardTitle extends StatelessWidget {
               SizedBox(width: 5),
               Text(
                 balance,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onBackground),

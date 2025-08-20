@@ -1,5 +1,4 @@
 import 'package:avankart_people/routes/app_routes.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../assets/image_assets.dart';
 import '../../utils/conts_texts.dart';
@@ -18,8 +17,9 @@ class SupportScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-          'support'.tr,
-          style: GoogleFonts.poppins(
+          'settings'.tr,
+          style: TextStyle(
+            fontFamily: 'Poppins',
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),

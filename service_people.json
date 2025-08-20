@@ -1,0 +1,417 @@
+{
+	"info": {
+		"_postman_id": "8a48ee5d-fa70-44af-bffd-ad9495237549",
+		"name": "People",
+		"description": "API endpoints for People application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "42783670",
+		"_collection_link": "https://avankart-backend.postman.co/workspace/Avankart-backend-Workspace~6c6e45b1-348f-43a8-8acf-c97dd604840b/collection/42783670-8a48ee5d-fa70-44af-bffd-ad9495237549?action=share&source=collection_link&creator=42783670"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login Page",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.environment.set('auth_token', response.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": "{{base_url}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "User Registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\",\n  \"name\": \"John\",\n  \"surname\": \"Doe\"\n}"
+						},
+						"url": "{{base_url}}/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit OTP",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWQ4ODU1YmU5ZDZhZGI3M2M1YWQ0ZSIsIm90cF92ZXJpZmllZCI6ZmFsc2UsImp0aSI6ImFmMTAzNjNjLWZhZDktNDhlYi1iMDQzLWE5MmUyZTRhNjU2NiIsImlhdCI6MTc1NTE1NjAyNX0.A1IYRgC2wprPPrFDSGzZ3KqJXLYz2atFqFB3hXJ4_JI"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"otp\": \"576551\",\n  \"email\": \"xson.msc@mail.ru\"\n}"
+						},
+						"url": "{{base_url}}/auth/submit-otp"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/auth/cancel-otp"
+					},
+					"response": []
+				},
+				{
+					"name": "Retry OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/auth/retry-otp"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}"
+						},
+						"url": "{{base_url}}/auth/forgot-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Forgotten Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+						},
+						"url": "{{base_url}}/auth/submit-forgotten-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/auth/check-session"
+					},
+					"response": []
+				},
+				{
+					"name": "User Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.environment.unset('auth_token');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/auth/logout"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Get Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/notifications"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Notification Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notificationId\": \"notification_id_here\",\n  \"status\": \"read\"\n}"
+						},
+						"url": "{{base_url}}/notifications/status"
+					},
+					"response": []
+				},
+				{
+					"name": "Handle Invite Action",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"inviteId\": \"invite_id_here\",\n  \"action\": \"accept\"\n}"
+						},
+						"url": "{{base_url}}/notifications/invite-action"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Request Profile Change",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"surname\": \"Updated Surname\",\n  \"email\": \"updated@example.com\"\n}"
+						},
+						"url": "{{base_url}}/profile/request-change"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Profile OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"otp\": \"123456\"\n}"
+						},
+						"url": "{{base_url}}/profile/otp-submit"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Delete OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"otp\": \"123456\"\n}"
+						},
+						"url": "{{base_url}}/profile/delete-otp-submit"
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Profile OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/profile/otp-resend"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Profile OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/profile/otp-cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Delete User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/profile/accept-delete-user"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Home",
+			"item": [
+				{
+					"name": "Get Home Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/home"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.avankart.com/v1/people",
+			"type": "string"
+		}
+	]
+}

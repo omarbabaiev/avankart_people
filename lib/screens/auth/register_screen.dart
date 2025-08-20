@@ -1,19 +1,19 @@
-import 'package:avankart_people/widgets/appbar/adaptive_appbar.dart';
+import 'package:avankart_people/assets/image_assets.dart';
 
-import '../../../routes/app_routes.dart';
-import '../../assets/image_assets.dart';
-import '../../../utils/snackbar_utils.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../utils/app_theme.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/gestures.dart';
-import 'email_verification_screen.dart';
-import '../../../utils/masked_text_formatter.dart';
-import '../../../utils/bottom_sheet_extension.dart';
+import '../support/terms_of_use_screen.dart';
+import 'otp_screen.dart';
+import '../../utils/masked_text_formatter.dart';
+import '../../utils/bottom_sheet_extension.dart';
+import '../../controllers/register_controller.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -23,6 +23,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final RegisterController _controller = Get.put(RegisterController());
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -32,7 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String? _selectedGender;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
@@ -49,7 +49,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     e164Key: "",
   );
 
-  final List<String> _genders = ['male'.tr, 'female'.tr, 'other'.tr];
+  // Gender mapping - backend'e gönderilecek değerler
+  final Map<String, String> _genderMapping = {
+    'male': 'male'.tr,
+    'female': 'female'.tr,
+  };
+
+  String? _selectedGenderValue; // Backend'e gönderilecek değer
 
   @override
   void dispose() {
@@ -61,6 +67,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Controller'ları text controller'lara bağla
+    _firstNameController.addListener(() {
+      _controller.updateFirstName(_firstNameController.text);
+    });
+    _lastNameController.addListener(() {
+      _controller.updateLastName(_lastNameController.text);
+    });
+    _emailController.addListener(() {
+      _controller.updateEmail(_emailController.text);
+    });
+    _birthDateController.addListener(() {
+      _controller.updateBirthDate(_birthDateController.text);
+    });
+    _phoneController.addListener(() {
+      _controller.updatePhoneNumber(_phoneController.text);
+    });
+    _passwordController.addListener(() {
+      _controller.updatePassword(_passwordController.text);
+    });
+    _confirmPasswordController.addListener(() {
+      _controller.updateConfirmPassword(_confirmPasswordController.text);
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -85,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (picked != null) {
       setState(() {
-        _birthDateController.text = DateFormat('dd.MM.yyyy').format(picked);
+        _birthDateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -100,58 +133,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 10),
             context.buildBottomSheetHandle(),
             const SizedBox(height: 10),
-            ListTile(
-              leading: Radio<String>(
-                activeColor: Theme.of(context).colorScheme.primary,
-                value: 'male'.tr,
-                groupValue: _selectedGender,
-                onChanged: (value) {
-                  setState(() => _selectedGender = value);
-                  this.setState(() {});
-                  Navigator.pop(context);
-                },
-              ),
-              title: Text(
-                'male'.tr,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: _selectedGender == 'male'.tr
-                      ? Theme.of(context).colorScheme.onBackground
-                      : Theme.of(context).unselectedWidgetColor,
-                ),
-              ),
-              onTap: () {
-                setState(() => _selectedGender = 'male'.tr);
-                this.setState(() {});
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Radio<String>(
-                value: 'female'.tr,
-                groupValue: _selectedGender,
-                onChanged: (value) {
-                  setState(() => _selectedGender = value);
-                  this.setState(() {});
-                  Navigator.pop(context);
-                },
-                activeColor: AppTheme.primaryColor,
-              ),
-              title: Text(
-                'female'.tr,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: _selectedGender == 'female'.tr
-                      ? Theme.of(context).colorScheme.onBackground
-                      : Theme.of(context).unselectedWidgetColor,
-                ),
-              ),
-              onTap: () {
-                setState(() => _selectedGender = 'female'.tr);
-                this.setState(() {});
-                Navigator.pop(context);
-              },
-            ),
+            ..._genderMapping.entries
+                .map((entry) => ListTile(
+                      leading: Radio<String>(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        value: entry.key, // Backend'e gönderilecek değer
+                        groupValue: _selectedGenderValue,
+                        onChanged: (value) {
+                          setState(() => _selectedGenderValue = value);
+                          this.setState(() {});
+                          _controller.updateSelectedGender(value!);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      title: Text(
+                        entry.value, // Kullanıcıya gösterilecek localized değer
+                        style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 16,
+                            color: _selectedGenderValue == entry.key
+                                ? Theme.of(context).colorScheme.onBackground
+                                : Theme.of(context).unselectedWidgetColor),
+                      ),
+                      onTap: () {
+                        setState(() => _selectedGenderValue = entry.key);
+                        this.setState(() {});
+                        _controller.updateSelectedGender(entry.key);
+                        Navigator.pop(context);
+                      },
+                    ))
+                .toList(),
             const SizedBox(height: 40),
           ],
         ),
@@ -252,6 +263,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildCountryItem(String code, String flag) {
     bool isSelected = code == '+${_selectedCountry.phoneCode}';
+    print(
+        '[BUILD COUNTRY ITEM] Code: $code, Selected: +${_selectedCountry.phoneCode}, IsSelected: $isSelected');
     String countryKey = '';
 
     switch (code) {
@@ -412,6 +425,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return InkWell(
       onTap: () {
+        print('[COUNTRY SELECTION] Code selected: $code');
         setState(() {
           _selectedCountry = Country(
             phoneCode: code.substring(1),
@@ -426,6 +440,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             e164Key: "",
           );
         });
+        _controller.updatePhoneSuffix(code.substring(1));
         Navigator.pop(context);
       },
       child: Container(
@@ -437,6 +452,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               value: code,
               groupValue: '+${_selectedCountry.phoneCode}',
               onChanged: (value) {
+                print('[RADIO SELECTION] Code selected: $value');
                 setState(() {
                   _selectedCountry = Country(
                     phoneCode: code.substring(1),
@@ -451,13 +467,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     e164Key: "",
                   );
                 });
+                _controller.updatePhoneSuffix(code.substring(1));
                 Navigator.pop(context);
               },
               activeColor: AppTheme.primaryColor,
             ),
             Text(
               code,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: "Poppins",
                 fontSize: 15,
                 color: isSelected
                     ? Theme.of(context).colorScheme.onBackground
@@ -468,7 +486,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(width: 8),
             Text(
               countryKey.tr,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: "Poppins",
                 fontSize: 15,
                 color: isSelected
                     ? Theme.of(context).colorScheme.onBackground
@@ -485,31 +504,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   bool _isFormValid() {
-    return _firstNameController.text.isNotEmpty &&
-        _lastNameController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _birthDateController.text.isNotEmpty &&
-        _phoneController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty &&
-        _confirmPasswordController.text.isNotEmpty &&
-        _selectedGender != null &&
-        _agreeToTerms;
+    return _controller.isFormValid.value;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(.1)))),
-            child: AdaptiveAppBar(title: "new_account".tr)),
+      appBar: AppBar(
+        title: Text(
+          'new_account'.tr,
+          style: TextStyle(
+              fontFamily: "Poppins", fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -522,22 +532,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'first_name'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
                   controller: _firstNameController,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_first_name".tr,
-                    context,
-                  ),
+                      "enter_first_name".tr, context),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'first_name_empty'.tr;
@@ -549,22 +559,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'last_name'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
                   controller: _lastNameController,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_last_name".tr,
-                    context,
-                  ),
+                      "enter_last_name".tr, context),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'last_name_empty'.tr;
@@ -576,13 +586,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'email'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -590,9 +602,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_email".tr,
-                    context,
-                  ),
+                      "enter_email".tr, context),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'email_empty'.tr;
@@ -609,13 +619,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'birth_date'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -623,9 +635,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _birthDateController,
                   readOnly: true,
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_birth_date".tr,
-                    context,
-                  ),
+                      "enter_birth_date".tr, context),
                   onTap: () => _selectDate(context),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -638,13 +648,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'phone_number'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -657,10 +669,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       separator: ' ',
                     ),
                   ],
-                  decoration: AppTheme.registerInputDecoration(
-                    "XX XXX XX XX",
-                    context,
-                  ).copyWith(
+                  decoration:
+                      AppTheme.registerInputDecoration("XX XXX XX XX", context)
+                          .copyWith(
                     prefixIcon: InkWell(
                       onTap: _showCountryPicker,
                       child: Container(
@@ -705,8 +716,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'gender'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
@@ -725,9 +737,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Row(
                       children: [
                         Text(
-                          _selectedGender ?? 'select_gender'.tr,
+                          _selectedGenderValue != null
+                              ? _genderMapping[_selectedGenderValue]!
+                              : 'select_gender'.tr,
                           style: TextStyle(
-                            color: _selectedGender == null
+                            fontFamily: "Poppins",
+                            color: _selectedGenderValue == null
                                 ? Theme.of(context).colorScheme.onBackground
                                 : Theme.of(
                                     context,
@@ -748,13 +763,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'password'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -762,9 +779,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_password".tr,
-                    context,
-                  ).copyWith(
+                          "enter_password".tr, context)
+                      .copyWith(
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -796,13 +812,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'confirm_password'.tr,
                   style: TextStyle(
+                    fontFamily: "Poppins",
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 TextFormField(
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -810,9 +828,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: AppTheme.registerInputDecoration(
-                    "enter_confirm_password".tr,
-                    context,
-                  ).copyWith(
+                          "enter_confirm_password".tr, context)
+                      .copyWith(
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
@@ -846,6 +863,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Text(
                         'minimum_chars'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 12,
                           color: Theme.of(context).splashColor,
                         ),
@@ -854,6 +872,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Text(
                         'minimum_special_char'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 12,
                           color: Theme.of(context).splashColor,
                         ),
@@ -875,6 +894,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           setState(() {
                             _agreeToTerms = value ?? false;
                           });
+                          _controller.updateAgreeToTerms(value ?? false);
                         },
                         size: 24,
                       ),
@@ -889,6 +909,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextSpan(
                                 text: 'agree_to_terms1'.tr,
                                 style: TextStyle(
+                                  fontFamily: "Poppins",
                                   fontSize: 15,
                                   color: AppTheme.hyperLinkColor,
                                   decoration: TextDecoration.underline,
@@ -897,10 +918,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextSpan(
                                 text: ' ' + 'agree_to_terms2'.tr,
                                 style: TextStyle(
+                                  fontFamily: "Poppins",
                                   fontSize: 15,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onBackground,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
                                 ),
                               ),
                             ],
@@ -911,33 +933,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isFormValid()
-                        ? () {
-                            if (_formKey.currentState!.validate() &&
-                                _agreeToTerms) {
-                              Get.toNamed(AppRoutes.emailVerification);
-                            } else if (!_agreeToTerms) {
-                              SnackbarUtils.showSnackbar(
-                                'please_accept_terms'.tr,
-                              );
-                            }
-                          }
-                        : null,
-                    style: AppTheme.primaryButtonStyle(),
-                    child: Text(
-                      'create_new_account'.tr,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _controller.isFormValid.value &&
+                                !_controller.isLoading.value
+                            ? () async {
+                                if (_formKey.currentState!.validate() &&
+                                    _agreeToTerms) {
+                                  await _controller.register();
+                                } else if (!_agreeToTerms) {
+                                  SnackbarUtils.showErrorSnackbar(
+                                    'please_accept_terms'.tr,
+                                  );
+                                }
+                              }
+                            : null,
+                        style: AppTheme.primaryButtonStyle(),
+                        child: _controller.isLoading.value
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'create_new_account'.tr,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
-                    ),
-                  ),
-                ),
+                    )),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -952,6 +986,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Text(
                         'or'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 12,
                           color: Theme.of(context).unselectedWidgetColor,
                         ),
@@ -973,6 +1008,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Text(
                         'yes_account'.tr,
                         style: TextStyle(
+                          fontFamily: "Poppins",
                           fontSize: 13,
                           color: Theme.of(context).colorScheme.onBackground,
                         ),
@@ -982,6 +1018,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           'login'.tr,
                           style: TextStyle(
+                            fontFamily: "Poppins",
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,

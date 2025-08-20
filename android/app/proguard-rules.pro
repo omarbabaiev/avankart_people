@@ -11,7 +11,7 @@
 -keep class android.opengl.** { *; }
 
 # Keep your application classes
--keep class com.example.avankart_people.** { *; }
+-keep class com.avankart.people.** { *; }
 
 # Kotlin
 -keep class kotlin.** { *; }

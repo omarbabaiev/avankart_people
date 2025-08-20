@@ -1,7 +1,8 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/controllers/notification_settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../controllers/theme_controller.dart';
 import '../../controllers/language_controller.dart';
 import '../../utils/app_theme.dart';
@@ -23,15 +24,10 @@ class SettingsSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSettingsTile(
-            icon: Icons.notifications_outlined,
-            title: 'notifications'.tr,
-            isSwitch: true,
-            context: context,
-          ),
+          _buildNotificationTile(context),
           GetBuilder<ThemeController>(
             builder: (controller) => _buildSettingsTile(
-              icon: Icons.brightness_6_outlined,
+              imageUrl: ImageAssets.brightness,
               title: controller.themeName,
               onTap: () {
                 Get.back();
@@ -42,7 +38,7 @@ class SettingsSection extends StatelessWidget {
           ),
           GetBuilder<LanguageController>(
             builder: (controller) => _buildSettingsTile(
-              icon: Icons.language,
+              imageUrl: ImageAssets.globe,
               title: controller.currentLanguage,
               onTap: () {
                 _showLanguageSelectionDialog(context);
@@ -55,11 +51,33 @@ class SettingsSection extends StatelessWidget {
     );
   }
 
+  Widget _buildNotificationTile(BuildContext context) {
+    final controller = Get.put(NotificationSettingsController());
+
+    return Obx(() => Skeletonizer(
+          enabled: controller.isLoading.value,
+          enableSwitchAnimation: true,
+          child: _buildSettingsTile(
+            imageUrl: ImageAssets.bellringing,
+            title: 'notifications'.tr,
+            isSwitch: true,
+            switchValue: controller.isNotificationEnabled.value,
+            onSwitchChanged: (value) => controller.toggleNotification(value),
+            // Burada switch yerine loading göstermiyoruz
+
+            context: context,
+          ),
+        ));
+  }
+
   Widget _buildSettingsTile({
-    required IconData icon,
+    required String imageUrl,
     required String title,
     bool isSwitch = false,
     VoidCallback? onTap,
+    bool? switchValue,
+    Function(bool)? onSwitchChanged,
+    bool isLoading = false,
     required BuildContext context,
   }) {
     return ListTile(
@@ -72,26 +90,31 @@ class SettingsSection extends StatelessWidget {
           color: Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(
-          icon,
-          size: 23,
+        child: Image.asset(
+          imageUrl,
+          width: 23,
+          height: 23,
           color: Theme.of(context).colorScheme.onBackground,
         ),
       ),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Theme.of(context).colorScheme.onBackground,
         ),
       ),
       trailing: isSwitch
-          ? Switch.adaptive(
-              value: true,
-              onChanged: (value) {},
-              activeColor: AppTheme.primaryColor,
-            )
+          ? Skeletonizer(
+              enabled: isLoading,
+              enableSwitchAnimation: true,
+              child: Switch.adaptive(
+                value: switchValue ?? false,
+                onChanged: onSwitchChanged ?? (value) {},
+                activeColor: AppTheme.primaryColor,
+              ))
           : Image.asset(
               ImageAssets.caretRight,
               width: 24,
@@ -178,7 +201,7 @@ class SettingsSection extends StatelessWidget {
                 builder: (controller) => Column(
                   children: [
                     SettingsRadioItem<Locale>(
-                      title: 'azerbaijan'.tr,
+                      title: 'azerbaijani_language'.tr,
                       value: Locale('az', 'AZ'),
                       groupValue: controller.locale,
                       onChanged: (Locale? value) {
@@ -193,7 +216,7 @@ class SettingsSection extends StatelessWidget {
                       color: Theme.of(context).dividerColor,
                     ),
                     SettingsRadioItem<Locale>(
-                      title: 'united_states'.tr,
+                      title: 'english_language'.tr,
                       value: Locale('en', 'US'),
                       groupValue: controller.locale,
                       onChanged: (Locale? value) {
@@ -208,7 +231,18 @@ class SettingsSection extends StatelessWidget {
                       color: Theme.of(context).dividerColor,
                     ),
                     SettingsRadioItem<Locale>(
-                      title: 'russia'.tr,
+                      title: 'turkish_language'.tr,
+                      value: Locale('tr', 'TR'),
+                      groupValue: controller.locale,
+                      onChanged: (Locale? value) {
+                        if (value != null) {
+                          controller.changeLanguage(value);
+                          Get.back();
+                        }
+                      },
+                    ),
+                    SettingsRadioItem<Locale>(
+                      title: 'russian_language'.tr,
                       value: Locale('ru', 'RU'),
                       groupValue: controller.locale,
                       onChanged: (Locale? value) {

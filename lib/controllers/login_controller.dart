@@ -1,0 +1,208 @@
+import 'package:avankart_people/utils/auth_utils.dart';
+
+import '../utils/snackbar_utils.dart';
+import '../utils/api_response_parser.dart';
+import '../utils/debug_logger.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../services/auth_service.dart';
+import '../models/login_response.dart';
+import '../routes/app_routes.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../controllers/home_controller.dart';
+
+class LoginController extends GetxController {
+  final AuthService _authService = AuthService();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final isLoading = false.obs;
+  final rememberMe = false.obs;
+  final forgotPasswordLoading = false.obs;
+
+  // New password screen için
+  String email = '';
+  String token = '';
+
+  void login() async {
+    isLoading.value = true;
+    try {
+      final LoginResponse response = await _authService.login(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      DebugLogger.controllerAction('LoginController', 'login', data: {
+        'requiresOtp': response.requiresOtp,
+        'token': response.token.substring(0, 20) + '...',
+      });
+
+      if (response.requiresOtp) {
+        // OTP gerekli - password'u temizle ve OTP ekranına yönlendir
+        DebugLogger.info(
+            LogCategory.controller, 'OTP required, navigating to OTP screen');
+        passwordController.clear();
+        Get.toNamed(AppRoutes.otp, arguments: {
+          'email': emailController.text.trim(),
+          'token': response.token,
+          'rememberMe': rememberMe.value,
+        });
+      } else {
+        // OTP gerekmiyor - direkt token'ı kaydet ve home'a yönlendir
+        DebugLogger.info(LogCategory.controller,
+            'OTP not required, proceeding directly to home');
+
+        // Token'ı kaydet
+        await _saveTokenAndProceed(response.token);
+      }
+    } catch (e) {
+      DebugLogger.controllerError('LoginController', 'login', e);
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Token'ı kaydet ve home endpoint'ini çağır
+  Future<void> _saveTokenAndProceed(String token) async {
+    try {
+      // Remember me durumuna göre token'ı kaydet
+      if (rememberMe.value) {
+        await _storage.write(key: 'token', value: token);
+        await _storage.write(key: 'rememberMe', value: 'true');
+        print('[TOKEN SAVED] With remember me: true');
+      } else {
+        await _storage.write(key: 'token', value: token);
+        await _storage.delete(key: 'rememberMe');
+        print('[TOKEN SAVED] Without remember me');
+      }
+
+      // Home endpoint'ini çağır
+      print('[CALLING HOME ENDPOINT]');
+      final homeResponse = await _authService.home();
+      print('[HOME RESPONSE] success: ${homeResponse?.success}');
+
+      // Check if logout is required (status 2) - UserModel'den status kontrol et
+      if (homeResponse != null &&
+          homeResponse.user != null &&
+          homeResponse.user!.status == 2) {
+        print(
+            '[LOGIN CONTROLLER] Status 2 detected in user model, logging out user');
+        await AuthUtils.logout();
+        return;
+      }
+
+      if (homeResponse?.success == true) {
+        // Başarılı giriş - password'u temizle
+        passwordController.clear();
+
+        // Home controller'ı initialize et ve verileri yükle
+        if (!Get.isRegistered<HomeController>()) {
+          Get.put(HomeController(), permanent: true);
+        }
+        final homeController = Get.find<HomeController>();
+        // await homeController.refreshUserData();
+
+        // Home'a yönlendir
+        print('[HOME SUCCESS] Navigating to home');
+        Get.offAllNamed(AppRoutes.main);
+      } else {
+        print('[HOME FAILED] success is not true');
+        SnackbarUtils.showErrorSnackbar('main_page_could_not_load'.tr);
+      }
+    } catch (homeError) {
+      print('[HOME ERROR] $homeError');
+      final errorMessage = ApiResponseParser.parseDioError(homeError);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+    }
+  }
+
+  /// New password screen için initialization
+  void initializeNewPassword(String userEmail, String resetToken) {
+    email = userEmail;
+    token = resetToken;
+  }
+
+  /// Yeni şifre belirleme
+  Future<void> submitNewPassword() async {
+    isLoading.value = true;
+    try {
+      // Yeni şifre belirleme API çağrısı
+      final response = await _authService.submitNewPassword(
+        token: token,
+        newPassword: newPasswordController.text,
+        confirmPassword: confirmPasswordController.text,
+      );
+
+      if (response['token'] != null &&
+          (response['success'] == true ||
+              response['message'] == 'Password updated')) {
+        print('[NEW PASSWORD SUCCESS] Password updated successfully');
+
+        // Yeni token'ı kaydet
+        final newToken = response['token'];
+        await _authService.saveToken(newToken);
+        print('[NEW PASSWORD] New token saved: $newToken');
+
+        // Şifre güncellendiği için güvenlik nedeniyle login screen'e yönlendir
+        print(
+            '[NEW PASSWORD] Password updated, redirecting to login for security');
+
+        // Token'ı temizle çünkü yeni login gerekli
+        await _storage.delete(key: 'token');
+        await _storage.delete(key: 'rememberMe');
+        print('[NEW PASSWORD] Tokens cleared for fresh login');
+
+        // Success mesajını göster ve ardından navigate et
+        SnackbarUtils.showSuccessSnackbar('password_updated_successfully'.tr);
+
+        // Kısa bir delay sonra navigate et ki snackbar görünsün
+        await Future.delayed(const Duration(milliseconds: 1500));
+
+        // Tüm controller'ları temizle ve login screen'e git
+        Get.deleteAll();
+        Get.offAllNamed(AppRoutes.login);
+      } else {
+        print('[NEW PASSWORD ERROR] ${response['message']}');
+        final errorMessage =
+            ApiResponseParser.parseApiMessage(response['message']);
+        SnackbarUtils.showErrorSnackbar(errorMessage);
+      }
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<dynamic> forgotPassword({required String email}) async {
+    forgotPasswordLoading.value = true;
+    try {
+      final response = await _authService.forgotPassword(email: email);
+      return response;
+    } catch (e) {
+      rethrow;
+    } finally {
+      forgotPasswordLoading.value = false;
+    }
+  }
+
+  @override
+  void onClose() {
+    // Controllers'ı güvenli şekilde dispose et
+    try {
+      emailController.dispose();
+      passwordController.dispose();
+      newPasswordController.dispose();
+      confirmPasswordController.dispose();
+    } catch (e) {
+      print('[LOGIN CONTROLLER] Error disposing controllers: $e');
+    }
+    super.onClose();
+  }
+}

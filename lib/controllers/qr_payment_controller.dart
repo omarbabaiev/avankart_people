@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 class QrPaymentController extends GetxController {
   final RxDouble balance = 148.50.obs;
-  final RxString cardName = 'Yemək Kartı'.obs;
+  final RxString cardName = 'food_card'.tr.obs;
   final RxBool isFlashOn = false.obs;
 
   // QR kodu açıp kapamak için
@@ -22,8 +22,8 @@ class QrPaymentController extends GetxController {
     // QR kodundan ödeme işlemi yapılacak
     // Gerçek uygulamada burada API çağrısı yapılır
     Get.snackbar(
-      'Ödəniş edildi',
-      'QR kodu ilə ödəniş uğurla tamamlandı',
+      'payment_completed'.tr,
+      'qr_payment_successful'.tr,
       backgroundColor: Colors.green,
       colorText: Colors.white,
       snackPosition: SnackPosition.BOTTOM,

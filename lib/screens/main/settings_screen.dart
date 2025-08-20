@@ -1,5 +1,6 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/theme_controller.dart';
+import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/widgets/restaurant_card_widget.dart';
 import 'package:avankart_people/widgets/settings_widgets/logout_button.dart';
@@ -9,15 +10,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SettingsScreen extends GetView<ThemeController> {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Controller'ı başlat
+    // Controller'ları başlat
     Get.put(ThemeController());
+
+    // ProfileController'ı sadece gerekli olduğunda initialize et
+    ProfileController? profileController;
+    if (Get.isRegistered<ProfileController>()) {
+      profileController = Get.find<ProfileController>();
+    } else {
+      profileController = Get.put(ProfileController());
+      // Sayfa açılınca profil verilerini yükle (sadece data yoksa)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (profileController!.profile.value == null) {
+          profileController!.getProfile();
+        }
+      });
+    }
+
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.secondary,
         appBar: AppBar(
@@ -27,34 +42,42 @@ class SettingsScreen extends GetView<ThemeController> {
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              'Tənzimləmələr',
-              style: GoogleFonts.poppins(
+              'settings'.tr,
+              style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
         ),
-        body: ListView(
-          padding: EdgeInsets.only(bottom: 150),
-          children: [
-            buildProfileTile(context),
-            buildCompanyTile(context),
-            buildTile(context, 'Kartlar', ImageAssets.cardholder, () {
-              Get.toNamed(AppRoutes.selectCard);
-            }),
-            buildTile(context, 'Rozetlər', ImageAssets.trophy, () {
-              Get.toNamed(AppRoutes.benefits);
-            }),
-            SettingsSection(),
-            buildTile(context, 'Təhlükəsizlik', ImageAssets.locckey, () {
-              Get.toNamed(AppRoutes.security);
-            }),
-            buildTile(context, 'Dəstək', ImageAssets.headset, () {
-              Get.toNamed(AppRoutes.support);
-            }),
-            buildLogoutButton(context),
-          ],
-        ));
+        body: Obx(() {
+          final user = profileController?.profile.value;
+          final isLoading = profileController?.isLoading.value ?? false;
+
+          return ListView(
+            padding: EdgeInsets.only(bottom: 150),
+            children: [
+              ProfileSection(
+                user: user,
+                isLoading: isLoading,
+              ),
+              buildTile(context, 'cards'.tr, ImageAssets.cardholder, () {
+                Get.toNamed(AppRoutes.selectCard);
+              }),
+              // buildTile(context, 'Rozetlər', ImageAssets.trophy, () {
+              //   Get.toNamed(AppRoutes.benefits);
+              // }),
+              SettingsSection(),
+              buildTile(context, 'security'.tr, ImageAssets.locckey, () {
+                Get.toNamed(AppRoutes.security);
+              }),
+              buildTile(context, 'support'.tr, ImageAssets.headset, () {
+                Get.toNamed(AppRoutes.support);
+              }),
+              LogoutButton(),
+            ],
+          );
+        }));
   }
 }

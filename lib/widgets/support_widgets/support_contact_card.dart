@@ -55,7 +55,7 @@ class SupportContactCard extends StatelessWidget {
                   title.tr,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
@@ -120,7 +120,7 @@ class SupportSocialCard extends StatelessWidget {
               title.tr,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w400,
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             ),

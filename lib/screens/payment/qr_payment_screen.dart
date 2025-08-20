@@ -1,7 +1,6 @@
 import 'package:avankart_people/controllers/qr_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrPaymentScreen extends GetView<QrPaymentController> {
@@ -32,7 +31,8 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                     // Kart adı
                     Obx(() => Text(
                           controller.cardName.value,
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontSize: 13,
                             fontWeight: FontWeight.normal,
                             color: Colors.white,
@@ -44,7 +44,8 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                     // Bakiye
                     Obx(() => Text(
                           '${controller.balance.value}',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -120,8 +121,9 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
 
                     // Alt mesaj
                     Text(
-                      'QR kodu skan edə bilmirsiniz?',
-                      style: GoogleFonts.poppins(
+                      'cant_scan_qr_code'.tr,
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 17,
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -142,7 +144,8 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                       ),
                       child: Text(
                         'Əlnən daxil et',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+    fontFamily: 'Poppins',
                           fontSize: 13,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,

@@ -7,7 +7,6 @@ import 'package:avankart_people/widgets/settings_widgets/settings_radio_item.dar
 import 'package:avankart_people/widgets/support_widgets/query_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class QueryScreen extends GetView<QueryController> {
@@ -28,7 +27,8 @@ class QueryScreen extends GetView<QueryController> {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             'Sorğular',
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+    fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -41,7 +41,8 @@ class QueryScreen extends GetView<QueryController> {
             },
             label: Text(
               "Sorğu göndər",
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+    fontFamily: 'Poppins',
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -97,7 +98,8 @@ class QueryScreen extends GetView<QueryController> {
                             SizedBox(height: 16),
                             Text(
                               'Heç bir sorğu tapılmadı',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
+    fontFamily: 'Poppins',
                                 fontSize: 16,
                                 color: Colors.grey[600],
                               ),
@@ -107,7 +109,7 @@ class QueryScreen extends GetView<QueryController> {
                               onPressed: () {
                                 // Yeni sorgu ekleme
                               },
-                              child: Text('Yeni sorğu yarat'),
+                              child: Text('create_new_query'.tr),
                             ),
                           ],
                         ),
@@ -192,7 +194,8 @@ class QueryScreen extends GetView<QueryController> {
                   Center(
                     child: Text(
                       'Sorğu yarat',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -203,7 +206,8 @@ class QueryScreen extends GetView<QueryController> {
                   Center(
                     child: Text(
                       'Biz buradayıq, sizə necə kömək edə bilərik?',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+    fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor,
@@ -215,7 +219,8 @@ class QueryScreen extends GetView<QueryController> {
                   // Sorğu kategoriyası - İnteraktif buton
                   Text(
                     'Sorğu kateqoriyası',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -249,7 +254,8 @@ class QueryScreen extends GetView<QueryController> {
                         children: [
                           Text(
                             _selectedCategory ?? 'Seçim edin',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(
+    fontFamily: 'Poppins',
                               fontSize: 13,
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
@@ -269,7 +275,8 @@ class QueryScreen extends GetView<QueryController> {
                   // Problemin səbəbi - Bottom sheet ile
                   Text(
                     'Problemin səbəbi',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -308,7 +315,8 @@ class QueryScreen extends GetView<QueryController> {
                                 selectedReasonCount.value > 0
                                     ? '${selectedReasonCount.value} seçim edildi'
                                     : 'Seçim edin',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(
+    fontFamily: 'Poppins',
                                     fontSize: 13,
                                     color: Theme.of(context)
                                         .colorScheme
@@ -329,7 +337,8 @@ class QueryScreen extends GetView<QueryController> {
                   // Mövzu
                   Text(
                     'Mövzu',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -347,7 +356,8 @@ class QueryScreen extends GetView<QueryController> {
                   // Probleminiz
                   Text(
                     'Probleminiz',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+    fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -376,7 +386,8 @@ class QueryScreen extends GetView<QueryController> {
                         SizedBox(width: 8),
                         Text(
                           'Şəkil və ya fayl əlavə edin',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+    fontFamily: 'Poppins',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -543,7 +554,8 @@ class QueryScreen extends GetView<QueryController> {
                                 Expanded(
                                   child: Text(
                                     reason,
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(
+    fontFamily: 'Poppins',
                                       fontSize: 15,
                                       color: Theme.of(context)
                                           .colorScheme
@@ -616,7 +628,8 @@ class QueryScreen extends GetView<QueryController> {
               const SizedBox(height: 24),
               Text(
                 'Müraciətiniz göndərildi',
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -626,7 +639,8 @@ class QueryScreen extends GetView<QueryController> {
               Text(
                 'Ən qısa zamanda e-poçt adresinizə problemin həlli ilə bağlı mesaj göndəriləcək',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+    fontFamily: 'Poppins',
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Theme.of(context).unselectedWidgetColor,
@@ -670,7 +684,8 @@ class QueryScreen extends GetView<QueryController> {
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: GoogleFonts.poppins(
+        hintStyle: TextStyle(
+    fontFamily: 'Poppins',
           fontSize: 14,
           color: Theme.of(context).splashColor,
         ),

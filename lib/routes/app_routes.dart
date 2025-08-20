@@ -1,4 +1,14 @@
+import 'package:avankart_people/auth/forgot_password_screen.dart';
+import 'package:avankart_people/screens/auth/change_password_screen.dart';
+import 'package:avankart_people/screens/auth/login_screen.dart';
+import 'package:avankart_people/screens/auth/new_password_screen.dart';
+import 'package:avankart_people/screens/auth/otp_screen.dart';
+import 'package:avankart_people/screens/auth/register_screen.dart';
+import 'package:avankart_people/screens/auth/splash_screen.dart';
+
+import 'package:avankart_people/screens/empty_state/not_found_screen.dart';
 import 'package:avankart_people/screens/initial/initial_card_select_screen.dart';
+import 'package:avankart_people/screens/main/main_screen.dart';
 import 'package:avankart_people/screens/other/filter_search_screen.dart';
 import 'package:avankart_people/screens/other/membership_detail_screen.dart';
 import 'package:avankart_people/screens/other/membership_list_screen.dart';
@@ -19,29 +29,25 @@ import 'package:avankart_people/screens/support/faq_screen.dart';
 import 'package:avankart_people/screens/support/query_detail_screen.dart';
 import 'package:avankart_people/screens/support/query_screen.dart';
 
-import '../screens/auth/register_screen.dart';
 import '../screens/support/terms_of_use_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../screens/auth/splash_screen.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/auth/email_verification_screen.dart';
 
 import '../screens/support/support_screen.dart';
-import '../screens/auth/forgot_password_screen.dart';
-import '../screens/auth/new_password_screen.dart';
-import '../screens/auth/change_password_screen.dart';
+
 import '../controllers/splash_controller.dart';
 
 // Uygulama rotalarının tanımlandığı sınıf
 class AppRoutes {
+  static const String notFound = '/not-found';
+
   // Ana rotalar
   static const String splash = '/splash';
   static const String cards = '/cards';
   static const String login = '/login';
   static const String terms = '/terms';
   static const String register = '/register';
-  static const String emailVerification = '/email-verification';
+  static const String otp = '/otp';
   static const String main = '/main';
   static const String forgotPassword = '/forgot-password';
   static const String newPassword = '/new-password';
@@ -51,7 +57,7 @@ class AppRoutes {
   static const String faq = '/faq';
   static const String initialCard = '/initial-card-select';
   static const String selectCard = '/select-card';
-
+  static const String otpScreen = '/otp-screen';
   // Alt rotalar
   static const String home = '/home';
   static const String profile = '/profile';
@@ -77,6 +83,11 @@ class AppRoutes {
   // Tüm sayfaların rota eşleştirmelerini içeren liste
 
   static final List<GetPage> routes = [
+    GetPage(
+      name: notFound,
+      page: () => const NotFoundScreen(),
+      transition: Transition.cupertino,
+    ),
     GetPage(
       name: queryDetail,
       page: () => QueryDetailScreen(),
@@ -133,7 +144,7 @@ class AppRoutes {
       binding: BindingsBuilder(() {
         Get.put(SplashController());
       }),
-      transition: Transition.fadeIn,
+      transition: Transition.cupertino,
     ),
     GetPage(
       name: benefits,
@@ -163,7 +174,7 @@ class AppRoutes {
     GetPage(
       name: login,
       page: () => const LoginScreen(),
-      transition: Transition.fadeIn,
+      transition: Transition.cupertino,
     ),
     GetPage(
       name: notification,
@@ -201,11 +212,6 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
-      name: emailVerification,
-      page: () => const EmailVerificationForNewUserScreen(email: ''),
-      transition: Transition.cupertino,
-    ),
-    GetPage(
       name: forgotPassword,
       page: () => const ForgotPasswordScreen(),
       transition: Transition.cupertino,
@@ -221,6 +227,11 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
+      name: otpScreen,
+      page: () => const OtpScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
       name: support,
       page: () => const SupportScreen(),
       transition: Transition.cupertino,
@@ -228,6 +239,16 @@ class AppRoutes {
     GetPage(
       name: intro,
       page: () => const IntroScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
+      name: otp,
+      page: () => const OtpScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
+      name: main,
+      page: () => const MainScreen(),
       transition: Transition.cupertino,
     ),
   ];

@@ -8,7 +8,6 @@ import 'package:avankart_people/widgets/restaurant_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MembershipDetailScreen extends GetView<MembershipController> {
@@ -78,7 +77,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             membership['name'],
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -94,17 +94,20 @@ class MembershipDetailScreen extends GetView<MembershipController> {
             child: Column(
               children: [
                 Text("Toplam xərcləmə",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor)),
                 SizedBox(height: 5),
                 Text("₼ ${membership['totalSpending']}",
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
+    fontFamily: 'Inter',
                         fontSize: 26, fontWeight: FontWeight.w700)),
                 SizedBox(height: 5),
                 Text("${membership["startDate"]} > Bu gün",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).unselectedWidgetColor)),
@@ -139,7 +142,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                     _showMembershipLeaveDialog(context);
                   },
                   child: Text("Üzvlükdən ayrıl",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.error)),
@@ -172,14 +176,16 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                   ),
                   SizedBox(width: 8),
                   Text(title,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground)),
                 ],
               ),
               Text("${currentSpending.toString()} ₼",
-                  style: GoogleFonts.roboto(
+                  style: TextStyle(
+    fontFamily: 'Roboto',
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       color: Theme.of(context).colorScheme.onBackground)),
@@ -205,7 +211,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                 flex: 1,
                 child: Text(
                     "${(currentSpending / totalSpending * 100).toStringAsFixed(0)}%",
-                    style: GoogleFonts.roboto(
+                    style: TextStyle(
+    fontFamily: 'Roboto',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor)),
@@ -241,7 +248,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                   const SizedBox(height: 10),
                   Text(
                     'otp'.tr,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -252,7 +260,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: "omarbaba007@gmail.com",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -260,7 +269,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                       children: [
                         TextSpan(
                           text: " ",
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -268,8 +278,9 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                         ),
                         TextSpan(
                           text:
-                              "email adresinə göndərilən 6 rəqəmli şifrəni daxil edin",
-                          style: GoogleFonts.poppins(
+                              "enter_verification_code".tr,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 15,
                             fontWeight: FontWeight.w400,
                             color: Theme.of(context).unselectedWidgetColor,
@@ -306,7 +317,7 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                       // TODO: Implement resend logic
                     },
                     child: Text(
-                      'Yenidən göndər',
+                      'resend'.tr,
                       style: TextStyle(
                         fontSize: 15,
                         color: Theme.of(context).colorScheme.primary,
@@ -322,7 +333,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                       (index) => SizedBox(
                         width: 50,
                         child: TextFormField(
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
                           controller: _otpControllers[index],
@@ -370,7 +382,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                       style: AppTheme.primaryButtonStyle(),
                       child: Text(
                         'Təsdiqlə',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
@@ -386,7 +399,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                     },
                     child: Text(
                       'Ləğv et',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                         color: Theme.of(context).unselectedWidgetColor,
@@ -438,7 +452,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
               SizedBox(height: 24),
               Text(
                 'Üzvlükdən ayrıl',
-                style: GoogleFonts.poppins(
+                style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -450,7 +465,8 @@ class MembershipDetailScreen extends GetView<MembershipController> {
                 child: Text(
                   'Üzvlükdən ayrılmaq istədiyinizə əminsiniz ?',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 15,
                     color: Theme.of(context).unselectedWidgetColor,
                   ),

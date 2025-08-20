@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SecurityScreen extends StatelessWidget {
   const SecurityScreen({super.key});
@@ -17,6 +16,12 @@ class SecurityScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,
@@ -24,7 +29,8 @@ class SecurityScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             'Təhlükəsizlik',
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -191,7 +197,8 @@ class SecurityScreen extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Theme.of(context).colorScheme.onBackground,
@@ -201,7 +208,8 @@ class SecurityScreen extends StatelessWidget {
           ? null
           : Text(
               subtitle,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 10,
                 fontWeight: FontWeight.w400,
                 color: Theme.of(context).unselectedWidgetColor,
@@ -250,7 +258,8 @@ class SecurityScreen extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
+        style: TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Theme.of(context).colorScheme.error,
@@ -260,7 +269,8 @@ class SecurityScreen extends StatelessWidget {
           ? null
           : Text(
               subtitle,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 10,
                 fontWeight: FontWeight.w400,
                 color: Theme.of(context).colorScheme.error.withOpacity(0.5),
