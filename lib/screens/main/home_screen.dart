@@ -1,4 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/controllers/notifications_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              'Baku, Azerbaijan',
+              'baku_azerbaijan'.tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 14,
@@ -61,21 +62,55 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             SizedBox(width: 4),
-            IconButton.filledTonal(
-              icon: Image.asset(
-                ImageAssets.bellInactive,
-                width: 24,
-                height: 24,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-              onPressed: () {
-                Get.toNamed(AppRoutes.notifications);
-              },
-              style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                fixedSize: Size(44, 44),
-              ),
-            ),
+            Obx(() {
+              final notificationsController =
+                  Get.find<NotificationsController>();
+              final unreadCount = notificationsController.unreadCount;
+
+              return Stack(
+                children: [
+                  IconButton.filledTonal(
+                    icon: Image.asset(
+                      ImageAssets.bellInactive,
+                      width: 24,
+                      height: 24,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                    onPressed: () {
+                      Get.toNamed(AppRoutes.notifications);
+                    },
+                    style: IconButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      fixedSize: Size(44, 44),
+                    ),
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        padding: EdgeInsets.all(1),
+                        alignment: Alignment.center,
+                        child: Text(
+                          unreadCount.toString(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }),
+
             SizedBox(width: 15),
           ],
         ),
@@ -91,10 +126,11 @@ class HomeScreen extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.onPrimary,
               title: GestureDetector(
                 onTap: () {
-                  Get.toNamed(AppRoutes.searchCompany);
+                  Get.toNamed(AppRoutes.searchCompany,
+                      arguments: {'heroTag': 'home_search_company'});
                 },
                 child: Hero(
-                  tag: 'search_company',
+                  tag: 'home_search_company',
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(

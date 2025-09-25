@@ -1,12 +1,11 @@
-import 'package:avankart_people/models/models/home_response.dart';
+import 'package:avankart_people/utils/conts_texts.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
-
-import '../utils/conts_texts.dart';
-import '../utils/debug_logger.dart';
+import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:dio/dio.dart';
 import '../models/login_response.dart';
 import '../models/register_response.dart';
 import '../models/forgot_password_response.dart';
+import '../models/home_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -56,28 +55,28 @@ class AuthService {
       // Firebase token al
       String? firebaseToken = await _firebaseServiceInstance.getAndSaveToken();
 
-      DebugLogger.apiRequest('/auth/login', {
+      DebugLogger.apiRequest('/people/auth/login', {
         'email': email,
         'password': '*' * password.length,
-        'firebase_token': firebaseToken?.substring(0, 20) ?? 'null',
+        'firebase_token': firebaseToken ?? 'null',
       });
 
       final response = await _dio.post(
-        '/auth/login',
+        '/people/auth/login',
         data: {
           'email': email,
           'password': password,
           'firebase_token': firebaseToken ?? 'token',
         },
       );
-      DebugLogger.apiResponse('/auth/login', response.data);
+      DebugLogger.apiResponse('/people/auth/login', response.data);
       return LoginResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        DebugLogger.apiError('/auth/login', e.response!.data);
+        DebugLogger.apiError('/people/auth/login', e.response!.data);
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        DebugLogger.apiError('/auth/login', e);
+        DebugLogger.apiError('/people/auth/login', e);
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -89,13 +88,13 @@ class AuthService {
       required String otp,
       required String token}) async {
     try {
-      DebugLogger.apiRequest('/auth/submit-otp', {
+      DebugLogger.apiRequest('/people/auth/submit-otp', {
         'email': email,
         'otp': otp,
         'token': token.substring(0, 20) + '...',
       });
       final response = await _dio.post(
-        '/auth/submit-otp',
+        '/people/auth/submit-otp',
         data: {
           'email': email,
           'otp': otp,
@@ -104,7 +103,7 @@ class AuthService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      DebugLogger.apiResponse('/auth/submit-otp', response.data);
+      DebugLogger.apiResponse('/people/auth/submit-otp', response.data);
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
@@ -113,11 +112,11 @@ class AuthService {
           DebugLogger.info(LogCategory.auth,
               'OTP already verified, token: ${e.response?.data['token']}, used token: $token, otp: $otp');
         } else {
-          DebugLogger.apiError('/auth/submit-otp', e.response!.data);
+          DebugLogger.apiError('/people/auth/submit-otp', e.response!.data);
         }
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        DebugLogger.apiError('/auth/submit-otp', e);
+        DebugLogger.apiError('/people/auth/submit-otp', e);
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -127,9 +126,9 @@ class AuthService {
   Future<Map<String, dynamic>> retryOtp(
       {required String email, required String token}) async {
     try {
-      DebugLogger.apiRequest('/auth/retry-otp', {'email': email});
+      DebugLogger.apiRequest('/people/auth/retry-otp', {'email': email});
       final response = await _dio.post(
-        '/auth/retry-otp',
+        '/people/auth/retry-otp',
         data: {
           'email': email,
         },
@@ -137,14 +136,14 @@ class AuthService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      DebugLogger.apiResponse('/auth/retry-otp', response.data);
+      DebugLogger.apiResponse('/people/auth/retry-otp', response.data);
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        DebugLogger.apiError('/auth/retry-otp', e.response!.data);
+        DebugLogger.apiError('/people/auth/retry-otp', e.response!.data);
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        DebugLogger.apiError('/auth/retry-otp', e);
+        DebugLogger.apiError('/people/auth/retry-otp', e);
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -154,9 +153,9 @@ class AuthService {
   Future<Map<String, dynamic>> cancelOtp(
       {required String email, required String token}) async {
     try {
-      DebugLogger.apiRequest('/auth/cancel-otp', {'email': email});
+      DebugLogger.apiRequest('/people/auth/cancel-otp', {'email': email});
       final response = await _dio.post(
-        '/auth/cancel-otp',
+        '/people/auth/cancel-otp',
         data: {
           'email': email,
         },
@@ -164,14 +163,14 @@ class AuthService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      DebugLogger.apiResponse('/auth/cancel-otp', response.data);
+      DebugLogger.apiResponse('/people/auth/cancel-otp', response.data);
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        DebugLogger.apiError('/auth/cancel-otp', e.response!.data);
+        DebugLogger.apiError('/people/auth/cancel-otp', e.response!.data);
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        DebugLogger.apiError('/auth/cancel-otp', e);
+        DebugLogger.apiError('/people/auth/cancel-otp', e);
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -186,7 +185,7 @@ class AuthService {
       await _firebaseServiceInstance.clearToken();
 
       final response = await _dio.post(
-        '/auth/logout',
+        '/people/auth/logout',
         data: {},
       );
       print('[LOGOUT RESPONSE] ' + response.data.toString());
@@ -214,7 +213,7 @@ class AuthService {
     try {
       print('[FORGOT PASSWORD REQUEST] email: ' + email);
       final response = await _dio.post(
-        '/auth/forgot-password',
+        '/people/auth/forgot-password',
         data: {
           'email': email,
         },
@@ -251,7 +250,7 @@ class AuthService {
       print(
           '[REGISTER REQUEST] name: $name, surname: $surname, email: $email, phone: +$phoneSuffix $phoneNumber');
       final response = await _dio.post(
-        '/auth/register',
+        '/people/auth/register',
         data: {
           'name': name,
           'surname': surname,
@@ -294,7 +293,7 @@ class AuthService {
           '[HOME REQUEST] Firebase Token: ${firebaseToken?.substring(0, 20)}...');
 
       final response = await _dio.post(
-        '/home',
+        '/people/home',
         data: {
           'firebase_token': firebaseToken ?? 'token',
         },
@@ -340,7 +339,7 @@ class AuthService {
     try {
       print('[SUBMIT NEW PASSWORD REQUEST]');
       final response = await _dio.post(
-        '/auth/submit-forgotten-password',
+        '/people/auth/submit-forgotten-password',
         data: {
           'new_password': newPassword,
           'password_again': confirmPassword,
@@ -368,13 +367,16 @@ class AuthService {
     required String token,
   }) async {
     try {
-      print('[RESEND OTP REQUEST] email: $email');
+      print(
+          '[RESEND OTP REQUEST] email: $email, token: ${token.substring(0, 20)}...');
       final response = await _dio.post(
-        '/auth/resend-otp',
+        '/people/auth/resend-otp',
         data: {
           'email': email,
-          'token': token,
         },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
       );
       print('[RESEND OTP RESPONSE] ${response.data}');
       return response.data;

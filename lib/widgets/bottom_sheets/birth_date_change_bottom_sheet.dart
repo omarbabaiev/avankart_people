@@ -28,7 +28,8 @@ class BirthDateChangeBottomSheet {
               const SizedBox(height: 10),
               Text(
                 'birth_date_change'.tr,
-                style: TextStyle(fontFamily: "Poppins", 
+                style: TextStyle(
+                  fontFamily: "Poppins",
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -96,7 +97,8 @@ class BirthDateChangeBottomSheet {
                                 )
                               : Text(
                                   'Dəyiş',
-                                  style: TextStyle(fontFamily: "Poppins", 
+                                  style: TextStyle(
+                                    fontFamily: "Poppins",
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
@@ -111,7 +113,8 @@ class BirthDateChangeBottomSheet {
                 onPressed: () => Get.back(),
                 child: Text(
                   'Ləğv et',
-                  style: TextStyle(fontFamily: "Poppins", 
+                  style: TextStyle(
+                    fontFamily: "Poppins",
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                     color: Theme.of(context).unselectedWidgetColor,
@@ -135,9 +138,9 @@ class BirthDateChangeBottomSheet {
       if (currentContext != null) {
         VerificationBottomSheet.show(
           currentContext,
-          title: 'Doğum tarixi doğrulaması',
+          title: 'otp'.tr,
           subtitle:
-              'Yeni doğum tarixinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -155,9 +158,9 @@ class BirthDateChangeBottomSheet {
     // Context geçerliyse normal şekilde devam et
     VerificationBottomSheet.show(
       context,
-      title: 'Doğum tarixi doğrulaması',
+      title: 'otp'.tr,
       subtitle:
-          'Yeni doğum tarixinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

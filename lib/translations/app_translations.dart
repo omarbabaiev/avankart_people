@@ -6,9 +6,56 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'az': {
+          'total_spending': 'Toplam xərcləmə',
+          'start_date': 'Başlama tarixi',
+          'end_date': 'Bitmə tarixi',
+          'categories': 'Kateqoriyalar',
+          'unknown': 'Bilinməyən',
+          'loading': 'Yüklənir...',
+          'left_date': 'Ayrılma tarixi:',
+          'membership_date': 'Üzv tarixi:',
+          'company_not_found': 'Şirkət tapılmadı !',
+          'you_have_not_been_a_member_of_any_company':
+              'Daha əvvəl heç bir şirkətə üzv olmadınız',
+          'become_a_member': 'Üzv ol',
+          'membership_not_found': 'Üzvlük tapılmadı',
+          'left': 'Ayrılıb',
+          'continue': 'Davam edir',
+          'membership_date': 'Üzv tarixi:',
+          'membership_list': 'Üzvlük',
+          'update_otp_sent': 'Doğrulama kodu göndərildi',
+          'password_change_otp_sent':
+              'Şifrə dəyişikliyi üçün doğrulama kodu göndərildi',
+          'email_change_success': 'E-poçt adresiniz uğurla dəyişdirildi',
+          'email_change_otp_sent': 'Doğrulama kodu göndərildi',
+          'delete_account_success': 'Profil uğurla silindi',
+          'delete_account_otp_sent':
+              'Profil silme için doğrulama kodu göndərildi',
+          'change_email_address': 'E-poçt adresini dəyiş',
+          'enter_email_address': 'Cari e-poçt adresinizi daxil edin',
+          'enter_new_email_address': 'Yeni e-poçt adresinizi daxil edin',
+          'new_email_address': 'Yeni e-poçt adresi',
+          'search_placeholder': 'Restoran, müəssisə..',
+          'name_surname': 'Ad Soyad',
+          'user_id': 'İstifadəçi ID',
+          'company': 'Üzv olduğu şirkət',
+          'membership': 'Üzvlük',
+          'cards': 'Kartlar',
+          'no_cards_found': 'Kart tapılmadı',
+          'no_cards_available_message':
+              'Hazırda heç bir kart mövcud deyil. Zəhmət olmasa yenidən yoxlayın.',
+          'refresh': 'Yenilə',
+          'security': 'Təhlükəsizlik',
+          'email_address': 'E-poçt adresi',
+          'password': 'Şifrə',
+          'reset_password': 'Şifrəni Sıfırla',
+          'freeze_account': 'Hesabı Dondur',
           'amount_must_be_greater_than_0': 'Məbləğ 0-dan böyük olmalıdır',
           "faq": "Tez-tez verilən suallar",
-          // Login Screen
+          'finger_print': 'Barmaq izi',
+          'pin_code': 'PIN kod',
+          'two_step_verification': '2 addımlı doğrulama',
+          'delete_account': 'Hesabı sil',
           'welcome_emoji': '👋',
           'welcome': 'Xoş gəlmisiniz!',
           'login_subtitle': 'Hesabınıza daxil olun və işlərinizə davam edin.',
@@ -673,8 +720,53 @@ class AppTranslations extends Translations {
           'welcome_greeting': 'Xoş Gəldin',
           'hotline': 'Qaynar xətt',
           'terms_of_use': 'İstifadə Qaydaları',
+
+          // Card Screen Translations
+          'card_activation_conditions': 'Kart aktivasiya şərtləri',
+          'card_usage_rules': 'Kart istifadə qaydaları',
+          'no_activation_conditions':
+              'Bu kart üçün xüsusi aktivasiya şərtləri yoxdur',
+          'no_usage_rules': 'Bu kart üçün xüsusi istifadə qaydaları yoxdur',
+          'accept_terms': 'Şərtləri oxudum və qəbul etdim',
+          'accept_rules': 'Qaydaları oxudum və qəbul etdim',
+          'activate_card': 'Kartı aktivləşdir',
+          'activate_card_confirmation':
+              'kartını aktivləşdirmək istədiyinizə əminsiniz?',
+          'yes_activate': 'Bəli, aktivləşdir',
+          'no': 'Xeyr',
+          'forward': 'İrəli',
+          'cancel': 'Ləğv et',
+          'select_deactivation_reasons':
+              'Kartı hansı səbəblərdən deaktiv etmək istədiyinizi seçin',
+          'no_reasons_available': 'Seçiləcək səbəb yox',
+          'confirm': 'Təsdiqlə',
+          'card_activation_request_sent': 'Kart aktivasiya sorğusu göndərildi',
+          'card_activation_request_failed':
+              'Kart aktivasiya sorğusu göndərilə bilmədi',
+          'card_deactivation_request_sent':
+              'Kart deaktivasiya sorğusu göndərildi',
+          'card_deactivation_request_failed':
+              'Kart deaktivasiya sorğusu göndərilə bilmədi',
+          'manage_active_cards': 'Aktiv kartları idarə et',
         },
         'en': {
+          'total_spending': 'Total spending',
+          'start_date': 'Start date',
+          'end_date': 'End date',
+          'categories': 'Categories',
+          'unknown': 'Unknown',
+          'loading': 'Loading...',
+          'left_date': 'Left date:',
+          'membership_date': 'Membership date:',
+          'company_not_found': 'Company not found!',
+          'you_have_not_been_a_member_of_any_company':
+              'You have not been a member of any company yet',
+          'become_a_member': 'Become a member',
+          'membership_not_found': 'Membership not found',
+          'left': 'Left',
+          'continue': 'Continue',
+          'membership_date': 'Membership date:',
+          'membership_list': 'Membership List',
           'amount_must_be_greater_than_0': 'Amount must be greater than 0',
           'faq': 'Frequently Asked Questions',
           'welcome_emoji': '👋',
@@ -696,6 +788,11 @@ class AppTranslations extends Translations {
           'password_empty': 'Please enter your password',
           'terms_of_use': 'Terms of Use',
           'contact_info': 'Contact information',
+          'cards': 'Cards',
+          'no_cards_found': 'No cards found',
+          'no_cards_available_message':
+              'No cards are currently available. Please try again.',
+          'refresh': 'Refresh',
           'new_account': 'New Account',
           'first_name': 'First name',
           'enter_first_name': 'Enter your first name',
@@ -1125,8 +1222,88 @@ class AppTranslations extends Translations {
           'qr.unknown_status': 'Unknown status value',
           'server.internal_error_bang': 'Internal server error!',
           'delete_request.not_found': 'No delete request found',
+
+          // Card Screen Translations
+          'card_activation_conditions': 'Card activation conditions',
+          'card_usage_rules': 'Card usage rules',
+          'no_activation_conditions':
+              'No specific activation conditions for this card',
+          'no_usage_rules': 'No specific usage rules for this card',
+          'accept_terms': 'I have read and accept the terms',
+          'accept_rules': 'I have read and accept the rules',
+          'activate_card': 'Activate card',
+          'activate_card_confirmation':
+              'Are you sure you want to activate the card?',
+          'yes_activate': 'Yes, activate',
+          'no': 'No',
+          'forward': 'Forward',
+          'cancel': 'Cancel',
+          'select_deactivation_reasons':
+              'Select the reasons why you want to deactivate the card',
+          'no_reasons_available': 'No reasons available to select',
+          'confirm': 'Confirm',
+          'card_activation_request_sent': 'Card activation request sent',
+          'card_activation_request_failed':
+              'Card activation request could not be sent',
+          'card_deactivation_request_sent': 'Card deactivation request sent',
+          'card_deactivation_request_failed':
+              'Card deactivation request could not be sent',
+          'manage_active_cards': 'Manage active cards',
+
+          // Query Screen Translations
+          'create_query': 'Create Query',
+          'query_category': 'Query Category',
+          'select_option': 'Select Option',
+          'problem_reason': 'Problem Reason',
+          'selections_made': 'selections made',
+          'subject': 'Subject',
+          'enter_your_name': 'Enter your name',
+          'your_problem': 'Your Problem',
+          'describe_problem': 'Describe the problem you are facing',
+          'add_image_or_file': 'Add image or file',
+          'send_query': 'Send Query',
+          'request_sent': 'Your request has been sent',
+          'problem_solution_message':
+              'A message regarding the solution to your problem will be sent to your email address as soon as possible',
+
+          // Query Categories
+          'general': 'General',
+          'account_problem': 'Account Problem',
+          'payment_problem': 'Payment Problem',
+
+          // Problem Reasons
+          'card_incorrectly_activated':
+              'Card incorrectly activated due to technical reasons',
+          'cannot_make_payment': 'Cannot make payment',
+          'qr_code_not_scanning': 'QR code not scanning',
+
+          // Search Screen
+          'search_history': 'Search History',
+          'restaurant': 'Restaurant',
+          'ozsut': 'Ozsut',
+          'borani_restaurant': 'Borani Restaurant',
+
+          // Location
+          'baku_azerbaijan': 'Baku, Azerbaijan',
         },
         'tr': {
+          'total_spending': 'Toplam xərcləmə',
+          'start_date': 'Başlama tarixi',
+          'end_date': 'Bitmə tarixi',
+          'categories': 'Kateqoriyalar',
+          'unknown': 'Bilinməyən',
+          'loading': 'Yüklənir...',
+          'left_date': 'Ayrılma tarixi:',
+          'membership_date': 'Üzv tarixi:',
+          'company_not_found': 'Şirkət tapılmadı !',
+          'you_have_not_been_a_member_of_any_company':
+              'Daha əvvəl heç bir şirkətə üzv olmadınız',
+          'become_a_member': 'Üzv ol',
+          'membership_not_found': 'Üzvlük tapılmadı',
+          'left': 'Ayrılıb',
+          'continue': 'Davam edir',
+          'membership_date': 'Üzv tarixi:',
+          'membership_list': 'Üzvlük',
           'amount_must_be_greater_than_0': "Tutar 0'dan büyük olmalı",
           'faq': 'Sıkça Sorulan Sorular',
           'welcome_emoji': '👋',
@@ -1148,6 +1325,11 @@ class AppTranslations extends Translations {
           'password_empty': 'Lütfen şifrenizi girin',
           'terms_of_use': 'Kullanım Koşulları',
           'contact_info': 'İletişim bilgileri',
+          'cards': 'Kartlar',
+          'no_cards_found': 'Kart bulunamadı',
+          'no_cards_available_message':
+              'Şu anda hiçbir kart mevcut değil. Lütfen tekrar deneyin.',
+          'refresh': 'Yenile',
           'new_account': 'Yeni Hesap',
           'first_name': 'Ad',
           'enter_first_name': 'Adınızı girin',
@@ -1578,8 +1760,89 @@ class AppTranslations extends Translations {
           'qr.unknown_status': 'Bilinmeyen durum değeri',
           'server.internal_error_bang': 'İç sunucu hatası!',
           'delete_request.not_found': 'Silme isteği bulunamadı',
+
+          // Card Screen Translations
+          'card_activation_conditions': 'Kart aktivasyon şartları',
+          'card_usage_rules': 'Kart kullanım kuralları',
+          'no_activation_conditions':
+              'Bu kart için özel aktivasyon şartları yoktur',
+          'no_usage_rules': 'Bu kart için özel kullanım kuralları yoktur',
+          'accept_terms': 'Şartları okudum ve kabul ettim',
+          'accept_rules': 'Kuralları okudum ve kabul ettim',
+          'activate_card': 'Kartı aktifleştir',
+          'activate_card_confirmation':
+              'kartını aktifleştirmek istediğinizden emin misiniz?',
+          'yes_activate': 'Evet, aktifleştir',
+          'no': 'Hayır',
+          'forward': 'İleri',
+          'cancel': 'İptal',
+          'select_deactivation_reasons':
+              'Kartı hangi sebeplerden deaktif etmek istediğinizi seçin',
+          'no_reasons_available': 'Seçilecek sebep yok',
+          'confirm': 'Onayla',
+          'card_activation_request_sent': 'Kart aktivasyon talebi gönderildi',
+          'card_activation_request_failed':
+              'Kart aktivasyon talebi gönderilemedi',
+          'card_deactivation_request_sent':
+              'Kart deaktivasyon talebi gönderildi',
+          'card_deactivation_request_failed':
+              'Kart deaktivasyon talebi gönderilemedi',
+          'manage_active_cards': 'Aktif kartları yönet',
+
+          // Query Screen Translations
+          'create_query': 'Sorgu Oluştur',
+          'query_category': 'Sorgu Kategorisi',
+          'select_option': 'Seçenek Seçin',
+          'problem_reason': 'Problem Nedeni',
+          'selections_made': 'seçim yapıldı',
+          'subject': 'Konu',
+          'enter_your_name': 'Adınızı girin',
+          'your_problem': 'Probleminiz',
+          'describe_problem': 'Karşılaştığınız problemi bize açıklayın',
+          'add_image_or_file': 'Resim veya dosya ekleyin',
+          'send_query': 'Sorgu Gönder',
+          'request_sent': 'Talebiniz gönderildi',
+          'problem_solution_message':
+              'En kısa sürede e-posta adresinize problemin çözümü ile ilgili mesaj gönderilecek',
+
+          // Query Categories
+          'general': 'Genel',
+          'account_problem': 'Hesap Problemi',
+          'payment_problem': 'Ödeme Problemi',
+
+          // Problem Reasons
+          'card_incorrectly_activated':
+              'Kart teknik sebeplerden yanlış aktifleştirildi',
+          'cannot_make_payment': 'Ödeme yapamıyorum',
+          'qr_code_not_scanning': 'QR kod taranmıyor',
+
+          // Search Screen
+          'search_history': 'Arama Geçmişi',
+          'restaurant': 'Restoran',
+          'ozsut': 'Özsüt',
+          'borani_restaurant': 'Borani Restaurant',
+
+          // Location
+          'baku_azerbaijan': 'Baku, Azerbaijan',
         },
         'ru': {
+          'total_spending': 'Общая сумма расходов',
+          'start_date': 'Дата начала',
+          'end_date': 'Дата окончания',
+          'categories': 'Категории',
+          'unknown': 'Неизвестно',
+          'loading': 'Загрузка...',
+          'left_date': 'Дата выхода:',
+          'membership_date': 'Дата членства:',
+          'company_not_found': 'Компания не найдена!',
+          'you_have_not_been_a_member_of_any_company':
+              'Вы еще не были членом ни одной компании',
+          'become_a_member': 'Стань членом',
+          'membership_not_found': 'Членство не найдено',
+          'left': 'Покинул',
+          'continue': 'Продолжить',
+          'membership_date': 'Дата членства:',
+          'membership_list': 'Членство',
           'amount_must_be_greater_than_0': 'Сумма должна быть больше 0',
           'faq': 'Часто задаваемые вопросы',
           'welcome_emoji': '👋',
@@ -1602,6 +1865,11 @@ class AppTranslations extends Translations {
           'password_empty': 'Пожалуйста, введите ваш пароль',
           'terms_of_use': 'Условия использования',
           'contact_info': 'Контактная информация',
+          'cards': 'Карты',
+          'no_cards_found': 'Карты не найдены',
+          'no_cards_available_message':
+              'В настоящее время карты недоступны. Пожалуйста, попробуйте снова.',
+          'refresh': 'Обновить',
           'new_account': 'Новый аккаунт',
           'first_name': 'Имя',
           'enter_first_name': 'Введите ваше имя',
@@ -2039,6 +2307,71 @@ class AppTranslations extends Translations {
           'qr.unknown_status': 'Неизвестное значение статуса',
           'server.internal_error_bang': 'Внутренняя ошибка сервера!',
           'delete_request.not_found': 'Запрос на удаление не найден',
+
+          // Card Screen Translations
+          'card_activation_conditions': 'Условия активации карты',
+          'card_usage_rules': 'Правила использования карты',
+          'no_activation_conditions':
+              'Нет специальных условий активации для этой карты',
+          'no_usage_rules':
+              'Нет специальных правил использования для этой карты',
+          'accept_terms': 'Я прочитал и принимаю условия',
+          'accept_rules': 'Я прочитал и принимаю правила',
+          'activate_card': 'Активировать карту',
+          'activate_card_confirmation':
+              'Вы уверены, что хотите активировать карту?',
+          'yes_activate': 'Да, активировать',
+          'no': 'Нет',
+          'forward': 'Вперед',
+          'cancel': 'Отмена',
+          'select_deactivation_reasons':
+              'Выберите причины, по которым вы хотите деактивировать карту',
+          'no_reasons_available': 'Нет доступных причин для выбора',
+          'confirm': 'Подтвердить',
+          'card_activation_request_sent': 'Запрос на активацию карты отправлен',
+          'card_activation_request_failed':
+              'Запрос на активацию карты не может быть отправлен',
+          'card_deactivation_request_sent':
+              'Запрос на деактивацию карты отправлен',
+          'card_deactivation_request_failed':
+              'Запрос на деактивацию карты не может быть отправлен',
+          'manage_active_cards': 'Управление активными картами',
+
+          // Query Screen Translations
+          'create_query': 'Создать запрос',
+          'query_category': 'Категория запроса',
+          'select_option': 'Выберите опцию',
+          'problem_reason': 'Причина проблемы',
+          'selections_made': 'выборов сделано',
+          'subject': 'Тема',
+          'enter_your_name': 'Введите ваше имя',
+          'your_problem': 'Ваша проблема',
+          'describe_problem': 'Опишите проблему, с которой вы столкнулись',
+          'add_image_or_file': 'Добавить изображение или файл',
+          'send_query': 'Отправить запрос',
+          'request_sent': 'Ваш запрос отправлен',
+          'problem_solution_message':
+              'В ближайшее время на ваш адрес электронной почты будет отправлено сообщение о решении вашей проблемы',
+
+          // Query Categories
+          'general': 'Общий',
+          'account_problem': 'Проблема с аккаунтом',
+          'payment_problem': 'Проблема с оплатой',
+
+          // Problem Reasons
+          'card_incorrectly_activated':
+              'Карта неправильно активирована по техническим причинам',
+          'cannot_make_payment': 'Не могу произвести оплату',
+          'qr_code_not_scanning': 'QR код не сканируется',
+
+          // Search Screen
+          'search_history': 'История поиска',
+          'restaurant': 'Ресторан',
+          'ozsut': 'Озсут',
+          'borani_restaurant': 'Ресторан Борани',
+
+          // Location
+          'baku_azerbaijan': 'Баку, Азербайджан',
         },
       };
 }

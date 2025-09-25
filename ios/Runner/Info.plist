@@ -49,5 +49,38 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Bu uygulama harita özelliklerini kullanabilmek için konumunuza erişim istiyor.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Bu uygulama harita özelliklerini kullanabilmek için konumunuza erişim istiyor.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Bu uygulama harita özelliklerini kullanabilmek için konumunuza erişim istiyor.</string>
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
+		<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+		<dict>
+			<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+			<string>Bu uygulama harita özelliklerini kullanabilmek için konumunuza erişim istiyor.</string>
+		</dict>
+		<key>GMSApiKey</key>
+		<string>AIzaSyAb9a_LNBjwrJDPvf09azKB4dWI3X1eIYM</string>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>This app needs access to local network for debugging purposes</string>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_dartobservatory._tcp</string>
+		</array>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsLocalNetworking</key>
+			<true/>
+		</dict>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>remote-notification</string>
+		</array>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
 	</dict>
 </plist>

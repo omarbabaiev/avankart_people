@@ -49,7 +49,7 @@ class ProfileSection extends StatelessWidget {
           radius: 30,
           child: Center(
             child: Text(
-              _getInitial(user?.fullName ?? ''),
+              _getInitial(user?.name ?? ''),
               style: TextStyle(
                 fontFamily: 'Poppins',
                 color: Theme.of(context).primaryColor,
@@ -60,7 +60,7 @@ class ProfileSection extends StatelessWidget {
           ),
         ),
         title: Text(
-          user?.fullName ?? 'user_name'.tr,
+          '${user?.name} ${user?.surname}' ?? 'undefined'.tr,
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 17,
@@ -115,7 +115,7 @@ class ProfileSection extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          user?.muessiseName ?? 'Üzvlük yoxdur',
+          user?.companyInfo?.companyName ?? 'undefined'.tr,
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 10,

@@ -19,6 +19,20 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
   final Map<String, bool> _switchStates = {};
   List<Map<String, dynamic>> _cards = [];
 
+  // Const icon data definitions
+  static const Map<String, IconData> _iconMap = {
+    "0xe56c": IconData(0xe56c, fontFamily: 'MaterialIcons'),
+    "0xe546": IconData(0xe546, fontFamily: 'MaterialIcons'),
+    "0xe8cc": IconData(0xe8cc, fontFamily: 'MaterialIcons'),
+    "0xe40f": IconData(0xe40f, fontFamily: 'MaterialIcons'),
+    "0xe539": IconData(0xe539, fontFamily: 'MaterialIcons'),
+    "0xe80c": IconData(0xe80c, fontFamily: 'MaterialIcons'),
+    "0xe3e5": IconData(0xe3e5, fontFamily: 'MaterialIcons'),
+    "0xf582": IconData(0xf582, fontFamily: 'MaterialIcons'),
+    "0xe1bc": IconData(0xe1bc, fontFamily: 'MaterialIcons'),
+    "0xe89f": IconData(0xe89f, fontFamily: 'MaterialIcons'),
+  };
+
   @override
   void initState() {
     super.initState();
@@ -131,7 +145,7 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                   Text(
                     "cards".tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -140,7 +154,7 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                   Text(
                     "using_cards".tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).unselectedWidgetColor,
@@ -173,10 +187,7 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                   key: ValueKey('card_$index'),
                   title: card['title'],
                   subtitle: card['subtitle'],
-                  icon: IconData(
-                    int.parse(card['icon']),
-                    fontFamily: 'MaterialIcons',
-                  ),
+                  icon: _iconMap[card['icon']]!,
                   color: Color(int.parse(card['color'].toString())),
                   value: _switchStates[card['title']] ?? false,
                   onChanged: (value) => _onSwitchChanged(card['title'], value),
@@ -240,7 +251,7 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                 "selected_cards_activate".tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -253,7 +264,7 @@ class _InitialCardScreenState extends State<InitialCardScreen> {
                   "selected_cards_activate_info".tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-    fontFamily: 'Poppins',
+                    fontFamily: 'Poppins',
                     fontSize: 15,
                     color: Theme.of(context).unselectedWidgetColor,
                   ),

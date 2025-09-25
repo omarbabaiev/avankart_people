@@ -1,172 +1,178 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import '../services/membership_service.dart';
+import '../models/membership_models.dart';
+import '../utils/debug_logger.dart';
+import '../utils/snackbar_utils.dart';
+import '../services/auth_service.dart';
+import '../utils/auth_utils.dart';
+import '../utils/api_response_parser.dart';
 
 class MembershipController extends GetxController {
-  final RxList<Map<String, dynamic>> memberships = <Map<String, dynamic>>[].obs;
-  final RxBool isLoading = false.obs;
+  final MembershipService _membershipService = MembershipService();
+  final AuthService _authService = AuthService();
 
-  // Kategori detayları için Map
-  final Rx<Map<String, dynamic>> selectedMembershipDetails =
-      Rx<Map<String, dynamic>>({});
+  // Observable variables
+  final RxList<Membership> _memberships = <Membership>[].obs;
+  final RxBool _isLoading = false.obs;
+  final RxString _errorMessage = ''.obs;
+
+  // Selected membership details
+  final Rx<MembershipDetail?> _selectedMembershipDetail =
+      Rx<MembershipDetail?>(null);
+  final RxBool _isLoadingDetails = false.obs;
+
+  // Pagination variables
+  final RxInt _currentPage = 1.obs;
+  final RxInt _totalPages = 1.obs;
+  final RxInt _totalMemberships = 0.obs;
+  final RxBool _hasMoreMemberships = true.obs;
+
+  // Getters
+  List<Membership> get memberships => _memberships;
+  bool get isLoading => _isLoading.value;
+  String get errorMessage => _errorMessage.value;
+  MembershipDetail? get selectedMembershipDetail =>
+      _selectedMembershipDetail.value;
+  bool get isLoadingDetails => _isLoadingDetails.value;
+  int get currentPage => _currentPage.value;
+  int get totalPages => _totalPages.value;
+  int get totalMemberships => _totalMemberships.value;
+  bool get hasMoreMemberships => _hasMoreMemberships.value;
 
   @override
   void onInit() {
     super.onInit();
-    fetchMemberships();
+    DebugLogger.debug(
+        LogCategory.controller, 'MembershipController initialized');
   }
 
-  // API'dan üyelik bilgilerini çekmek (şimdilik mock veri)
-  Future<void> fetchMemberships() async {
-    isLoading.value = true;
-
+  /// Load user's memberships with pagination
+  Future<void> fetchMemberships({
+    int page = 1,
+    bool refresh = false,
+  }) async {
     try {
-      // Burada gerçek API çağrısı yapılabilir
-      // Şimdilik mock veri kullanıyoruz
-      await Future.delayed(
-          Duration(milliseconds: 800)); // API gecikmesi simülasyonu
+      if (refresh) {
+        _currentPage.value = 1;
+        _memberships.clear();
+        _hasMoreMemberships.value = true;
+      }
 
-      // API'dan alınacak JSON formatında veri örneği
-      memberships.value = [
-        {
-          'id': '1',
-          'name': 'Veysəloğlu MMC',
-          'imageLink':
-              'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-          'startDate': '14.08.2024',
-          'endDate': null,
-          'isEnd': false,
-          'totalSpending': 3235.00,
-          'categories': [
-            {
-              'id': '1',
-              'name': 'Yemək',
-              'colorHex': 0xFFFFD700,
-              'iconPath': 'assets/icons/food.png',
-              'spending': 100.0,
-            },
-            {
-              'id': '2',
-              'name': 'Market',
-              'colorHex': 0xFF00FF62,
-              'iconPath': 'assets/icons/market.png',
-              'spending': 2000.0,
-            },
-            {
-              'id': '3',
-              'name': 'Texnika',
-              'colorHex': 0xFFFF00D0,
-              'iconPath': 'assets/icons/tech.png',
-              'spending': 400.0,
-            },
-            {
-              'id': '4',
-              'name': 'Digər',
-              'colorHex': 0xFFFF2600,
-              'iconPath': 'assets/icons/other.png',
-              'spending': 72.0,
-            },
-          ]
-        },
-        {
-          'id': '2',
-          'name': 'Azersun Holding',
-          'imageLink':
-              'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-          'startDate': '05.03.2023',
-          'endDate': '01.06.2024',
-          'isEnd': true,
-          'totalSpending': 1500.00,
-          'categories': [
-            {
-              'id': '1',
-              'name': 'Yemək',
-              'colorHex': 0xFFFFD700,
-              'iconPath': 'assets/icons/food.png',
-              'spending': 500.0,
-            },
-            {
-              'id': '2',
-              'name': 'Market',
-              'colorHex': 0xFF00FF62,
-              'iconPath': 'assets/icons/market.png',
-              'spending': 750.0,
-            },
-            {
-              'id': '3',
-              'name': 'Texnika',
-              'colorHex': 0xFFFF00D0,
-              'iconPath': 'assets/icons/tech.png',
-              'spending': 250.0,
-            },
-          ]
-        },
-        {
-          'id': '3',
-          'name': 'Bakı Tekstil Fabriki',
-          'imageLink':
-              'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-          'startDate': '10.01.2022',
-          'endDate': '10.01.2024',
-          'isEnd': true,
-          'totalSpending': 2750.00,
-          'categories': [
-            {
-              'id': '1',
-              'name': 'Yemək',
-              'colorHex': 0xFFFFD700,
-              'iconPath': 'assets/icons/food.png',
-              'spending': 650.0,
-            },
-            {
-              'id': '2',
-              'name': 'Texnika',
-              'colorHex': 0xFFFF00D0,
-              'iconPath': 'assets/icons/tech.png',
-              'spending': 2100.0,
-            },
-          ]
-        },
-        {
-          'id': '4',
-          'name': 'Bakı Ağ Şəhər',
-          'imageLink':
-              'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-          'startDate': '22.05.2024',
-          'endDate': null,
-          'isEnd': false,
-          'totalSpending': 800.00,
-          'categories': [
-            {
-              'id': '1',
-              'name': 'Yemək',
-              'colorHex': 0xFFFFD700,
-              'iconPath': 'assets/icons/food.png',
-              'spending': 300.0,
-            },
-            {
-              'id': '2',
-              'name': 'Market',
-              'colorHex': 0xFF00FF62,
-              'iconPath': 'assets/icons/market.png',
-              'spending': 500.0,
-            },
-          ]
+      if (!_hasMoreMemberships.value) return;
+
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      DebugLogger.debug(
+          LogCategory.controller, 'Loading memberships, page: $page');
+
+      final response = await _membershipService.getMyMemberships(
+        page: page,
+        limit: 20,
+      );
+
+      // Eğer null döndüyse (token geçersiz veya logout gerekli), logout yap
+      if (response == null) {
+        DebugLogger.debug(
+            LogCategory.controller, 'Token invalid or logout required');
+        await AuthUtils.logout();
+        return;
+      }
+
+      if (response.success) {
+        final newMemberships = response.memberships;
+
+        if (refresh) {
+          _memberships.value = newMemberships;
+        } else {
+          _memberships.addAll(newMemberships);
         }
-      ];
-    } catch (error) {
-      print('Error fetching memberships: $error');
+
+        _currentPage.value = page;
+        _hasMoreMemberships.value =
+            newMemberships.length >= 20; // Limit kadar veri varsa devam eder
+
+        DebugLogger.debug(LogCategory.controller,
+            'Memberships loaded: ${_memberships.length} memberships, page: $page');
+      } else {
+        _errorMessage.value = response.message ?? 'Failed to load memberships';
+        DebugLogger.error(LogCategory.controller,
+            'Failed to load memberships: ${response.message}');
+      }
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      _errorMessage.value = errorMessage;
+      DebugLogger.error(LogCategory.controller, 'Error loading memberships',
+          error: e);
     } finally {
-      isLoading.value = false;
+      _isLoading.value = false;
     }
   }
 
-  // Üyelik detaylarını getir
-  Map<String, dynamic>? getMembershipDetails(String id) {
-    return memberships.firstWhereOrNull((membership) => membership['id'] == id);
+  /// Load membership details by company ID
+  Future<void> fetchMembershipDetails({
+    required String sirketId,
+  }) async {
+    try {
+      _isLoadingDetails.value = true;
+      _errorMessage.value = '';
+
+      DebugLogger.debug(LogCategory.controller,
+          'Loading membership details for sirket: $sirketId');
+
+      final response = await _membershipService.getMembershipDetails(
+        sirketId: sirketId,
+      );
+
+      // Eğer null döndüyse (token geçersiz veya logout gerekli), logout yap
+      if (response == null) {
+        DebugLogger.debug(
+            LogCategory.controller, 'Token invalid or logout required');
+        await AuthUtils.logout();
+        return;
+      }
+
+      if (response.success) {
+        _selectedMembershipDetail.value = response.membershipDetail;
+        DebugLogger.debug(LogCategory.controller,
+            'Membership details loaded for sirket: $sirketId');
+      } else {
+        _errorMessage.value =
+            response.message ?? 'Failed to load membership details';
+        DebugLogger.error(LogCategory.controller,
+            'Failed to load membership details: ${response.message}');
+      }
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      _errorMessage.value = errorMessage;
+      DebugLogger.error(
+          LogCategory.controller, 'Error loading membership details',
+          error: e);
+    } finally {
+      _isLoadingDetails.value = false;
+    }
   }
 
-  // Belirli bir üyeliğin detaylarını ayarla
-  void setSelectedMembership(Map<String, dynamic> membership) {
-    selectedMembershipDetails.value = membership;
+  /// Refresh all data
+  Future<void> refreshData() async {
+    DebugLogger.debug(LogCategory.controller, 'Refreshing membership data...');
+    await Future.wait([
+      fetchMemberships(refresh: true),
+    ]);
+  }
+
+  /// Clear selected membership details
+  void clearSelectedMembershipDetails() {
+    _selectedMembershipDetail.value = null;
+  }
+
+  /// Get membership by ID
+  Membership? getMembershipById(String id) {
+    try {
+      return _memberships.firstWhere((membership) => membership.id == id);
+    } catch (e) {
+      return null;
+    }
   }
 }

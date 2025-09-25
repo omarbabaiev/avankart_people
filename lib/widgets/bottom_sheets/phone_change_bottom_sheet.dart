@@ -256,8 +256,9 @@ class PhoneChangeBottomSheet {
       if (currentContext != null) {
         VerificationBottomSheet.show(
           currentContext,
-          title: 'phone_verification'.tr,
-          subtitle: 'phone_verification_subtitle'.tr,
+          title: 'otp'.tr,
+          subtitle:
+              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -275,8 +276,9 @@ class PhoneChangeBottomSheet {
     // Context geçerliyse normal şekilde devam et
     VerificationBottomSheet.show(
       context,
-      title: 'phone_verification'.tr,
-      subtitle: 'phone_verification_subtitle'.tr,
+      title: 'otp'.tr,
+      subtitle:
+          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

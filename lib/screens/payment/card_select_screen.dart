@@ -1,123 +1,49 @@
-import 'dart:convert';
-import 'package:avankart_people/screens/main/main_screen.dart';
-import 'package:avankart_people/utils/bottom_sheet_extension.dart';
+import 'package:avankart_people/controllers/card_manage_controller.dart';
 import 'package:avankart_people/widgets/card_tile_widget.dart';
-import 'package:flutter/services.dart';
+import 'package:avankart_people/models/card_models.dart';
 import 'package:avankart_people/utils/app_theme.dart';
+import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'dart:io';
 
-class CardSelectScreen extends StatefulWidget {
-  const CardSelectScreen({super.key});
+class CardSelectScreen extends StatelessWidget {
+  final cardManagerController = Get.put(CardManageController());
 
-  @override
-  State<CardSelectScreen> createState() => _CardSelectScreenState();
-}
+  CardSelectScreen({Key? key}) : super(key: key) {
+    // Controller'ı initialize et
 
-class _CardSelectScreenState extends State<CardSelectScreen> {
-  final Map<String, bool> _switchStates = {};
-  List<Map<String, dynamic>> _cards = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCards();
+    // Sadece ilk kez açıldığında kart verilerini yükle
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Eğer kart data yoksa yükle
+      if (cardManagerController.allCards.isEmpty) {
+        cardManagerController.loadAllCards(refresh: true);
+      }
+    });
   }
 
-  // Switch durumlarını kontrol eden fonksiyon
-  bool get _isAnyCardSelected => _switchStates.values.any((value) => value);
+  // Get card icon based on icon name - now returns the icon name string directly
+  String _getCardIcon(String iconName) {
+    return iconName; // Return the icon name directly for dynamic URL usage
+  }
 
-  void _loadCards() {
-    _cards = [
-      {
-        "title": "Yemək kartı",
-        "subtitle":
-            "Yemək kartı, sizlərin restoran və kafelərdə rahat və sürətli ödəniş etməniz üçündür.",
-        "icon": "0xe56c",
-        "color": "0xffFFBC0D",
-        "status": "waiting",
-      },
-      {
-        "title": "Yanacaq kartı",
-        "subtitle":
-            "Yanacaq kartı ilə yanacaq doldurma məntəqələrində rahat və endirimli ödəniş edin.",
-        "icon": "0xe546",
-        "color": "0xff32B5AC",
-        "status": "waiting",
-      },
-      {
-        "title": "Market kartı",
-        "subtitle":
-            "Market kartı gündəlik alış-verişlər üçün sürətli və təhlükəsiz ödəniş imkanı verir.",
-        "icon": "0xe8cc",
-        "color": "0xff4CAF50",
-        "status": "waiting",
-      },
-      {
-        "title": "Əyləncə kartı",
-        "subtitle": "Kinoteatr və əyləncə mərkəzlərində istifadə edilə bilər.",
-        "icon": "0xe40f",
-        "color": "0xff9C27B0",
-        "status": "waiting",
-      },
-      {
-        "title": "Səyahət kartı",
-        "subtitle":
-            "Səyahət zamanı otel və nəqliyyat üçün endirim imkanı təqdim edir.",
-        "icon": "0xe539",
-        "color": "0xff03A9F4",
-        "status": "waiting",
-      },
-      {
-        "title": "Təhsil kartı",
-        "subtitle":
-            "Kitab, kurs və təhsil platformalarında endirimli ödənişlər üçün.",
-        "icon": "0xe80c",
-        "color": "0xff00A3FF",
-        "status": "waiting",
-      },
-      {
-        "title": "Sağlamlıq kartı",
-        "subtitle":
-            "Aptek və klinikalarda ödəniş zamanı istifadə üçün nəzərdə tutulub.",
-        "icon": "0xe3e5",
-        "color": "0xffE91E63",
-        "status": "canceled",
-      },
-      {
-        "title": "Geyim kartı",
-        "subtitle": "Geyim mağazalarında endirimli alış-veriş üçün.",
-        "icon": "0xf582",
-        "color": "0xff795548",
-        "status": "none",
-      },
-      {
-        "title": "Mobil və İnternet kartı",
-        "subtitle": "Mobil və internet xidmətlərinin ödənişini asanlaşdırır.",
-        "icon": "0xe1bc",
-        "color": "0xff607D8B",
-        "status": "none",
-      },
-      {
-        "title": "Xeyriyyə kartı",
-        "subtitle":
-            "Xeyriyyə fondlarına asan dəstək vermək imkanı təqdim edir.",
-        "icon": "0xe89f",
-        "color": "0xff8BC34A",
-        "status": "none",
-      },
-    ];
-
-    // Her kart için başlangıç switch durumunu false olarak ayarla
-    for (var card in _cards) {
-      _switchStates[card['title']] = false;
+  // Parse hex color string to Color
+  Color _parseHexColor(String hexColor) {
+    try {
+      // Remove # if present
+      String hex = hexColor.startsWith('#') ? hexColor.substring(1) : hexColor;
+      return Color(int.parse('FF$hex', radix: 16));
+    } catch (e) {
+      return AppTheme.primaryColor; // Default green color
     }
   }
 
-  void _onSwitchChanged(String title, bool value) {
-    setState(() {
-      _switchStates[title] = value;
-    });
+  // Handle card selection
+  void _onCardSelectionChanged(String cardId, bool value) {
+    final cardController = Get.find<CardManageController>();
+    cardController.toggleCardSelection(cardId);
   }
 
   @override
@@ -131,7 +57,7 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
             Get.back();
           },
         ),
-        toolbarHeight: 80,
+        toolbarHeight: 68,
         centerTitle: false,
         title: Text(
           "cards".tr,
@@ -143,9 +69,10 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(30),
+          preferredSize: Size.fromHeight(20),
           child: Container(
             color: Theme.of(context).colorScheme.secondary,
+            alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Text(
@@ -162,28 +89,181 @@ class _CardSelectScreenState extends State<CardSelectScreen> {
           ),
         ),
       ),
-      body: _cards.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: _cards.length,
-              itemBuilder: (context, index) {
-                final card = _cards[index];
-                return CardTileWidget(
-                  key: ValueKey('card_$index'),
-                  title: card['title'],
-                  subtitle: card['subtitle'],
-                  icon: IconData(
-                    int.parse(card['icon']),
-                    fontFamily: 'MaterialIcons',
+      body: Obx(() {
+        final cards = cardManagerController.allCards;
+        final isLoading = cardManagerController.isLoadingAllCards;
+
+        // Loading false ve cards empty true ise empty state göster
+        if (!isLoading && cards.isEmpty) {
+          return _buildEmptyState(context);
+        }
+
+        return Skeletonizer(
+          enabled: isLoading || cards.isEmpty,
+          enableSwitchAnimation: true,
+          child: Platform.isIOS
+              ? CustomScrollView(
+                  slivers: [
+                    CupertinoSliverRefreshControl(
+                      onRefresh: () async {
+                        await cardManagerController.loadAllCards(refresh: true);
+                      },
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          if (cards.isEmpty) {
+                            return _buildSkeletonCard(context);
+                          }
+
+                          final card = cards[index];
+
+                          // Print log for each card
+                          debugPrint('📱 Kart Yüklendi:');
+                          debugPrint('   İsim: ${card.name}');
+                          debugPrint('   isActive: ${card.isActive}');
+                          debugPrint('   Status: ${card.currentStatus}');
+                          debugPrint('   ID: ${card.id}');
+                          debugPrint('   ---');
+
+                          return CardTileWidget(
+                            key: ValueKey('card_${card.id}'),
+                            title: card.name,
+                            subtitle: card.description ?? card.name,
+                            icon: _getCardIcon(card.icon),
+                            color: _parseHexColor(card.backgroundColor),
+                            value:
+                                cardManagerController.selectedCards[card.id] ??
+                                    false,
+                            status: card.currentStatus,
+                            isActive: card.isActive,
+                            conditions: card.conditions,
+                            cardId: card.id,
+                            onChanged: (value) =>
+                                _onCardSelectionChanged(card.id, value),
+                          );
+                        },
+                        childCount: cards.isEmpty ? 12 : cards.length,
+                      ),
+                    ),
+                  ],
+                )
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    await cardManagerController.loadAllCards(refresh: true);
+                  },
+                  child: ListView.builder(
+                    itemCount: cards.isEmpty ? 12 : cards.length,
+                    itemBuilder: (context, index) {
+                      if (cards.isEmpty) {
+                        return _buildSkeletonCard(context);
+                      }
+
+                      final card = cards[index];
+
+                      // Print log for each card
+                      debugPrint('📱 Kart Yüklendi:');
+                      debugPrint('   İsim: ${card.name}');
+                      debugPrint('   isActive: ${card.isActive}');
+                      debugPrint('   Status: ${card.currentStatus}');
+                      debugPrint('   ID: ${card.id}');
+                      debugPrint('   ---');
+
+                      return CardTileWidget(
+                        key: ValueKey('card_${card.id}'),
+                        title: card.name,
+                        subtitle: card.description ?? card.name,
+                        icon: _getCardIcon(card.icon),
+                        color: _parseHexColor(card.backgroundColor),
+                        value: cardManagerController.selectedCards[card.id] ??
+                            false,
+                        status: card.currentStatus,
+                        isActive: card.isActive,
+                        conditions: card.conditions,
+                        cardId: card.id,
+                        onChanged: (value) =>
+                            _onCardSelectionChanged(card.id, value),
+                      );
+                    },
                   ),
-                  color: Color(int.parse(card['color'].toString())),
-                  value: _switchStates[card['title']] ?? false,
-                  status: card['status'],
-                  onChanged: (value) => _onSwitchChanged(card['title'], value),
-                );
-              },
+                ),
+        );
+      }),
+    );
+  }
+
+  // Build empty state widget
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              ImageAssets.cardholder,
+              width: 80,
+              height: 80,
+              color: Theme.of(context).unselectedWidgetColor,
             ),
+            const SizedBox(height: 16),
+            Text(
+              'no_cards_found'.tr,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'no_cards_available_message'.tr,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                color: Theme.of(context).unselectedWidgetColor,
+              ),
+            ),
+            const SizedBox(height: 24),
+            CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              color: AppTheme.primaryColor,
+              borderRadius: BorderRadius.circular(8),
+              onPressed: () async {
+                await cardManagerController.loadAllCards(refresh: true);
+              },
+              child: Text(
+                'refresh'.tr,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build skeleton card widget
+  Widget _buildSkeletonCard(BuildContext context) {
+    return CardTileWidget(
+      key: const Key('skeleton_card'),
+      title: 'card_name',
+      subtitle: 'card_description',
+      icon: _getCardIcon('card_icon'),
+      color: _parseHexColor('card_background_color'),
+      value: false,
+      status: 'card_status',
+      isActive: false,
+      conditions: const <CardCondition>[],
+      cardId: 'skeleton_card_id',
+      onChanged: (value) => _onCardSelectionChanged('card_id', value),
     );
   }
 }

@@ -41,7 +41,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Hero(
-                tag: 'search_company',
+                tag: Get.arguments?['heroTag'] ?? 'search_company',
                 child: Container(
                   color: Theme.of(context).colorScheme.onPrimary,
                   child: Padding(
@@ -88,7 +88,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                       },
                                       decoration: InputDecoration(
                                         hintStyle: TextStyle(
-    fontFamily: 'Poppins',
+                                          fontFamily: 'Poppins',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 14,
                                           color: Theme.of(context)
@@ -97,7 +97,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                               ?.withOpacity(.8),
                                         ),
                                         fillColor: Colors.transparent,
-                                        hintText: 'Restoran, müəssisə...',
+                                        hintText: 'search_placeholder'.tr,
                                         border: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -105,7 +105,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                         focusedErrorBorder: InputBorder.none,
                                       ),
                                       style: TextStyle(
-    fontFamily: 'Poppins',
+                                        fontFamily: 'Poppins',
                                         fontWeight: FontWeight.w500,
                                         color: Theme.of(context)
                                             .bottomNavigationBarTheme
@@ -126,9 +126,9 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                             Get.back();
                           },
                           child: Text(
-                            'Ləğv et',
+                            'cancel'.tr,
                             style: TextStyle(
-    fontFamily: 'Poppins',
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w500,
                               fontSize: 13,
                               color: Theme.of(context).unselectedWidgetColor,
@@ -162,9 +162,9 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Axtarış keçmişi',
+                      child: Text('search_history'.tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
                             color: Theme.of(context).unselectedWidgetColor,
@@ -173,9 +173,9 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                     SizedBox(height: 6),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text('Restoran',
+                      title: Text('restaurant'.tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -186,15 +186,15 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                         size: 24,
                       ),
                       onTap: () {
-                        _searchController.text = 'Restoran';
+                        _searchController.text = 'restaurant'.tr;
                         _searchFocusNode.requestFocus();
                       },
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text('Özsüt',
+                      title: Text('ozsut'.tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -205,15 +205,15 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                         size: 24,
                       ),
                       onTap: () {
-                        _searchController.text = 'Özsüt';
+                        _searchController.text = 'ozsut'.tr;
                         _searchFocusNode.requestFocus();
                       },
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text('Borani Restoraunt',
+                      title: Text('borani_restaurant'.tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -224,7 +224,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                         size: 24,
                       ),
                       onTap: () {
-                        _searchController.text = 'Borani Restoraunt';
+                        _searchController.text = 'borani_restaurant'.tr;
                         _searchFocusNode.requestFocus();
                       },
                     ),

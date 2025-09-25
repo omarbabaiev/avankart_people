@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../routes/app_routes.dart';
 import '../services/auth_service.dart';
 import '../utils/api_response_parser.dart';
+import '../utils/secure_storage_config.dart';
 import 'login_controller.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -35,8 +36,14 @@ class SplashController extends GetxController {
 
   Future<void> _checkAuth() async {
     try {
+      // Debug: Tüm key'leri kontrol et
+      await _debugAllKeys();
+
       final token = await _storage.read(key: 'token');
       final rememberMe = await _storage.read(key: 'rememberMe');
+
+      print('[SPLASH] Token check - token: ${token?.substring(0, 20)}...');
+      print('[SPLASH] Remember me: $rememberMe');
 
       await Future.delayed(
           const Duration(seconds: 2)); // Lottie animasyonu için bekleme
@@ -53,9 +60,9 @@ class SplashController extends GetxController {
             Get.offAllNamed(AppRoutes.main);
           } else {
             print('[SPLASH] Home failed, navigating to login');
-            // Token geçersiz, temizle ve login'e git
-            await _storage.delete(key: 'token');
-            await _storage.delete(key: 'rememberMe');
+            // Token geçersiz, tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
+            await _storage.deleteAll();
+            print('[SPLASH] All storage cleared');
             _clearPasswordField();
             Get.offAllNamed(AppRoutes.login);
           }
@@ -83,7 +90,9 @@ class SplashController extends GetxController {
         // Retry butonu göster, login'e gitme
       } else {
         print('[SPLASH] Non-retryable error, navigating to login');
-        // Hata durumunda login'e git
+        // Hata durumunda tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
+        await _storage.deleteAll();
+        print('[SPLASH] All storage cleared due to error');
         _clearPasswordField();
         Get.offAllNamed(AppRoutes.login);
       }
@@ -136,6 +145,34 @@ class SplashController extends GetxController {
   void _clearPasswordField() {
     if (Get.isRegistered<LoginController>()) {
       Get.find<LoginController>().passwordController.clear();
+    }
+  }
+
+  /// Debug: Tüm storage key'lerini kontrol et
+  Future<void> _debugAllKeys() async {
+    try {
+      final allKeys = await _storage.readAll();
+      print('[SPLASH DEBUG] All stored keys: ${allKeys.keys.toList()}');
+
+      // Token key'lerini ayrı ayrı kontrol et
+      final token1 = await _storage.read(key: 'token');
+      final token2 = await _storage.read(key: SecureStorageConfig.tokenKey);
+      final rememberMe1 = await _storage.read(key: 'rememberMe');
+      final rememberMe2 =
+          await _storage.read(key: SecureStorageConfig.rememberMeKey);
+
+      print('[SPLASH DEBUG] token key: ${token1?.substring(0, 20)}...');
+      print('[SPLASH DEBUG] auth_token key: ${token2?.substring(0, 20)}...');
+      print('[SPLASH DEBUG] rememberMe key: $rememberMe1');
+      print('[SPLASH DEBUG] remember_me key: $rememberMe2');
+
+      // Eğer readAll() boş ama read() token buluyorsa, bu Flutter Secure Storage bug'ı
+      if (allKeys.isEmpty && token1 != null) {
+        print(
+            '[SPLASH DEBUG] ⚠️ Flutter Secure Storage bug detected! readAll() empty but read() finds token');
+      }
+    } catch (e) {
+      print('[SPLASH DEBUG] Error reading keys: $e');
     }
   }
 }

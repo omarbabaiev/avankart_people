@@ -1,17 +1,22 @@
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
+import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/models/card_models.dart';
+import 'package:avankart_people/controllers/card_manage_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_rx/get_rx.dart';
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 
 class CardTileWidget extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
+  final String icon;
   final Color color;
   final String status;
   final bool value;
+  final bool isActive;
+  final List<CardCondition> conditions;
+  final String cardId;
   final ValueChanged<bool> onChanged;
 
   const CardTileWidget({
@@ -22,18 +27,21 @@ class CardTileWidget extends StatelessWidget {
     required this.color,
     required this.status,
     required this.value,
+    this.isActive = false,
+    this.conditions = const <CardCondition>[],
+    required this.cardId,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: value
+      onTap: isActive
           ? () => _cardDeactivateDetailBottomSheet(
                 context,
                 title,
                 subtitle,
-                icon.toString(),
+                icon,
                 color.toString(),
               ) // Kart aktifse, deaktif sebeplerini sor
           : () => _cardActiveDetailBottomSheet(
@@ -41,7 +49,7 @@ class CardTileWidget extends StatelessWidget {
                 context,
                 title,
                 subtitle,
-                icon.toString(),
+                icon,
                 color.toString(),
               ),
       child: Container(
@@ -54,13 +62,34 @@ class CardTileWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              padding: EdgeInsets.all(6),
               height: 32,
               width: 32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: color,
               ),
-              child: Icon(icon, color: Colors.black, size: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkSVGImage(
+                  'https://api.avankart.com/v1/icon/$icon',
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.contain,
+                  placeholder: Icon(
+                    Icons.image_outlined,
+                    color: Colors.grey,
+                    size: 20,
+                  ),
+                  errorWidget: Icon(
+                    Icons.credit_card,
+                    color: Colors.black,
+                    size: 20,
+                  ),
+                  color: Colors.black,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+              ),
             ),
             SizedBox(width: 10),
             Expanded(
@@ -72,7 +101,7 @@ class CardTileWidget extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -82,7 +111,7 @@ class CardTileWidget extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).unselectedWidgetColor,
@@ -95,19 +124,19 @@ class CardTileWidget extends StatelessWidget {
                         child: Text(
                           "waiting_confirmation".tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                             color: Color(0xffF9B100),
                           ),
                         ),
                       ),
-                    'canceled' => Align(
+                    'cancelled' => Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "rejected".tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.error,
@@ -121,22 +150,29 @@ class CardTileWidget extends StatelessWidget {
             ),
             SizedBox(width: 16),
             Switch.adaptive(
-              value: value,
+              value: isActive,
               activeColor: Theme.of(context).colorScheme.primary,
-              onChanged: value
-                  ? (newValue) {
-                      // Sadece aktiften inaktife geçişe izin ver ve sebep dialogu göster
-                      if (!newValue) {
-                        _cardDeactivateDetailBottomSheet(
-                          context,
-                          title,
-                          subtitle,
-                          icon.toString(),
-                          color.toString(),
-                        );
-                      }
-                    }
-                  : null, // Değer false ise değiştirilemez
+              onChanged: (newValue) async {
+                if (newValue) {
+                  // Aktif etmek için bottom sheet göster
+                  _cardActiveDetailBottomSheet(
+                    context,
+                    title,
+                    subtitle,
+                    icon,
+                    color.toString(),
+                  );
+                } else {
+                  // Deaktif etmek için bottom sheet göster
+                  _cardDeactivateDetailBottomSheet(
+                    context,
+                    title,
+                    subtitle,
+                    icon,
+                    color.toString(),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -144,94 +180,148 @@ class CardTileWidget extends StatelessWidget {
     );
   }
 
-  void _showDeactivateSheet(BuildContext context) {
+  void _showActivationConfirmationBottomSheet(
+    BuildContext context,
+    String title,
+    String subtitle,
+    String icon,
+    String color,
+  ) {
     context.showPerformantBottomSheet(
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              context.buildBottomSheetHandle(),
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).hoverColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.power_settings_new,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            bool isLoading = false;
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
-              SizedBox(height: 24),
-              Text(
-                'Kartı deaktiv et',
-                style: TextStyle(
-    fontFamily: 'Poppins',
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-              ),
-              SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  'Kartı deaktiv etmək istədiyinizə əminsiniz?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-    fontFamily: 'Poppins',
-                    fontSize: 15,
-                    color: Theme.of(context).unselectedWidgetColor,
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: ElevatedButton(
-                  onPressed: () {
-                    onChanged(false); // Kartı deaktif et
-                    Get.back();
-                  },
-                  style: AppTheme.primaryButtonStyle(
-                    backgroundColor: AppTheme.primaryColor,
-                  ),
-                  child: Text(
-                    'Bəli, deaktiv et',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  context.buildBottomSheetHandle(),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).hoverColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextButton(
-                onPressed: () => Get.back(),
-                child: Text(
-                  'Xeyr',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).unselectedWidgetColor,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 24),
+                  Text(
+                    'activate_card'.tr,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
                   ),
-                ),
+                  SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      '$title ${'activate_card_confirmation'.tr}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        color: Theme.of(context).unselectedWidgetColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              try {
+                                // API çağrısı yap
+                                final cardController =
+                                    Get.find<CardManageController>();
+                                final success = await cardController
+                                    .requestChangeCardStatus(
+                                  cardId: cardId,
+                                  status: 'active',
+                                  reasonIds: [], // Aktivasyon için boş array
+                                );
+
+                                if (success) {
+                                  Get.back();
+                                  SnackbarUtils.showSuccessSnackbar(
+                                    'card_activation_request_sent'.tr,
+                                  );
+                                } else {
+                                  Get.back();
+                                  SnackbarUtils.showErrorSnackbar(
+                                    'card_activation_request_failed'.tr,
+                                  );
+                                }
+                              } finally {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            },
+                      style: AppTheme.primaryButtonStyle(
+                        backgroundColor: AppTheme.primaryColor,
+                        isDisabled: isLoading,
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              'yes_activate'.tr,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextButton(
+                    onPressed: isLoading ? null : () => Get.back(),
+                    child: Text(
+                      'no'.tr,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).unselectedWidgetColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                ],
               ),
-              SizedBox(height: 30),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -297,18 +387,36 @@ class CardTileWidget extends StatelessWidget {
                                     Container(
                                       width: 60,
                                       height: 60,
+                                      padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                                         color: this.color,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Transform.rotate(
-                                        angle: 3.14,
-                                        child: Icon(
-                                          this.icon,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onBackground,
-                                          size: 24,
+                                      child: ClipOval(
+                                        child: CachedNetworkSVGImage(
+                                          'https://api.avankart.com/v1/icon/$icon',
+                                          width: 24,
+                                          height: 24,
+                                          fit: BoxFit.contain,
+                                          placeholder: Icon(
+                                            Icons.image_outlined,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withOpacity(0.5),
+                                            size: 24,
+                                          ),
+                                          errorWidget: Icon(
+                                            Icons.credit_card,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            size: 24,
+                                          ),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                          colorBlendMode: BlendMode.srcIn,
                                         ),
                                       ),
                                     ),
@@ -317,7 +425,7 @@ class CardTileWidget extends StatelessWidget {
                                       title,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-    fontFamily: 'Poppins',
+                                        fontFamily: 'Poppins',
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
                                         color: Theme.of(
@@ -334,7 +442,7 @@ class CardTileWidget extends StatelessWidget {
                                         subtitle,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-    fontFamily: 'Poppins',
+                                          fontFamily: 'Poppins',
                                           fontSize: 15,
                                           color: Theme.of(
                                             context,
@@ -351,9 +459,9 @@ class CardTileWidget extends StatelessWidget {
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        "Yemək kartının aktivasiya şərtləri",
+                                        "card_activation_conditions".tr,
                                         style: TextStyle(
-    fontFamily: 'Poppins',
+                                          fontFamily: 'Poppins',
                                           fontSize: 12,
                                           color: Theme.of(context).splashColor,
                                           fontWeight: FontWeight.w500,
@@ -361,13 +469,24 @@ class CardTileWidget extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(height: 5),
-                                    _buildExpansionTileCard(
-                                      context: context,
-                                      title:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                      content:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                    ),
+                                    // Show activation conditions from API (filter by status = 'activate')
+                                    if (conditions.isNotEmpty) ...[
+                                      ...conditions.where((condition) {
+                                        return condition.status == 'activate';
+                                      }).map((condition) {
+                                        return _buildExpansionTileCard(
+                                          context: context,
+                                          title: condition.title,
+                                          content: condition.description,
+                                        );
+                                      }),
+                                    ] else ...[
+                                      _buildExpansionTileCard(
+                                        context: context,
+                                        title: "card_activation_conditions".tr,
+                                        content: "no_activation_conditions".tr,
+                                      ),
+                                    ],
                                     Row(
                                       children: [
                                         AppTheme.adaptiveCheckbox(
@@ -380,9 +499,9 @@ class CardTileWidget extends StatelessWidget {
                                         ),
                                         SizedBox(width: 8),
                                         Text(
-                                          "Şərtləri oxudum və qəbul etdim",
+                                          "accept_terms".tr,
                                           style: TextStyle(
-    fontFamily: 'Poppins',
+                                            fontFamily: 'Poppins',
                                             fontSize: 15,
                                             color: Theme.of(
                                               context,
@@ -403,18 +522,36 @@ class CardTileWidget extends StatelessWidget {
                                     Container(
                                       width: 60,
                                       height: 60,
+                                      padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                                         color: this.color,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Transform.rotate(
-                                        angle: 3.14,
-                                        child: Icon(
-                                          this.icon,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onBackground,
-                                          size: 24,
+                                      child: ClipOval(
+                                        child: CachedNetworkSVGImage(
+                                          'https://api.avankart.com/v1/icon/$icon',
+                                          width: 24,
+                                          height: 24,
+                                          fit: BoxFit.contain,
+                                          placeholder: Icon(
+                                            Icons.image_outlined,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withOpacity(0.5),
+                                            size: 24,
+                                          ),
+                                          errorWidget: Icon(
+                                            Icons.credit_card,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            size: 24,
+                                          ),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                          colorBlendMode: BlendMode.srcIn,
                                         ),
                                       ),
                                     ),
@@ -423,7 +560,7 @@ class CardTileWidget extends StatelessWidget {
                                       title,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-    fontFamily: 'Poppins',
+                                        fontFamily: 'Poppins',
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
                                         color: Theme.of(
@@ -440,7 +577,7 @@ class CardTileWidget extends StatelessWidget {
                                         subtitle,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-    fontFamily: 'Poppins',
+                                          fontFamily: 'Poppins',
                                           fontSize: 15,
                                           color: Theme.of(
                                             context,
@@ -457,9 +594,9 @@ class CardTileWidget extends StatelessWidget {
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        "Yemək kartının istifadə qaydası",
+                                        "card_usage_rules".tr,
                                         style: TextStyle(
-    fontFamily: 'Poppins',
+                                          fontFamily: 'Poppins',
                                           fontSize: 12,
                                           color: Theme.of(context).splashColor,
                                           fontWeight: FontWeight.w500,
@@ -467,27 +604,24 @@ class CardTileWidget extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(height: 5),
-                                    _buildExpansionTileCard(
-                                      context: context,
-                                      title:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                      content:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                    ),
-                                    _buildExpansionTileCard(
-                                      context: context,
-                                      title:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                      content:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                    ),
-                                    _buildExpansionTileCard(
-                                      context: context,
-                                      title:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                      content:
-                                          "Yemək kartının aktivasiya şərtləri",
-                                    ),
+                                    // Show usage conditions from API (filter by status = 'usage')
+                                    if (conditions.isNotEmpty) ...[
+                                      ...conditions.where((condition) {
+                                        return condition.status == 'usage';
+                                      }).map((condition) {
+                                        return _buildExpansionTileCard(
+                                          context: context,
+                                          title: condition.title,
+                                          content: condition.description,
+                                        );
+                                      }),
+                                    ] else ...[
+                                      _buildExpansionTileCard(
+                                        context: context,
+                                        title: "card_usage_rules".tr,
+                                        content: "no_usage_rules".tr,
+                                      ),
+                                    ],
                                     SizedBox(height: 20),
                                     Row(
                                       children: [
@@ -501,9 +635,9 @@ class CardTileWidget extends StatelessWidget {
                                         ),
                                         SizedBox(width: 8),
                                         Text(
-                                          "Qaydaları oxudum və qəbul etdim",
+                                          "accept_rules".tr,
                                           style: TextStyle(
-    fontFamily: 'Poppins',
+                                            fontFamily: 'Poppins',
                                             fontSize: 15,
                                             color: Theme.of(
                                               context,
@@ -532,8 +666,15 @@ class CardTileWidget extends StatelessWidget {
                           onPressed: isSecondPage
                               ? (isRulesAccepted
                                   ? () {
-                                      onChanged(true);
-                                      Get.back();
+                                      // Önce onay bottom sheet'i göster
+                                      Get.back(); // Mevcut bottom sheet'i kapat
+                                      _showActivationConfirmationBottomSheet(
+                                        context,
+                                        title,
+                                        subtitle,
+                                        icon,
+                                        color.toString(),
+                                      );
                                     }
                                   : null)
                               : (isTermsAccepted
@@ -551,7 +692,7 @@ class CardTileWidget extends StatelessWidget {
                                 : !isTermsAccepted,
                           ),
                           child: Text(
-                            isSecondPage ? 'Aktivləşdir' : 'İrəli',
+                            isSecondPage ? 'activate_card'.tr : 'forward'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -563,7 +704,7 @@ class CardTileWidget extends StatelessWidget {
                         TextButton(
                           onPressed: () => Get.back(),
                           child: Text(
-                            'Ləğv et',
+                            'cancel'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               color: Theme.of(context).unselectedWidgetColor,
@@ -591,29 +732,30 @@ class CardTileWidget extends StatelessWidget {
     String icon,
     String color,
   ) {
-    // Deaktive sebepleri için map - key: sebep, value: [seçili mi, alt açıklama]
-    Map<String, Map<String, dynamic>> deactivateReasons = {
-      "Şirkətdən istifadə etmək istəmirəm": {
-        'selected': false,
-        'subtitle':
-            "Başqa bir şirkət tərəfindən təqdim olunan üstünlük istifadə etmək istəyirəm"
-      },
-      "Kartın müddəti bitib": {
-        'selected': false,
-        'subtitle': "Kartın etibarlılıq müddəti bitib və yeniləmək istəmirəm"
-      },
-      "Müəssisə istifadəyə uyğun deyil": {
-        'selected': false,
-        'subtitle': "Mənim ehtiyaclarıma uyğun restoran və ya xidmətlər yoxdur"
-      },
-    };
+    // Deaktive sebepleri için map - API'den gelen deactivate condition'ları kullan
+    Map<String, Map<String, dynamic>> deactivateReasons = {};
 
-    // En az bir sebep seçili mi
-    bool isAnyReasonSelected = false;
+    // API'den gelen deactivate condition'larını map'e ekle
+    for (var condition in conditions) {
+      if (condition.status == 'deactivate') {
+        deactivateReasons[condition.title] = {
+          'selected': false,
+          'subtitle': condition.description,
+          'id': condition.id,
+        };
+      }
+    }
+
+    // Eğer API'den deactivate condition'ları gelmemişse, boş liste ile devam et
+    // Bottom sheet her halda gösterilecek
+
+    // En az bir sebep seçili mi veya səbəb yoxdursa
+    bool isAnyReasonSelected =
+        deactivateReasons.isEmpty; // Səbəb yoxdursa direkt aktif
 
     // Seçili sebep sayısını kontrol et
     void checkSelectedReasons() {
-      isAnyReasonSelected =
+      isAnyReasonSelected = deactivateReasons.isEmpty || // Səbəb yoxdursa aktif
           deactivateReasons.values.any((value) => value['selected'] == true);
     }
 
@@ -655,18 +797,36 @@ class CardTileWidget extends StatelessWidget {
                                 Container(
                                   width: 60,
                                   height: 60,
+                                  padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: this.color,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Transform.rotate(
-                                    angle: 3.14,
-                                    child: Icon(
-                                      this.icon,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onBackground,
-                                      size: 24,
+                                  child: ClipOval(
+                                    child: CachedNetworkSVGImage(
+                                      'https://api.avankart.com/v1/icon/$icon',
+                                      width: 24,
+                                      height: 24,
+                                      fit: BoxFit.contain,
+                                      placeholder: Icon(
+                                        Icons.image_outlined,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground
+                                            .withOpacity(0.5),
+                                        size: 24,
+                                      ),
+                                      errorWidget: Icon(
+                                        Icons.credit_card,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                        size: 24,
+                                      ),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
+                                      colorBlendMode: BlendMode.srcIn,
                                     ),
                                   ),
                                 ),
@@ -675,7 +835,7 @@ class CardTileWidget extends StatelessWidget {
                                   title,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-    fontFamily: 'Poppins',
+                                    fontFamily: 'Poppins',
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                     color: Theme.of(
@@ -692,7 +852,7 @@ class CardTileWidget extends StatelessWidget {
                                     subtitle,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-    fontFamily: 'Poppins',
+                                      fontFamily: 'Poppins',
                                       fontSize: 15,
                                       color: Theme.of(
                                         context,
@@ -710,9 +870,9 @@ class CardTileWidget extends StatelessWidget {
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    "Kartı hansı səbəblərdən deaktiv etmək istədiyinizi seçin",
+                                    "select_deactivation_reasons".tr,
                                     style: TextStyle(
-    fontFamily: 'Poppins',
+                                      fontFamily: 'Poppins',
                                       fontSize: 12,
                                       color: Theme.of(context).splashColor,
                                       fontWeight: FontWeight.w500,
@@ -722,61 +882,100 @@ class CardTileWidget extends StatelessWidget {
                                 SizedBox(height: 5),
 
                                 // Sebep seçim listesi
-                                ...deactivateReasons.keys.map((reason) {
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        leading: Theme(
-                                          data: Theme.of(context),
-                                          child: SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: AppTheme.adaptiveCheckbox(
-                                              value: deactivateReasons[reason]
-                                                      ?['selected'] ??
-                                                  false,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  deactivateReasons[reason]
-                                                          ?['selected'] =
-                                                      value ?? false;
-                                                  checkSelectedReasons();
-                                                });
-                                              },
+                                if (deactivateReasons.isNotEmpty) ...[
+                                  ...deactivateReasons.keys.map((reason) {
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          leading: Theme(
+                                            data: Theme.of(context),
+                                            child: SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child: AppTheme.adaptiveCheckbox(
+                                                value: deactivateReasons[reason]
+                                                        ?['selected'] ??
+                                                    false,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    deactivateReasons[reason]
+                                                            ?['selected'] =
+                                                        value ?? false;
+                                                    checkSelectedReasons();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          title: Text(
+                                            reason,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            deactivateReasons[reason]
+                                                    ?['subtitle'] ??
+                                                '',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w400,
+                                                color: Theme.of(context)
+                                                    .unselectedWidgetColor),
+                                          ),
+                                        ),
+                                        Divider(
+                                          color: Theme.of(context).splashColor,
+                                          thickness: 0.2,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                                ] else ...[
+                                  // Səbəb yoxdursa mesaj göster
+                                  Container(
+                                    padding: EdgeInsets.all(16),
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).hoverColor,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Theme.of(context).splashColor,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          color: Theme.of(context)
+                                              .unselectedWidgetColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            "no_reasons_available".tr,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .unselectedWidgetColor,
                                             ),
                                           ),
                                         ),
-                                        title: Text(
-                                          reason,
-                                          style: TextStyle(
-    fontFamily: 'Poppins',
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground,
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          deactivateReasons[reason]
-                                                  ?['subtitle'] ??
-                                              '',
-                                          style: TextStyle(
-    fontFamily: 'Poppins',
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w400,
-                                              color: Theme.of(context)
-                                                  .unselectedWidgetColor),
-                                        ),
-                                      ),
-                                      Divider(
-                                        color: Theme.of(context).splashColor,
-                                        thickness: 0.2,
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -792,28 +991,82 @@ class CardTileWidget extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: isAnyReasonSelected
-                              ? () {
-                                  Get.back();
-                                  _showDeactivateSheet(context);
+                              ? () async {
+                                  setState(() {
+                                    isAnyReasonSelected =
+                                        false; // Loading state için
+                                  });
+
+                                  try {
+                                    // Seçili deaktivasiya səbəblərinin ID'lerini topla
+                                    final selectedReasonIds = <String>[];
+                                    for (var entry
+                                        in deactivateReasons.entries) {
+                                      if (entry.value['selected'] == true) {
+                                        selectedReasonIds
+                                            .add(entry.value['id']);
+                                      }
+                                    }
+
+                                    // API çağrısı yap
+                                    final cardController =
+                                        Get.find<CardManageController>();
+                                    final success = await cardController
+                                        .requestChangeCardStatus(
+                                      cardId: cardId,
+                                      status: 'deactive',
+                                      reasonIds: selectedReasonIds,
+                                    );
+
+                                    if (success) {
+                                      Get.back();
+                                      SnackbarUtils.showSuccessSnackbar(
+                                        'card_deactivation_request_sent'.tr,
+                                      );
+                                    } else {
+                                      Get.back();
+                                      SnackbarUtils.showErrorSnackbar(
+                                        'card_deactivation_request_failed'.tr,
+                                      );
+                                    }
+                                  } finally {
+                                    setState(() {
+                                      isAnyReasonSelected = deactivateReasons
+                                              .isEmpty ||
+                                          deactivateReasons.values.any(
+                                              (value) =>
+                                                  value['selected'] == true);
+                                    });
+                                  }
                                 }
                               : null,
                           style: AppTheme.primaryButtonStyle(
                             isDisabled: !isAnyReasonSelected,
                           ),
-                          child: Text(
-                            'Təsdiqlə',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: !isAnyReasonSelected
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : Text(
+                                  'confirm'.tr,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                         SizedBox(height: 10),
                         TextButton(
                           onPressed: () => Get.back(),
                           child: Text(
-                            'Ləğv et',
+                            'cancel'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               color: Theme.of(context).unselectedWidgetColor,
@@ -857,7 +1110,7 @@ class CardTileWidget extends StatelessWidget {
           title: Text(
             title,
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,

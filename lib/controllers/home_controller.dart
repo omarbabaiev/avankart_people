@@ -18,6 +18,7 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../models/user_model.dart';
 import '../routes/app_routes.dart';
+import 'package:get_storage/get_storage.dart';
 
 class HomeController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -50,6 +51,7 @@ class HomeController extends GetxController
   // AuthService
   final AuthService _authService = AuthService();
   final ProfileService _profileService = ProfileService();
+  final GetStorage _getStorage = GetStorage();
 
   // Animasyon controller
   late AnimationController _animationController;
@@ -81,15 +83,11 @@ class HomeController extends GetxController
   void onInit() {
     super.onInit();
 
-    // Hot reload kontrolü
-    if (_user.value != null) {
-      _isHotReload = true;
-      print('[HOME CONTROLLER] Hot reload detected, skipping data loading');
-    }
+    // İlk açılış kontrolü
 
-    // Animasyon controller'ı başlat
+    // Animasyon controller'ı her durumda başlat
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
@@ -98,14 +96,13 @@ class HomeController extends GetxController
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    // Sadece hot reload değilse data yükle
-    if (!_isHotReload) {
-      // User bilgilerini yükle
-      _loadUserData();
-
-      // NotificationsController'ı başlat ve notifications'ları çek
-      _initializeNotifications();
+    // Hot reload kontrolü
+    if (_user.value != null) {
+      _isHotReload = true;
+      print('[HOME CONTROLLER] Hot reload detected, skipping data loading');
     }
+
+    // Sadece hot reload değilse ve ilk açılış değilse data yükle
 
     // Başlangıçta ana sayfayı göster (getProfile request olmadan)
     _changePageWithAnimation(0, skipProfileRequest: true);
@@ -240,25 +237,12 @@ class HomeController extends GetxController
         print('[HOME CONTROLLER] ID: ${homeResponse.user?.id}');
         print('[HOME CONTROLLER] Name: ${homeResponse.user?.name}');
         print('[HOME CONTROLLER] Surname: ${homeResponse.user?.surname}');
-        print('[HOME CONTROLLER] Partner ID: ${homeResponse.user?.partnyorId}');
+        print('[HOME CONTROLLER] People ID: ${homeResponse.user?.peopleId}');
         print(
-            '[HOME CONTROLLER] Muessise ID: ${homeResponse.user?.muessiseIdString}');
-
-        // Muessise detaylarını kontrol et
-        if (homeResponse.user?.muessiseModel != null) {
-          print('[HOME CONTROLLER] ===== MUESSISE DETAILS =====');
-          print(
-              '[HOME CONTROLLER] Muessise Name: ${homeResponse.user?.muessiseName}');
-          print(
-              '[HOME CONTROLLER] Muessise Category: ${homeResponse.user?.muessiseCategory}');
-          print('[HOME CONTROLLER] ===== END MUESSISE DETAILS =====');
-        } else {
-          print(
-              '[HOME CONTROLLER] Muessise Model: null (user not registered to any muessise)');
-        }
+            '[HOME CONTROLLER] Sirket Name: ${homeResponse.user?.companyInfo?.companyName}');
 
         print('[HOME CONTROLLER] Email: ${homeResponse.user?.email}');
-        print('[HOME CONTROLLER] Username: ${homeResponse.user?.username}');
+
         print('[HOME CONTROLLER] Phone: ${homeResponse.user?.phone}');
         print('[HOME CONTROLLER] Birth Date: ${homeResponse.user?.birthDate}');
         print(
@@ -381,12 +365,7 @@ class HomeController extends GetxController
     switch (index) {
       case 0:
         newPage = const HomeScreen();
-        // Home screen'e geçerken profile data'yı yenile (hot reload değilse)
-        if (!skipProfileRequest &&
-            !_isHotReload &&
-            Get.isRegistered<ProfileController>()) {
-          Get.find<ProfileController>().getProfile();
-        }
+        // Home screen'e geçerken profile request ATMA
         break;
       case 1:
         // Map screen - profile request ATMA

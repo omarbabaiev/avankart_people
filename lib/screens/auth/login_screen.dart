@@ -7,6 +7,7 @@ import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 import '../main/main_screen.dart';
 import '../../controllers/login_controller.dart';
+import '../../utils/secure_storage_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late final LoginController controller;
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
 
   @override
   void initState() {
@@ -33,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
       controller = Get.put(LoginController());
     }
 
-    // Login ekranı açıldığında eski token ve rememberMe flag'ini temizle
-    _storage.delete(key: 'token');
-    _storage.delete(key: 'rememberMe');
+    // Login ekranı açıldığında tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
+    _storage.deleteAll();
+    print('[LOGIN SCREEN] All storage cleared');
 
     // Password field'ını da temizle (güvenlik için)
     controller.passwordController.clear();

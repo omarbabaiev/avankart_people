@@ -1,10 +1,11 @@
-import 'package:avankart_people/auth/forgot_password_screen.dart';
+import 'package:avankart_people/screens/auth/change_email_adress_screen.dart';
 import 'package:avankart_people/screens/auth/change_password_screen.dart';
+import 'package:avankart_people/screens/auth/forgot_password_screen.dart';
 import 'package:avankart_people/screens/auth/login_screen.dart';
 import 'package:avankart_people/screens/auth/new_password_screen.dart';
 import 'package:avankart_people/screens/auth/otp_screen.dart';
 import 'package:avankart_people/screens/auth/register_screen.dart';
-import 'package:avankart_people/screens/auth/splash_screen.dart';
+import 'package:avankart_people/screens/initial/splash_screen.dart';
 
 import 'package:avankart_people/screens/empty_state/not_found_screen.dart';
 import 'package:avankart_people/screens/initial/initial_card_select_screen.dart';
@@ -40,7 +41,7 @@ import '../controllers/splash_controller.dart';
 // Uygulama rotalarının tanımlandığı sınıf
 class AppRoutes {
   static const String notFound = '/not-found';
-
+  static const String changeEmailAdress = '/change-email-adress';
   // Ana rotalar
   static const String splash = '/splash';
   static const String cards = '/cards';
@@ -89,6 +90,11 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
+      name: changePassword,
+      page: () => const ChangePasswordScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
       name: queryDetail,
       page: () => QueryDetailScreen(),
       transition: Transition.cupertino,
@@ -99,13 +105,18 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
+      name: changeEmailAdress,
+      page: () => const ChangeEmailAdressScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
       name: membershipList,
       page: () => const MembershipListScreen(),
       transition: Transition.cupertino,
     ),
     GetPage(
       name: selectCard,
-      page: () => const CardSelectScreen(),
+      page: () => CardSelectScreen(),
       transition: Transition.cupertino,
     ),
     GetPage(
@@ -219,11 +230,6 @@ class AppRoutes {
     GetPage(
       name: newPassword,
       page: () => const NewPasswordScreen(),
-      transition: Transition.cupertino,
-    ),
-    GetPage(
-      name: changePassword,
-      page: () => const ChangePasswordScreen(),
       transition: Transition.cupertino,
     ),
     GetPage(

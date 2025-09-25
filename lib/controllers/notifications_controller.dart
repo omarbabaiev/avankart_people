@@ -24,7 +24,7 @@ class NotificationsController extends GetxController
   final RxBool isActionLoading = false.obs;
 
   // Tab management
-  final List<String> tabs = ['Hamısı', 'Oxunmuş', 'Oxunmamış'];
+  List<String> get tabs => ['all'.tr, 'read'.tr, 'unread'.tr];
   final RxInt currentIndex = 0.obs;
 
   // API'den gelen count değerleri
@@ -70,6 +70,11 @@ class NotificationsController extends GetxController
       if (currentIndex.value != tabController.index) {
         currentIndex.value = tabController.index;
       }
+    });
+
+    // Dil değişikliklerini dinle
+    ever(Get.locale.obs, (_) {
+      updateTabs();
     });
 
     // Controller başlatıldığında notifications'ları yükle
@@ -300,6 +305,28 @@ class NotificationsController extends GetxController
       currentIndex.value = index;
       tabController.animateTo(index);
     }
+  }
+
+  /// Update tabs when language changes
+  void updateTabs() {
+    // TabController'ı yeniden oluştur
+    tabController.dispose();
+    tabController = TabController(length: tabs.length, vsync: this);
+
+    // Tab değişikliklerini dinle
+    tabController.addListener(() {
+      if (currentIndex.value != tabController.index) {
+        currentIndex.value = tabController.index;
+      }
+    });
+
+    // Mevcut tab'ı koru
+    if (currentIndex.value < tabs.length) {
+      tabController.animateTo(currentIndex.value);
+    }
+
+    // UI'ı güncelle
+    update();
   }
 
   /// Mark all notifications as read

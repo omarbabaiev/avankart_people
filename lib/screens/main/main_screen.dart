@@ -6,6 +6,7 @@ import 'package:avankart_people/screens/initial/initial_card_select_screen.dart'
 import 'package:avankart_people/screens/main/home_screen.dart';
 import 'package:avankart_people/screens/main/settings_screen.dart';
 import 'package:avankart_people/screens/main/card_screen.dart';
+import 'package:avankart_people/screens/main/map_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
@@ -65,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
               index: controller.selectedIndex,
               children: [
                 HomeScreen(),
-                Container(child: Center(child: Text('map'.tr))),
+                MapScreen(),
                 CardScreen(),
                 SettingsScreen()
               ],

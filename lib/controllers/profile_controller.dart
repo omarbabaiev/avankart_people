@@ -8,6 +8,7 @@ import '../services/profile_service.dart';
 import '../routes/app_routes.dart';
 import 'home_controller.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 
 class ProfileController extends GetxController {
   final ProfileService _profileService = ProfileService();
@@ -15,6 +16,14 @@ class ProfileController extends GetxController {
   final profile = Rxn<UserModel>();
   final isLoading = false.obs;
   final isDeletingAccount = false.obs;
+
+  // Email değiştirme için text controller'lar
+  final currentEmailController = TextEditingController();
+  final newEmailController = TextEditingController();
+
+  // Email validation error messages
+  final currentEmailError = RxnString();
+  final newEmailError = RxnString();
 
   // Retry functionality
   final RxBool showRetryButton = false.obs;
@@ -91,7 +100,7 @@ class ProfileController extends GetxController {
       );
 
       isPasswordVerified.value = true;
-      SnackbarUtils.showSuccessSnackbar('Doğrulama kodu göndərildi');
+      SnackbarUtils.showSuccessSnackbar('delete_account_otp_sent'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -111,7 +120,7 @@ class ProfileController extends GetxController {
 
       isOtpVerified.value = true;
       SnackbarUtils.showSuccessSnackbar(
-        'Doğrulama kodu təsdiqləndi',
+        'delete_account_otp_verified'.tr,
       );
       return true;
     } catch (e) {
@@ -203,7 +212,7 @@ class ProfileController extends GetxController {
       _startOtpTimer();
       isVerificationRequired.value = true;
 
-      SnackbarUtils.showSuccessSnackbar('Doğrulama kodu göndərildi');
+      SnackbarUtils.showSuccessSnackbar('update_otp_sent'.tr);
       return true;
     } catch (e) {
       SnackbarUtils.showErrorSnackbar(e.toString());
@@ -310,8 +319,7 @@ class ProfileController extends GetxController {
       _pendingUpdateField = 'password';
       _pendingUpdateValue = passwordData;
 
-      SnackbarUtils.showSuccessSnackbar(
-          'Şifre değişikliği için doğrulama kodu göndərildi');
+      SnackbarUtils.showSuccessSnackbar('password_change_otp_sent'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -361,8 +369,7 @@ class ProfileController extends GetxController {
       _startOtpTimer();
       isVerificationRequired.value = true;
 
-      SnackbarUtils.showSuccessSnackbar(
-          'Profil silme için doğrulama kodu göndərildi');
+      SnackbarUtils.showSuccessSnackbar('delete_account_otp_sent'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -383,7 +390,7 @@ class ProfileController extends GetxController {
       // Başarılı olursa logout yap
       await AuthUtils.logout();
 
-      SnackbarUtils.showSuccessSnackbar('Profil uğurla silindi');
+      SnackbarUtils.showSuccessSnackbar('delete_account_success'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -397,6 +404,61 @@ class ProfileController extends GetxController {
   @override
   void onClose() {
     _stopOtpTimer();
+    currentEmailController.dispose();
+    newEmailController.dispose();
     super.onClose();
+  }
+
+  // E-posta değiştirme isteği gönder
+  Future<bool> requestEmailChange() async {
+    try {
+      isOtpSending.value = true;
+      _pendingUpdateField = 'email';
+      _pendingUpdateValue = newEmailController.text;
+
+      final response = await _profileService.sendUpdateOTP(
+        field: 'email',
+        newValue: newEmailController.text,
+      );
+
+      // OTP timer'ı başlat
+      _startOtpTimer();
+      isVerificationRequired.value = true;
+
+      SnackbarUtils.showSuccessSnackbar('email_change_otp_sent'.tr);
+      return true;
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isOtpSending.value = false;
+    }
+  }
+
+  // E-posta değiştirme OTP'sini doğrula
+  Future<bool> submitEmailChangeOTP(String otp) async {
+    try {
+      isOtpVerifying.value = true;
+
+      await _profileService.verifyUpdateOTP(
+        field: 'email',
+        newValue: _pendingUpdateValue,
+        otp: otp,
+      );
+
+      _stopOtpTimer();
+      isVerificationRequired.value = false;
+      _clearPendingUpdate();
+
+      SnackbarUtils.showSuccessSnackbar('email_change_success'.tr);
+      return true;
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isOtpVerifying.value = false;
+    }
   }
 }

@@ -170,9 +170,9 @@ class EmailChangeBottomSheet {
       if (currentContext != null) {
         VerificationBottomSheet.show(
           currentContext,
-          title: 'E-poçt doğrulaması',
+          title: 'otp'.tr,
           subtitle:
-              'Yeni e-poçt adrəsinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -190,9 +190,9 @@ class EmailChangeBottomSheet {
     // Context geçerliyse normal şekilde devam et
     VerificationBottomSheet.show(
       context,
-      title: 'E-poçt doğrulaması',
+      title: 'otp'.tr,
       subtitle:
-          'Yeni e-poçt adrəsinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

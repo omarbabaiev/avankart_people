@@ -127,9 +127,9 @@ class DeleteAccountBottomSheet {
       if (currentContext != null) {
         VerificationBottomSheet.show(
           currentContext,
-          title: 'Hesab silme doğrulaması',
+          title: 'otp'.tr,
           subtitle:
-              'Hesabınızı silmək üçün göndərilən doğrulama kodunu daxil edin',
+              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
             final success = await controller.submitDeleteProfileOTP(otp);
@@ -150,8 +150,9 @@ class DeleteAccountBottomSheet {
     // Context geçerliyse normal şekilde devam et
     VerificationBottomSheet.show(
       context,
-      title: 'Hesab silme doğrulaması',
-      subtitle: 'Hesabınızı silmək üçün göndərilən doğrulama kodunu daxil edin',
+      title: 'otp'.tr,
+      subtitle:
+          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         final success = await controller.submitDeleteProfileOTP(otp);

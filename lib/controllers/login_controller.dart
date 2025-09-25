@@ -1,8 +1,7 @@
+import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:avankart_people/utils/auth_utils.dart';
-
-import '../utils/snackbar_utils.dart';
-import '../utils/api_response_parser.dart';
-import '../utils/debug_logger.dart';
+import 'package:avankart_people/utils/api_response_parser.dart';
+import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../services/auth_service.dart';
@@ -41,9 +40,15 @@ class LoginController extends GetxController {
       });
 
       if (response.requiresOtp) {
-        // OTP gerekli - password'u temizle ve OTP ekranına yönlendir
-        DebugLogger.info(
-            LogCategory.controller, 'OTP required, navigating to OTP screen');
+        // OTP gerekli - token'ı storage'a kaydet, password'u temizle ve OTP ekranına yönlendir
+        DebugLogger.info(LogCategory.controller,
+            'OTP required, saving token and navigating to OTP screen');
+
+        // Token'ı storage'a kaydet
+        await _storage.write(key: 'token', value: response.token);
+        print(
+            '[LOGIN TOKEN SAVED FOR OTP] ${response.token.substring(0, 20)}...');
+
         passwordController.clear();
         Get.toNamed(AppRoutes.otp, arguments: {
           'email': emailController.text.trim(),
@@ -105,7 +110,7 @@ class LoginController extends GetxController {
           Get.put(HomeController(), permanent: true);
         }
         final homeController = Get.find<HomeController>();
-        // await homeController.refreshUserData();
+        await homeController.refreshUserData();
 
         // Home'a yönlendir
         print('[HOME SUCCESS] Navigating to home');

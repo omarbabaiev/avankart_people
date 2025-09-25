@@ -1,5 +1,6 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/membership_controller.dart';
+import 'package:avankart_people/models/membership_models.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/widgets/restaurant_card_widget.dart';
@@ -7,13 +8,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 
 class MembershipListScreen extends GetView<MembershipController> {
   const MembershipListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MembershipController());
+    // İlk yüklemede membership data'sını çek
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controller.memberships.isEmpty && !controller.isLoading) {
+        controller.fetchMemberships(refresh: true);
+      }
+    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -24,7 +31,7 @@ class MembershipListScreen extends GetView<MembershipController> {
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            'Üzvlük',
+            'membership_list'.tr,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 17,
@@ -34,7 +41,7 @@ class MembershipListScreen extends GetView<MembershipController> {
         ),
       ),
       body: Obx(() {
-        final isLoading = controller.isLoading.value;
+        final isLoading = controller.isLoading;
         final isEmpty = controller.memberships.isEmpty;
 
         return (isEmpty && !isLoading)
@@ -53,7 +60,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                       ),
                       SizedBox(height: 16),
                       Text(
-                        'Şirkət tapılmadı !',
+                        'company_not_found'.tr,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 16,
@@ -63,7 +70,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Daha əvvəl heç bir şirkətə üzv olmadınız',
+                        'you_have_not_been_a_member_of_any_company'.tr,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,
@@ -74,7 +81,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                       CupertinoButton(
                         onPressed: () {},
                         child: Text(
-                          'Üzv ol',
+                          'become_a_member'.tr,
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 15,
@@ -90,7 +97,9 @@ class MembershipListScreen extends GetView<MembershipController> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   CupertinoSliverRefreshControl(
-                    onRefresh: controller.fetchMemberships,
+                    onRefresh: () async {
+                      await controller.fetchMemberships(refresh: true);
+                    },
                   ),
                   SliverToBoxAdapter(
                     child: Skeletonizer(
@@ -108,15 +117,14 @@ class MembershipListScreen extends GetView<MembershipController> {
                           if (isLoading) {
                             return _buildMembershipTile(
                               context,
-                              {
-                                'id': '1',
-                                'name': 'Veysəloğlu MMC',
-                                'imageLink':
-                                    'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-                                'startDate': '14.08.2024',
-                                'endDate': null,
-                                'isEnd': false
-                              },
+                              Membership(
+                                id: '1',
+                                sirketName: 'Veysəloğlu MMC',
+                                profileImagePath:
+                                    '/uploads/sirket/profiles/logo.png',
+                                hireDate: '14.08.2024',
+                                status: 'ongoing',
+                              ),
                             );
                           }
 
@@ -131,7 +139,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                                         size: 64, color: Colors.grey[400]),
                                     SizedBox(height: 16),
                                     Text(
-                                      'Üzvlük tapılmadı',
+                                      'membership_not_found'.tr,
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 16,
@@ -157,7 +165,7 @@ class MembershipListScreen extends GetView<MembershipController> {
   }
 
   GestureDetector _buildMembershipTile(
-      BuildContext context, Map<String, dynamic> membership) {
+      BuildContext context, Membership membership) {
     return GestureDetector(
       onTap: () {
         Get.toNamed(
@@ -180,19 +188,36 @@ class MembershipListScreen extends GetView<MembershipController> {
                   radius: 28,
                   backgroundColor:
                       Theme.of(context).colorScheme.tertiaryContainer,
-                  child: membership['imageLink'].isNotEmpty
-                      ? Image.network(
-                          membership['imageLink'],
-                          errorBuilder: (context, error, stackTrace) =>
-                              Icon(Icons.image),
+                  child: membership.fullProfileImageUrl != null
+                      ? ClipOval(
+                          child: Image.network(
+                            membership.fullProfileImageUrl!,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                              Icons.business_center_outlined,
+                              color: Theme.of(context).unselectedWidgetColor,
+                              size: 28,
+                            ),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Icon(
+                                Icons.business_center_outlined,
+                                color: Theme.of(context).unselectedWidgetColor,
+                                size: 28,
+                              );
+                            },
+                          ),
                         )
-                      : Icon(Icons.image),
+                      : Icon(Icons.business,
+                          color: Theme.of(context).unselectedWidgetColor),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  membership['name'].isNotEmpty
-                      ? membership['name']
-                      : "Loading...",
+                  membership.sirketName.isNotEmpty
+                      ? membership.sirketName
+                      : "unknown".tr,
                   style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15,
@@ -202,76 +227,85 @@ class MembershipListScreen extends GetView<MembershipController> {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: membership['isEnd']
-                        ? Theme.of(context).dividerColor
-                        : Color(0xff23A26D).withOpacity(.12),
-                    borderRadius: BorderRadius.circular(50),
+                    color: membership.status == 'ongoing'
+                        ? AppTheme.greenColor.withOpacity(0.1)
+                        : Colors.grey.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    membership['isEnd'] ? 'Ayrılıb' : 'Davam edir',
+                    membership.status == 'ongoing' ? 'continue'.tr : 'left'.tr,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 10,
+                      color: membership.status == 'ongoing'
+                          ? AppTheme.successColor
+                          : Colors.grey,
                       fontWeight: FontWeight.w500,
-                      color: membership['isEnd']
-                          ? Theme.of(context)
-                              .colorScheme
-                              .onBackground
-                              .withOpacity(.5)
-                          : Color(0xff23A26D),
                     ),
                   ),
                 ),
-                SizedBox(height: 12),
-                Row(
-                  children: [
-                    Text("Üzv tarixi:",
+                SizedBox(height: 16),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'membership_date'.tr,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 12,
-                          fontWeight: FontWeight.w400,
                           color: Theme.of(context).unselectedWidgetColor,
-                        )),
-                    SizedBox(width: 4),
-                    Text(
-                      membership['startDate'],
-                      style: TextStyle(
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            ' ${membership.hireDate.isNotEmpty ? membership.hireDate : "unknown".tr}',
+                        style: TextStyle(
                           fontFamily: 'Roboto',
                           fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onBackground),
-                    )
-                  ],
-                ),
-                if (membership['isEnd'] && membership['endDate'] != null) ...[
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text("Ayrılma tarixi:",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).unselectedWidgetColor,
-                          )),
-                      SizedBox(width: 4),
-                      Text(
-                        membership['endDate'],
-                        style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.onBackground),
-                      )
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                      ),
                     ],
                   ),
-                ]
+                ),
+                membership.status != 'ongoing'
+                    ? SizedBox(height: 2)
+                    : SizedBox(height: 4),
+                membership.status != 'ongoing'
+                    ? Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'end_date'.tr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: Theme.of(context).unselectedWidgetColor,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  ' ${membership.endDate?.isNotEmpty ?? false ? membership.endDate : "unknown".tr}',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ],
-            )
+            ),
           ],
         ),
       ),

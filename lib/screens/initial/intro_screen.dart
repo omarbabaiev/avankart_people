@@ -78,7 +78,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 _introTexts[_currentPage],
                 textAlign: TextAlign.center,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -141,7 +141,9 @@ class _IntroScreenState extends State<IntroScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: TextButton(
-                  onPressed: () => Get.toNamed(AppRoutes.register),
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.register);
+                  },
                   child: Text(
                     'create_account'.tr,
                     style: TextStyle(

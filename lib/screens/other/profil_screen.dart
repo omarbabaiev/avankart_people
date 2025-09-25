@@ -20,8 +20,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class ProfilScreen extends StatelessWidget {
   ProfilScreen({Key? key}) : super(key: key) {
-    // Controller'ı initialize et
-    final profileController = Get.put(ProfileController());
+    // Controller'ı Get.find ile al
+    final profileController = Get.find<ProfileController>();
 
     // Sadece ilk kez açıldığında profil verilerini yükle
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,21 +75,25 @@ class ProfilScreen extends StatelessWidget {
               _buildProfileTile(
                 context,
                 'name_surname'.tr,
-                user?.fullName ?? 'undefined'.tr,
+                '${user?.name} ${user?.surname}' ?? 'undefined'.tr,
                 ImageAssets.pencil,
                 () => NameChangeBottomSheet.show(context),
               ),
               _buildProfileTile(
                 context,
                 'birth_date'.tr,
-                user?.formattedBirthDate ?? 'undefined'.tr,
+                user?.birthDate != null
+                    ? '${user!.birthDate!.day.toString().padLeft(2, '0')}.${user.birthDate!.month.toString().padLeft(2, '0')}.${user.birthDate!.year}'
+                    : 'undefined'.tr,
                 ImageAssets.pencil,
                 () => BirthDateChangeBottomSheet.show(context),
               ),
               _buildProfileTile(
                 context,
                 'phone_number'.tr,
-                user?.formattedPhone ?? 'undefined'.tr,
+                user?.phone != null
+                    ? '+${user!.phoneSuffix}${user.phone}'
+                    : 'undefined'.tr,
                 ImageAssets.pencil,
                 () => _showPhoneChange(context),
               ),
@@ -103,16 +107,16 @@ class ProfilScreen extends StatelessWidget {
               _buildProfileTile(
                 context,
                 'user_id'.tr,
-                user?.partnyorId ?? 'undefined'.tr,
+                user?.peopleId ?? 'undefined'.tr,
                 ImageAssets.copySimple,
-                () => _copyToClipboard(user?.partnyorId),
+                () => _copyToClipboard(user?.peopleId),
               ),
               _buildProfileTile(
                 context,
                 'company'.tr,
-                user?.muessiseName ?? 'undefined'.tr,
+                user?.companyInfo?.companyName ?? 'undefined'.tr,
                 ImageAssets.copySimple,
-                () => _copyToClipboard(user?.muessiseName),
+                () => _copyToClipboard(user?.companyInfo?.companyName),
               ),
             ],
           ),

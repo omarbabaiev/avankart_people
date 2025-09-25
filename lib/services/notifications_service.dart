@@ -9,7 +9,7 @@ import 'firebase_service.dart';
 class NotificationsService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: AuthService.baseUrl,
+      baseUrl: AuthService.baseUrl + '/people',
       headers: {'Content-Type': 'application/json'},
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),

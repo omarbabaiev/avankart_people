@@ -6,9 +6,11 @@ import 'package:avankart_people/widgets/notifications/notification_item.dart';
 import 'package:avankart_people/widgets/notifications/notification_tabs.dart';
 import 'package:avankart_people/widgets/notifications/skeletonizer_notification_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'dart:io';
 
 class NotificationsScreen extends GetView<NotificationsController> {
   const NotificationsScreen({super.key});
@@ -28,6 +30,12 @@ class NotificationsScreen extends GetView<NotificationsController> {
       backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
         toolbarHeight: 68,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -104,6 +112,71 @@ class NotificationsScreen extends GetView<NotificationsController> {
   }
 
   Widget _buildNotificationList(RxList<Map<String, dynamic>> notifications) {
+    // Platform-özel refresh indicator
+    if (Platform.isIOS) {
+      return _buildIOSNotificationList(notifications);
+    } else {
+      return _buildAndroidNotificationList(notifications);
+    }
+  }
+
+  // iOS için CupertinoSliverRefreshControl kullanarak CustomScrollView
+  Widget _buildIOSNotificationList(RxList<Map<String, dynamic>> notifications) {
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        CupertinoSliverRefreshControl(
+          onRefresh: controller.refreshNotifications,
+        ),
+        SliverToBoxAdapter(
+          child: Skeletonizer(
+            enabled: controller.isLoading.value,
+            enableSwitchAnimation: true,
+            child: notifications.isEmpty && !controller.isLoading.value
+                ? const EmptyNotification()
+                : Column(
+                    children: List.generate(
+                      controller.isLoading.value ? 5 : notifications.length,
+                      (index) {
+                        if (controller.isLoading.value) {
+                          return const SkeletonizerNotificationItem();
+                        } else {
+                          final notification = notifications[index];
+                          return NotificationItem(
+                            notification: notification,
+                            onTap: () {
+                              // Toggle notification read status when tapped
+                              controller
+                                  .toggleNotificationStatus(notification['id']);
+                            },
+                            onToggleReadStatus: (notificationId, isRead) {
+                              // Toggle notification read status
+                              controller.toggleNotificationReadStatus(
+                                  notificationId, isRead);
+                            },
+                            onAccept: (notificationId) {
+                              // Accept invite
+                              controller.acceptInvite(notificationId);
+                            },
+                            onReject: (notificationId) {
+                              // Reject invite
+                              controller.rejectInvite(notificationId);
+                            },
+                            isLoading: controller.isActionLoading.value,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Android için RefreshIndicator kullanarak ListView
+  Widget _buildAndroidNotificationList(
+      RxList<Map<String, dynamic>> notifications) {
     return RefreshIndicator(
       onRefresh: controller.refreshNotifications,
       child: Skeletonizer(

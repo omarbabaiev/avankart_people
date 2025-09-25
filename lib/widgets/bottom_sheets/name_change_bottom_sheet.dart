@@ -183,8 +183,9 @@ class NameChangeBottomSheet {
       if (currentContext != null) {
         VerificationBottomSheet.show(
           currentContext,
-          title: 'Ad doğrulaması',
-          subtitle: 'Yeni adınızı təsdiqləmək üçün göndərilən kodu daxil edin',
+          title: 'otp'.tr,
+          subtitle:
+              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -202,8 +203,9 @@ class NameChangeBottomSheet {
     // Context geçerliyse normal şekilde devam et
     VerificationBottomSheet.show(
       context,
-      title: 'Ad doğrulaması',
-      subtitle: 'Yeni adınızı təsdiqləmək üçün göndərilən kodu daxil edin',
+      title: 'otp'.tr,
+      subtitle:
+          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

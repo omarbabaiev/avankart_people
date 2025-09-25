@@ -75,10 +75,11 @@ class FavoritesScreen extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.onPrimary,
             title: GestureDetector(
               onTap: () {
-                Get.toNamed(AppRoutes.searchCompany);
+                Get.toNamed(AppRoutes.searchCompany,
+                    arguments: {'heroTag': 'favorites_search_company'});
               },
               child: Hero(
-                tag: 'search_company',
+                tag: 'favorites_search_company',
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(

@@ -1,7 +1,7 @@
+import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import '../utils/api_response_parser.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
 import 'firebase_service.dart';
@@ -35,7 +35,7 @@ class ProfileService {
     ));
   }
 
-  // / Kullanıcı bilgilerini getir (raw response ile)
+  /// Kullanıcı bilgilerini getir (raw response ile)
   Future<Map<String, dynamic>?> getProfileRaw() async {
     try {
       print('[GET PROFILE RAW REQUEST]');
@@ -46,7 +46,7 @@ class ProfileService {
           '[GET PROFILE RAW REQUEST] Firebase Token: ${firebaseToken?.substring(0, 20)}...');
 
       final response = await _dio.post(
-        '/home',
+        '/people/home',
         data: {
           'firebase_token': firebaseToken ?? 'token',
         },
@@ -72,7 +72,7 @@ class ProfileService {
   Future<UserModel?> getProfile() async {
     try {
       print('[GET PROFILE REQUEST]');
-      final response = await _dio.post('/home');
+      final response = await _dio.post('/people/home');
       print('[GET PROFILE RESPONSE] ${response.data}');
 
       if (response.data['user'] != null) {
@@ -124,7 +124,7 @@ class ProfileService {
       print('[REQUEST CHANGE REQUEST] $data');
 
       final response = await _dio.post(
-        '/profile/request-change',
+        '/people/profile/request-change',
         data: data,
       );
       print('[REQUEST CHANGE RESPONSE] ${response.data}');
@@ -140,7 +140,7 @@ class ProfileService {
     try {
       print('[SUBMIT OTP REQUEST] otp: $otp');
       final response = await _dio.post(
-        '/profile/otp-submit',
+        '/people/profile/otp-submit',
         data: {'otp': otp},
       );
       print('[SUBMIT OTP RESPONSE] ${response.data}');
@@ -155,7 +155,7 @@ class ProfileService {
   Future<Map<String, dynamic>> resendOTP() async {
     try {
       print('[RESEND OTP REQUEST]');
-      final response = await _dio.post('/profile/otp-resend');
+      final response = await _dio.post('/people/profile/otp-resend');
       print('[RESEND OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
@@ -168,7 +168,7 @@ class ProfileService {
   Future<Map<String, dynamic>> cancelOTP() async {
     try {
       print('[CANCEL OTP REQUEST]');
-      final response = await _dio.post('/profile/otp-cancel');
+      final response = await _dio.post('/people/profile/otp-cancel');
       print('[CANCEL OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
@@ -184,7 +184,7 @@ class ProfileService {
     try {
       print('[INITIATE DELETE ACCOUNT REQUEST]');
       final response = await _dio.post(
-        '/auth/delete-account',
+        '/people/auth/delete-account',
         data: {
           'delete': true,
           'password': password,
@@ -205,7 +205,7 @@ class ProfileService {
     try {
       print('[SUBMIT DELETE OTP REQUEST] otp: $otp');
       final response = await _dio.post(
-        '/profile/delete-otp-submit',
+        '/people/profile/delete-otp-submit',
         data: {'otp': otp},
       );
       print('[SUBMIT DELETE OTP RESPONSE] ${response.data}');
@@ -221,7 +221,7 @@ class ProfileService {
     try {
       print('[CONFIRM DELETE ACCOUNT REQUEST]');
       final response = await _dio.post(
-        '/auth/delete-account',
+        '/people/auth/delete-account',
         data: {'delete': true, 'confirm': true},
       );
       print('[CONFIRM DELETE ACCOUNT RESPONSE] ${response.data}');
@@ -237,7 +237,7 @@ class ProfileService {
     try {
       print('[REQUEST DELETE PROFILE]');
       final response = await _dio.post(
-        '/profile/request-change',
+        '/people/profile/request-change',
         data: {
           'duty': 'deleteProfile',
         },
@@ -257,7 +257,7 @@ class ProfileService {
     try {
       print('[SUBMIT DELETE PROFILE OTP REQUEST] otp: $otp');
       final response = await _dio.post(
-        '/profile/delete-otp-submit',
+        '/people/profile/delete-otp-submit',
         data: {'otp': otp},
       );
       print('[SUBMIT DELETE PROFILE OTP RESPONSE] ${response.data}');

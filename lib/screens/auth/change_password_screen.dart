@@ -1,6 +1,4 @@
 import 'package:avankart_people/assets/image_assets.dart';
-
-import 'login_screen.dart';
 import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,11 +21,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _confirmationPasswordController = TextEditingController();
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
-  bool _obscureConfirmationPassword = true;
 
   // OTP için controller ve focus node'ları
   final List<TextEditingController> _otpControllers = List.generate(
@@ -49,7 +45,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
-    _confirmationPasswordController.dispose();
     // OTP controller ve focus node'ları temizle
     for (var controller in _otpControllers) {
       controller.dispose();
@@ -60,53 +55,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
-  String get _formattedTime {
-    int minutes = _remainingTimeNotifier.value ~/ 60;
-    int seconds = _remainingTimeNotifier.value % 60;
-    return '$minutes : ${seconds.toString().padLeft(2, '0')}';
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-    _remainingTimeNotifier.value = 299;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingTimeNotifier.value > 0) {
-        _remainingTimeNotifier.value--;
-      } else {
-        timer.cancel();
-      }
-    });
-  }
-
-  void _changePassword() async {
-    if (_formKey.currentState!.validate()) {
-      final success = await _profileController.sendPasswordChangeOTP(
-        _currentPasswordController.text,
-        _newPasswordController.text,
-        _confirmPasswordController.text,
-      );
-
-      if (success) {
-        _showVerificationBottomSheet();
-      }
-    }
-  }
-
   void _showVerificationBottomSheet() {
     VerificationBottomSheet.show(
       context,
-      title: 'Şifre doğrulaması',
+      title: 'otp'.tr,
       subtitle:
-          'Şifre değişikliğinizi təsdiqləmək üçün göndərilən kodu daxil edin',
+          '${_profileController.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
         final success = await _profileController.verifyPasswordChangeOTP(otp);
         if (success) {
-          Get.off(() => const LoginScreen());
+          Get.close(2); // OTP bottom sheet ve confirm sheet'i kapat
+          _showSuccessScreen(); // Başarı ekranını göster
         }
       },
       onResend: () async {
-        await _profileController.resendOTP();
+        await _profileController.sendPasswordChangeOTP(
+          _currentPasswordController.text,
+          _newPasswordController.text,
+          _confirmPasswordController.text,
+        );
       },
     );
   }
@@ -116,6 +84,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       context.showPerformantBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
+        isDismissible: true,
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setModalState) {
@@ -167,104 +136,54 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    TextFormField(
-                      obscureText: _obscureCurrentPassword,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                      decoration: InputDecoration(
-                        fillColor: Colors.transparent,
-                        hintText: 'enter_confirm_password'.tr,
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                          color: Theme.of(context).hintColor,
-                        ),
-                        contentPadding: const EdgeInsets.only(left: 15),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            AppTheme.adaptiveVisibilityIcon(
-                              !_obscureCurrentPassword,
-                            ),
-                            color: Theme.of(context).colorScheme.onBackground,
-                            size: 22,
-                          ),
-                          onPressed: () {
-                            setModalState(() {
-                              _obscureCurrentPassword =
-                                  !_obscureCurrentPassword;
-                            });
-                          },
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).shadowColor,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: AppTheme.primaryColor,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                          VerificationBottomSheet.show(
-                            context,
-                            title: 'otp'.tr,
-                            subtitle:
-                                '${'email_sent_to'.tr} omarbaba007@gmail.com\n${'enter_verification_code'.tr}',
-                            onVerify: (code) {
-                              // OTP doğrulama işlemi
-                              if (code == "123456") {
-                                // Örnek doğrulama
-                                SnackbarUtils.showSuccessSnackbar(
-                                    'Şifre başarıyla değiştirildi');
-                                Get.off(() => LoginScreen());
-                              } else {
-                                SnackbarUtils.showErrorSnackbar(
-                                    'Geçersiz doğrulama kodu');
-                              }
-                            },
-                          );
-                          // Şifre kontrolü
-                          //   if (_confirmationPasswordController.text ==
-                          //       _currentPasswordController.text) {
-                          //     Get.back();
-                          //     _showVerificationBottomSheet();
-                          //   } else {
-                          //     // Yanlış şifre mesajı
-                          //     SnackbarUtils.showSnackbar(
-                          //      'Daxil etdiyiniz şifrə doğru deyil'
-                          //     );
-                          //   }
-                          // },
-                        },
-                        style: AppTheme.primaryButtonStyle(),
-                        child: Text(
-                          'Təsdiqlə',
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                    Obx(() => SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: _profileController.isOtpSending.value
+                                ? null
+                                : () async {
+                                    Get.back();
+
+                                    // OTP gönderme ve verification sheet'i gösterme
+                                    final success = await _profileController
+                                        .sendPasswordChangeOTP(
+                                      _currentPasswordController.text,
+                                      _newPasswordController.text,
+                                      _confirmPasswordController.text,
+                                    );
+
+                                    _showVerificationBottomSheet();
+                                  },
+                            style: AppTheme.primaryButtonStyle(),
+                            child: _profileController.isOtpSending.value
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'confirm'.tr,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
-                        ),
-                      ),
-                    ),
+                        )),
                     const SizedBox(height: 16),
                     TextButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () {
+                        Get.back();
+                      },
                       child: Text(
-                        'Ləğv et',
+                        'cancel'.tr,
                         style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 16,
@@ -534,7 +453,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       child: ElevatedButton(
                         onPressed: _profileController.isOtpSending.value
                             ? null
-                            : _changePassword,
+                            : _oldChangePassword,
                         style: AppTheme.primaryButtonStyle(),
                         child: _profileController.isOtpSending.value
                             ? SizedBox(

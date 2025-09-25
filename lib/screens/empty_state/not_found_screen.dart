@@ -3,7 +3,6 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
-import '../../auth/forgot_password_screen.dart';
 
 class NotFoundScreen extends StatefulWidget {
   const NotFoundScreen({super.key});

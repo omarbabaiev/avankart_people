@@ -47,7 +47,7 @@ class VerificationBottomSheet {
                       title,
                       style: TextStyle(
                         fontFamily: "Poppins",
-                        fontSize: 22,
+                        fontSize: 26,
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),

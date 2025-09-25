@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class AppTheme {
   // Color Palette - Light & Dark
+  static const String currencySymbol = '₼';
 
   // Primary Colors
   static const Color primaryColor = Color(0xFF745086); // Primary

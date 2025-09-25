@@ -2,21 +2,23 @@ import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
+import 'secure_storage_config.dart';
 
 class AuthUtils {
   /// Logout the user and clear all data
   static Future<void> logout() async {
     try {
       final authService = AuthService();
-      final storage = const FlutterSecureStorage();
+      final storage = SecureStorageConfig.storage;
       final firebaseService = FirebaseService();
 
       // Call logout API
       await authService.logout();
 
-      // Clear stored data
-      await storage.delete(key: 'token');
-      await storage.delete(key: 'rememberMe');
+      // Clear stored data - Tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
+      print('[AUTH UTILS] Clearing all storage due to readAll() bug...');
+      await storage.deleteAll(); // Tüm storage'ı temizle
+      print('[AUTH UTILS] All storage cleared');
 
       // Clear Firebase token
       await firebaseService.clearToken();
@@ -29,10 +31,12 @@ class AuthUtils {
     } catch (e) {
       print('[AUTH UTILS] Logout error: $e');
       // Even if logout API fails, clear local data and redirect
-      final storage = const FlutterSecureStorage();
+      print('[AUTH UTILS] Logout API failed, clearing all storage...');
+      final storage = SecureStorageConfig.storage;
       final firebaseService = FirebaseService();
-      await storage.delete(key: 'token');
-      await storage.delete(key: 'rememberMe');
+      await storage.deleteAll(); // Tüm storage'ı temizle
+      print('[AUTH UTILS] All storage cleared after error');
+
       await firebaseService.clearToken();
       Get.deleteAll();
       Get.offAllNamed('/login');

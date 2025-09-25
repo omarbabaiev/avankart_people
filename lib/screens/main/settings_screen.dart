@@ -19,19 +19,15 @@ class SettingsScreen extends GetView<ThemeController> {
     // Controller'ları başlat
     Get.put(ThemeController());
 
-    // ProfileController'ı sadece gerekli olduğunda initialize et
-    ProfileController? profileController;
-    if (Get.isRegistered<ProfileController>()) {
-      profileController = Get.find<ProfileController>();
-    } else {
-      profileController = Get.put(ProfileController());
-      // Sayfa açılınca profil verilerini yükle (sadece data yoksa)
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (profileController!.profile.value == null) {
-          profileController!.getProfile();
-        }
-      });
-    }
+    // ProfileController'ı Get.find ile al
+    final profileController = Get.find<ProfileController>();
+
+    // Sayfa açılınca profil verilerini yükle (sadece data yoksa)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (profileController.profile.value == null) {
+        profileController.getProfile();
+      }
+    });
 
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.secondary,

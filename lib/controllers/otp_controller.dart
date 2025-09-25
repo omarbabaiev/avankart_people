@@ -5,12 +5,13 @@ import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
+import '../utils/secure_storage_config.dart';
 import 'login_controller.dart';
 import 'home_controller.dart';
 
 class OtpController extends GetxController {
   final AuthService _authService = AuthService();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
 
   final otpController = TextEditingController();
   final isLoading = false.obs;
@@ -126,6 +127,13 @@ class OtpController extends GetxController {
       // Token'ı kaydet
       await _storage.write(key: 'token', value: token);
       print('[TOKEN SAVED FOR HOME CALL] ${token.substring(0, 20)}...');
+      print('[TOKEN SAVED] Full token length: ${token.length}');
+
+      // Token'ın gerçekten kaydedilip kaydedilmediğini kontrol et
+      final savedToken = await _storage.read(key: 'token');
+      print(
+          '[TOKEN VERIFICATION] Saved token: ${savedToken?.substring(0, 20)}...');
+      print('[TOKEN VERIFICATION] Token matches: ${savedToken == token}');
 
       // Remember me durumunu ayarla
       if (rememberMe) {

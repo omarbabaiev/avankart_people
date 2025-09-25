@@ -26,9 +26,9 @@ class QueryScreen extends GetView<QueryController> {
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            'Sorğular',
+            'queries'.tr,
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -40,9 +40,9 @@ class QueryScreen extends GetView<QueryController> {
               _createQuery(context);
             },
             label: Text(
-              "Sorğu göndər",
+              "create_new_query".tr,
               style: TextStyle(
-    fontFamily: 'Poppins',
+                fontFamily: 'Poppins',
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -97,9 +97,9 @@ class QueryScreen extends GetView<QueryController> {
                                 size: 64, color: Colors.grey[400]),
                             SizedBox(height: 16),
                             Text(
-                              'Heç bir sorğu tapılmadı',
+                              'no_queries_found'.tr,
                               style: TextStyle(
-    fontFamily: 'Poppins',
+                                fontFamily: 'Poppins',
                                 fontSize: 16,
                                 color: Colors.grey[600],
                               ),
@@ -156,17 +156,17 @@ class QueryScreen extends GetView<QueryController> {
 
     // Kategori seçenekleri
     final List<String> categoryOptions = [
-      'Ümumi',
-      'Hesab problemi',
-      'Ödəniş problemi'
+      'general'.tr,
+      'account_problem'.tr,
+      'payment_problem'.tr
     ];
     String? _selectedCategory;
 
     // Problem sebepleri ve seçimleri için map
     final Map<String, bool> problemReasons = {
-      'Kart texniki səbəblərdən yanlış aktivləşdirilib': false,
-      'Ödəniş edə bilmirəm': false,
-      'QR kod scan edilmir': false,
+      'card_incorrectly_activated'.tr: false,
+      'cannot_make_payment'.tr: false,
+      'qr_code_not_scanning'.tr: false,
     };
 
     // Seçili sebep sayısı
@@ -193,9 +193,9 @@ class QueryScreen extends GetView<QueryController> {
                   const SizedBox(height: 10),
                   Center(
                     child: Text(
-                      'Sorğu yarat',
+                      'create_query'.tr,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -205,9 +205,9 @@ class QueryScreen extends GetView<QueryController> {
                   SizedBox(height: 7),
                   Center(
                     child: Text(
-                      'Biz buradayıq, sizə necə kömək edə bilərik?',
+                      'support_subtitle'.tr,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor,
@@ -218,9 +218,9 @@ class QueryScreen extends GetView<QueryController> {
 
                   // Sorğu kategoriyası - İnteraktif buton
                   Text(
-                    'Sorğu kateqoriyası',
+                    'query_category'.tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -253,9 +253,9 @@ class QueryScreen extends GetView<QueryController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _selectedCategory ?? 'Seçim edin',
+                            _selectedCategory ?? 'select_option'.tr,
                             style: TextStyle(
-    fontFamily: 'Poppins',
+                              fontFamily: 'Poppins',
                               fontSize: 13,
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
@@ -274,9 +274,9 @@ class QueryScreen extends GetView<QueryController> {
 
                   // Problemin səbəbi - Bottom sheet ile
                   Text(
-                    'Problemin səbəbi',
+                    'problem_reason'.tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -313,10 +313,10 @@ class QueryScreen extends GetView<QueryController> {
                         children: [
                           Obx(() => Text(
                                 selectedReasonCount.value > 0
-                                    ? '${selectedReasonCount.value} seçim edildi'
-                                    : 'Seçim edin',
+                                    ? '${selectedReasonCount.value} ${'selections_made'.tr}'
+                                    : 'select_option'.tr,
                                 style: TextStyle(
-    fontFamily: 'Poppins',
+                                    fontFamily: 'Poppins',
                                     fontSize: 13,
                                     color: Theme.of(context)
                                         .colorScheme
@@ -336,9 +336,9 @@ class QueryScreen extends GetView<QueryController> {
 
                   // Mövzu
                   Text(
-                    'Mövzu',
+                    'subject'.tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -348,16 +348,16 @@ class QueryScreen extends GetView<QueryController> {
                   _buildTextField(
                     context: context,
                     controller: _titleController,
-                    hintText: 'Adınızı daxil edin',
+                    hintText: 'enter_your_name'.tr,
                   ),
 
                   const SizedBox(height: 16),
 
                   // Probleminiz
                   Text(
-                    'Probleminiz',
+                    'your_problem'.tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: Theme.of(context).colorScheme.onBackground,
@@ -367,7 +367,7 @@ class QueryScreen extends GetView<QueryController> {
                   _buildTextField(
                     context: context,
                     controller: _descriptionController,
-                    hintText: 'Qarşılaşdığınız problemi bizə təsvir edin',
+                    hintText: 'describe_problem'.tr,
                     maxLines: 3,
                   ),
 
@@ -385,9 +385,9 @@ class QueryScreen extends GetView<QueryController> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          'Şəkil və ya fayl əlavə edin',
+                          'add_image_or_file'.tr,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onBackground,
@@ -408,7 +408,7 @@ class QueryScreen extends GetView<QueryController> {
                       },
                       style: AppTheme.primaryButtonStyle(),
                       child: Text(
-                        'Sorğu göndər',
+                        'send_query'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -555,7 +555,7 @@ class QueryScreen extends GetView<QueryController> {
                                   child: Text(
                                     reason,
                                     style: TextStyle(
-    fontFamily: 'Poppins',
+                                      fontFamily: 'Poppins',
                                       fontSize: 15,
                                       color: Theme.of(context)
                                           .colorScheme
@@ -627,9 +627,9 @@ class QueryScreen extends GetView<QueryController> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Müraciətiniz göndərildi',
+                'request_sent'.tr,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -637,10 +637,10 @@ class QueryScreen extends GetView<QueryController> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Ən qısa zamanda e-poçt adresinizə problemin həlli ilə bağlı mesaj göndəriləcək',
+                'problem_solution_message'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Theme.of(context).unselectedWidgetColor,
@@ -656,7 +656,7 @@ class QueryScreen extends GetView<QueryController> {
                   },
                   style: AppTheme.primaryButtonStyle(),
                   child: Text(
-                    'Tamamlandı',
+                    'completed'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -685,7 +685,7 @@ class QueryScreen extends GetView<QueryController> {
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
-    fontFamily: 'Poppins',
+          fontFamily: 'Poppins',
           fontSize: 14,
           color: Theme.of(context).splashColor,
         ),

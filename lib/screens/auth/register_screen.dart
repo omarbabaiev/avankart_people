@@ -1,4 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/widgets/appbar/adaptive_appbar.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/snackbar_utils.dart';
@@ -510,16 +511,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'new_account'.tr,
-          style: TextStyle(
-              fontFamily: "Poppins", fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
+      appBar: AdaptiveAppBar(
+        title: 'new_account'.tr,
+        onBackPressed: () => Get.back(),
       ),
       body: SingleChildScrollView(
         child: Padding(
