@@ -1,14 +1,14 @@
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_header_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_info_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_action_buttons_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_address_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_working_hours_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_social_media_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_contact_widget.dart';
-import 'package:avankart_people/widgets/restaurant_details_widgets/restaurant_category_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_header_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_info_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_action_buttons_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_address_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_working_hours_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_social_media_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_contact_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_category_widget.dart';
 
 class RestorauntDetailScreen extends StatelessWidget {
   const RestorauntDetailScreen({super.key});

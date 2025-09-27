@@ -3,7 +3,7 @@ import 'package:avankart_people/controllers/membership_controller.dart';
 import 'package:avankart_people/models/membership_models.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

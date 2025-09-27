@@ -6,7 +6,7 @@ import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:avankart_people/utils/masked_text_formatter.dart';
 import 'package:avankart_people/utils/toast_utils.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:avankart_people/widgets/bottom_sheets/name_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/birth_date_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/phone_change_bottom_sheet.dart';

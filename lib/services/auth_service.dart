@@ -1,6 +1,7 @@
 import 'package:avankart_people/utils/conts_texts.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
+import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:dio/dio.dart';
 import '../models/login_response.dart';
 import '../models/register_response.dart';
@@ -22,7 +23,7 @@ class AuthService {
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
   FirebaseService? _firebaseService;
 
   FirebaseService get _firebaseServiceInstance {
@@ -39,7 +40,7 @@ class AuthService {
         // Sadece login ve register endpointleri hariç
         if (!(options.path.contains('/auth/login') ||
             options.path.contains('/auth/register'))) {
-          final token = await _storage.read(key: 'token');
+          final token = await _storage.read(key: SecureStorageConfig.tokenKey);
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -281,11 +282,11 @@ class AuthService {
   /// Home
   Future<HomeResponse?> home() async {
     try {
-      // Token'ı kontrol et
-      final token = await _storage.read(key: 'token');
-      print('[HOME REQUEST] Token: ${token?.substring(0, 20)}...');
-      print('[DEBUG] Full token: $token');
-      print('[DEBUG] Token length: ${token?.length}');
+      // Token'ı storage'dan oku
+      final tokenToUse = await _storage.read(key: SecureStorageConfig.tokenKey);
+      print('[HOME REQUEST] Token: ${tokenToUse?.substring(0, 20)}...');
+      print('[DEBUG] Full token: $tokenToUse');
+      print('[DEBUG] Token length: ${tokenToUse?.length}');
 
       // Firebase token al
       String? firebaseToken = await _firebaseServiceInstance.getStoredToken();
@@ -393,7 +394,7 @@ class AuthService {
 
   /// Token'ı kaydet
   Future<void> saveToken(String token) async {
-    await _storage.write(key: 'token', value: token);
+    await _storage.write(key: SecureStorageConfig.tokenKey, value: token);
     print('[TOKEN SAVED] $token');
   }
 
@@ -447,15 +448,13 @@ class AuthService {
 
   /// Token geçersiz durumunda logout yap
   Future<void> _handleTokenInvalid() async {
-    await _storage.delete(key: 'token');
-    await _storage.delete(key: 'rememberMe');
+    await _storage.delete(key: SecureStorageConfig.tokenKey);
     print('[AUTH SERVICE] Token invalid, cleared storage');
   }
 
   /// Logout gerekli durumunda logout yap
   Future<void> _handleLogoutRequired() async {
-    await _storage.delete(key: 'token');
-    await _storage.delete(key: 'rememberMe');
+    await _storage.delete(key: SecureStorageConfig.tokenKey);
     print('[AUTH SERVICE] Logout required, cleared storage');
   }
 

@@ -76,6 +76,11 @@ class AppTranslations extends Translations {
           'terms_of_use': 'İstifadə Qaydaları',
           "contact_info": "Əlaqə məlumatları",
 
+          // Favorite Messages
+          'company_added_to_favorites': 'Müəssisə favorilərə əlavə olundu',
+          'company_removed_from_favorites': 'Müəssisə favorilərdən çıxarıldı',
+          'favorite_error': 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+
           // Register Screen
           'new_account': 'Yeni Hesab',
           'first_name': 'Ad',

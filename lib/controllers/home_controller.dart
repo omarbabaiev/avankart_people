@@ -4,21 +4,19 @@ import 'package:avankart_people/screens/main/card_screen.dart';
 import 'package:avankart_people/screens/main/home_screen.dart';
 import 'package:avankart_people/screens/main/settings_screen.dart';
 import 'package:avankart_people/screens/other/profil_screen.dart';
-import 'package:avankart_people/screens/other/notifications_screen.dart';
 import 'package:avankart_people/screens/support/support_screen.dart';
 import 'package:avankart_people/screens/support/faq_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../screens/support/support_screen.dart';
 import '../utils/vibration_util.dart';
 import '../utils/auth_utils.dart';
 import '../utils/api_response_parser.dart';
 import '../services/auth_service.dart';
-import '../services/profile_service.dart';
+import '../services/companies_service.dart';
 import '../models/user_model.dart';
+import '../models/companies_response.dart';
 import '../routes/app_routes.dart';
-import 'package:get_storage/get_storage.dart';
 
 class HomeController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -39,6 +37,11 @@ class HomeController extends GetxController
   final _showRetryButton = false.obs;
   final _retryMessage = ''.obs;
 
+  // Companies bilgileri
+  final _companies = <MuessiseModel>[].obs;
+  final _isLoadingCompanies = false.obs;
+  final _companiesError = ''.obs;
+
   // Global retry yönetimi
   final _globalShowRetryButton = false.obs;
   final _globalRetryMessage = ''.obs;
@@ -48,10 +51,9 @@ class HomeController extends GetxController
   // Hot reload kontrolü
   bool _isHotReload = false;
 
-  // AuthService
+  // Services
   final AuthService _authService = AuthService();
-  final ProfileService _profileService = ProfileService();
-  final GetStorage _getStorage = GetStorage();
+  final CompaniesService _companiesService = CompaniesService();
 
   // Animasyon controller
   late AnimationController _animationController;
@@ -77,6 +79,11 @@ class HomeController extends GetxController
   bool get globalIsLoading => _globalIsLoading.value;
   Future<void> Function()? get globalRetryCallback =>
       _globalRetryCallback.value;
+
+  // Companies getters
+  List<MuessiseModel> get companies => _companies;
+  bool get isLoadingCompanies => _isLoadingCompanies.value;
+  String get companiesError => _companiesError.value;
 
   // Controller başlatıldığında gerekli ayarları yapar
   @override
@@ -107,6 +114,11 @@ class HomeController extends GetxController
     // Başlangıçta ana sayfayı göster (getProfile request olmadan)
     _changePageWithAnimation(0, skipProfileRequest: true);
     _isSpecialPage.value = false;
+
+    // İlk açılışta companies'leri yükle
+    if (!_isHotReload) {
+      loadCompanies();
+    }
   }
 
   /// Retry butonuna basıldığında çağrılır
@@ -165,6 +177,9 @@ class HomeController extends GetxController
       // User data'yı yeniden yükle
       await _loadUserData();
 
+      // Companies'leri de yeniden yükle
+      await loadCompanies();
+
       // Profile data'yı da yeniden yükle
       if (Get.isRegistered<ProfileController>()) {
         await Get.find<ProfileController>().getProfile();
@@ -192,6 +207,7 @@ class HomeController extends GetxController
     _isRefreshing.value = true;
     try {
       await _loadUserData();
+      await loadCompanies(); // Companies'leri de yenile
 
       // Notifications'ları da yenile
       if (Get.isRegistered<NotificationsController>()) {
@@ -200,6 +216,52 @@ class HomeController extends GetxController
     } finally {
       _isRefreshing.value = false;
     }
+  }
+
+  /// Companies'leri yükle
+  Future<void> loadCompanies({
+    String? filterType,
+    String? search,
+    String? cardId,
+    List<String>? muessiseCategory,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      _isLoadingCompanies.value = true;
+      _companiesError.value = '';
+
+      print('[HOME CONTROLLER] Loading companies...');
+
+      final response = await _companiesService.getCompanies(
+        filterType: filterType,
+        search: search,
+        cardId: cardId,
+        muessiseCategory: muessiseCategory,
+        page: page,
+        limit: limit,
+      );
+
+      if (response != null) {
+        _companies.value = response.muessises;
+        print(
+            '[HOME CONTROLLER] Companies loaded successfully: ${response.muessises.length} items');
+        update();
+      } else {
+        _companiesError.value = 'failed_to_load_companies'.tr;
+        print('[HOME CONTROLLER] Failed to load companies - response is null');
+      }
+    } catch (e) {
+      _companiesError.value = _extractErrorMessage(e);
+      print('[HOME CONTROLLER] Error loading companies: $e');
+    } finally {
+      _isLoadingCompanies.value = false;
+    }
+  }
+
+  /// Companies'leri yenile (pull to refresh için)
+  Future<void> refreshCompanies() async {
+    await loadCompanies();
   }
 
   // User bilgilerini yükle
@@ -275,24 +337,6 @@ class HomeController extends GetxController
       _retryMessage.value = _extractErrorMessage(e);
     } finally {
       _isLoading.value = false;
-    }
-  }
-
-  // NotificationsController'ı başlat ve notifications'ları çek
-  Future<void> _initializeNotifications() async {
-    try {
-      print('[HOME CONTROLLER] Initializing notifications...');
-
-      // NotificationsController'ı başlat
-      final notificationsController = Get.put(NotificationsController());
-
-      // Notifications'ları çek
-      await notificationsController.getNotifications();
-
-      print('[HOME CONTROLLER] Notifications initialized successfully');
-    } catch (e) {
-      print('[HOME CONTROLLER] Error initializing notifications: $e');
-      // Notifications hatası kritik değil, sessizce handle et
     }
   }
 

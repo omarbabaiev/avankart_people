@@ -1,3 +1,4 @@
+import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:get/get.dart';
 import '../services/auth_service.dart';
 import '../models/register_response.dart';
@@ -128,7 +129,8 @@ class RegisterController extends GetxController {
 
       if (response.token != null && response.token!.isNotEmpty) {
         // Token'ı kaydet
-        await _storage.write(key: 'token', value: response.token);
+        await _storage.write(
+            key: SecureStorageConfig.tokenKey, value: response.token);
         print('[REGISTER SUCCESS] Token saved: ${response.token}');
 
         // OTP ekranına yönlendir (register'dan geldiğini belirt)

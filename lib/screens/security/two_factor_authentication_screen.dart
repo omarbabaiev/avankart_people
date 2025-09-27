@@ -1,6 +1,6 @@
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +21,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
           child: Text(
             'Təhlükəsizlik',
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -44,7 +44,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                   Text(
                     "2 addımlı doğrulama",
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onBackground),
@@ -54,7 +54,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                     "Hesabınızın təhlükəsizliyi bizim üçün önəmlidir. İki addımlı doğrulama ilə hesabınıza girişləri tam idarə edin.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context).unselectedWidgetColor),
@@ -135,7 +135,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
       title: Text(
         title,
         style: TextStyle(
-    fontFamily: 'Poppins',
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Theme.of(context).colorScheme.onBackground,
@@ -144,7 +144,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: TextStyle(
-    fontFamily: 'Poppins',
+          fontFamily: 'Poppins',
           fontSize: 10,
           fontWeight: FontWeight.w400,
           color: Theme.of(context).unselectedWidgetColor,

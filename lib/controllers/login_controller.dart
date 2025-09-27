@@ -2,8 +2,10 @@ import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:avankart_people/utils/auth_utils.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
+import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../services/auth_service.dart';
 import '../models/login_response.dart';
 import '../routes/app_routes.dart';
@@ -12,7 +14,7 @@ import '../controllers/home_controller.dart';
 
 class LoginController extends GetxController {
   final AuthService _authService = AuthService();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -45,7 +47,8 @@ class LoginController extends GetxController {
             'OTP required, saving token and navigating to OTP screen');
 
         // Token'ı storage'a kaydet
-        await _storage.write(key: 'token', value: response.token);
+        await _storage.write(
+            key: SecureStorageConfig.tokenKey, value: response.token);
         print(
             '[LOGIN TOKEN SAVED FOR OTP] ${response.token.substring(0, 20)}...');
 
@@ -75,18 +78,36 @@ class LoginController extends GetxController {
   /// Token'ı kaydet ve home endpoint'ini çağır
   Future<void> _saveTokenAndProceed(String token) async {
     try {
-      // Remember me durumuna göre token'ı kaydet
+      // Token'ı kaydet
+      await _storage.write(key: SecureStorageConfig.tokenKey, value: token);
+
+      // Remember me durumunu GetStorage ile ayarla
       if (rememberMe.value) {
-        await _storage.write(key: 'token', value: token);
-        await _storage.write(key: 'rememberMe', value: 'true');
+        GetStorage().write('rememberMe', true);
         print('[TOKEN SAVED] With remember me: true');
       } else {
-        await _storage.write(key: 'token', value: token);
-        await _storage.delete(key: 'rememberMe');
+        GetStorage().write('rememberMe', false);
         print('[TOKEN SAVED] Without remember me');
       }
 
-      // Home endpoint'ini çağır
+      // Token'ın gerçekten kaydedildiğini kontrol et
+      final savedToken = await _storage.read(key: SecureStorageConfig.tokenKey);
+      if (savedToken != token) {
+        print('[TOKEN ERROR] Token could not be saved properly!');
+        SnackbarUtils.showErrorSnackbar('token_save_error'.tr);
+        return;
+      }
+
+      // Token storage işleminin tamamlanması için bekleme
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      // Token'ın gerçekten kaydedildiğini tekrar kontrol et
+      final finalToken = await _storage.read(key: SecureStorageConfig.tokenKey);
+      print('[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
+      print('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
+      print('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
+
+      // Home endpoint'ini çağır - storage'dan token okunacak
       print('[CALLING HOME ENDPOINT]');
       final homeResponse = await _authService.home();
       print('[HOME RESPONSE] success: ${homeResponse?.success}');
@@ -158,8 +179,8 @@ class LoginController extends GetxController {
             '[NEW PASSWORD] Password updated, redirecting to login for security');
 
         // Token'ı temizle çünkü yeni login gerekli
-        await _storage.delete(key: 'token');
-        await _storage.delete(key: 'rememberMe');
+        await _storage.delete(key: SecureStorageConfig.tokenKey);
+        GetStorage().remove('rememberMe');
         print('[NEW PASSWORD] Tokens cleared for fresh login');
 
         // Success mesajını göster ve ardından navigate et

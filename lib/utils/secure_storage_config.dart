@@ -16,7 +16,6 @@ class SecureStorageConfig {
   // Token storage keys
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';
-  static const String rememberMeKey = 'remember_me';
   static const String userDataKey = 'user_data';
   static const String firebaseTokenKey = 'firebase_token';
   static const String pinCodeKey = 'pin_code';

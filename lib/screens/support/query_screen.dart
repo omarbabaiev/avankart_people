@@ -3,8 +3,10 @@ import 'package:avankart_people/controllers/query_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
+import 'package:avankart_people/utils/toast_utils.dart';
 import 'package:avankart_people/widgets/settings_widgets/settings_radio_item.dart';
 import 'package:avankart_people/widgets/support_widgets/query_card.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -60,7 +62,7 @@ class QueryScreen extends GetView<QueryController> {
           final isEmpty = controller.queries.isEmpty;
 
           return RefreshIndicator.adaptive(
-            onRefresh: controller.fetchQueries,
+            onRefresh: controller.refresh,
             child: Skeletonizer(
               enableSwitchAnimation: true,
               enabled: isLoading,
@@ -171,6 +173,9 @@ class QueryScreen extends GetView<QueryController> {
 
     // Seçili sebep sayısı
     final RxInt selectedReasonCount = 0.obs;
+
+    // Seçili dosyalar
+    final RxList<String> selectedFiles = <String>[].obs;
 
     context.showPerformantBottomSheet(
       isScrollControlled: true,
@@ -374,8 +379,19 @@ class QueryScreen extends GetView<QueryController> {
                   // Şəkil və fayl əlavə et
                   const SizedBox(height: 24),
                   InkWell(
-                    onTap: () {
-                      // Dosya ekleme işlemi
+                    onTap: () async {
+                      // Dosya seçme işlemi
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.any,
+                        allowMultiple: true,
+                      );
+
+                      if (result != null) {
+                        selectedFiles.value =
+                            result.files.map((file) => file.path!).toList();
+                        ToastUtils.showSuccessToast('files_selected'.tr);
+                      }
                     },
                     child: Row(
                       children: [
@@ -397,14 +413,113 @@ class QueryScreen extends GetView<QueryController> {
                     ),
                   ),
 
+                  // Seçili dosyaları göster
+                  Obx(() {
+                    if (selectedFiles.isEmpty) {
+                      return SizedBox.shrink();
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(
+                          'selected_files'.tr,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...selectedFiles.map((filePath) {
+                          final fileName = filePath.split('/').last;
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.attach_file,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    fileName,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    selectedFiles.remove(filePath);
+                                  },
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Theme.of(context).colorScheme.error,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    );
+                  }),
+
                   const SizedBox(height: 60),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Sorgu başarılı bottom sheet göster
-                        _showSuccessBottomSheet(context);
+                      onPressed: () async {
+                        // Form validation
+                        if (_titleController.text.trim().isEmpty) {
+                          ToastUtils.showErrorToast('title_required'.tr);
+                          return;
+                        }
+
+                        if (_descriptionController.text.trim().isEmpty) {
+                          ToastUtils.showErrorToast('description_required'.tr);
+                          return;
+                        }
+
+                        if (_selectedCategory == null) {
+                          ToastUtils.showErrorToast('category_required'.tr);
+                          return;
+                        }
+
+                        // Create query
+                        final success = await controller.createQuery(
+                          title: _titleController.text.trim(),
+                          content: _titleController.text
+                              .trim(), // Kısa açıklama için title kullan
+                          description: _descriptionController.text.trim(),
+                          category: _selectedCategory!,
+                          files: selectedFiles, // Seçili dosyaları gönder
+                        );
+
+                        if (success) {
+                          _showSuccessBottomSheet(context);
+                        }
                       },
                       style: AppTheme.primaryButtonStyle(),
                       child: Text(

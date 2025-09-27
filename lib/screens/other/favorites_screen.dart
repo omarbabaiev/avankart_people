@@ -1,6 +1,7 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/controllers/notifications_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,21 +45,53 @@ class FavoritesScreen extends StatelessWidget {
           //   ),
           // ),
           // SizedBox(width: 4),
-          IconButton.filledTonal(
-            icon: Image.asset(
-              ImageAssets.bellInactive,
-              width: 24,
-              height: 24,
-              color: Theme.of(context).colorScheme.onBackground,
-            ),
-            onPressed: () {
-              Get.toNamed(AppRoutes.notifications);
-            },
-            style: IconButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              fixedSize: Size(44, 44),
-            ),
-          ),
+          Obx(() {
+            final notificationsController = Get.find<NotificationsController>();
+            final unreadCount = notificationsController.unreadCount;
+
+            return Stack(
+              children: [
+                IconButton.filledTonal(
+                  icon: Image.asset(
+                    ImageAssets.bellInactive,
+                    width: 24,
+                    height: 24,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.notifications);
+                  },
+                  style: IconButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    fixedSize: Size(44, 44),
+                  ),
+                ),
+                if (unreadCount > 0)
+                  Positioned(
+                    right: 4,
+                    top: 4,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      alignment: Alignment.center,
+                      child: Text(
+                        unreadCount.toString(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      width: 15,
+                      height: 15,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
           SizedBox(width: 15),
         ],
       ),
@@ -219,7 +252,7 @@ class FavoritesScreen extends StatelessWidget {
               ];
 
               final restaurant = restaurants[index];
-              return RestaurantCard(
+              return CompanyCard(
                 name: restaurant['name'].toString(),
                 location: restaurant['location'].toString(),
                 distance: restaurant['distance'].toString(),
@@ -228,6 +261,7 @@ class FavoritesScreen extends StatelessWidget {
                 hasGift: restaurant['hasGift'] as bool,
                 type: restaurant['type'],
                 index: index,
+                companyId: '',
               );
             },
           ),

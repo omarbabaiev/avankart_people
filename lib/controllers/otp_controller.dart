@@ -2,6 +2,7 @@ import '../utils/snackbar_utils.dart';
 import '../utils/api_response_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
@@ -124,27 +125,43 @@ class OtpController extends GetxController {
   /// Token'ı kaydet ve home endpoint'ini çağır
   Future<void> _saveTokenAndProceed(String token, bool rememberMe) async {
     try {
-      // Token'ı kaydet
-      await _storage.write(key: 'token', value: token);
+      // Token'ı kaydet ve işlemin tamamlanmasını bekle
+      await _storage.write(key: SecureStorageConfig.tokenKey, value: token);
       print('[TOKEN SAVED FOR HOME CALL] ${token.substring(0, 20)}...');
       print('[TOKEN SAVED] Full token length: ${token.length}');
 
       // Token'ın gerçekten kaydedilip kaydedilmediğini kontrol et
-      final savedToken = await _storage.read(key: 'token');
+      final savedToken = await _storage.read(key: SecureStorageConfig.tokenKey);
       print(
           '[TOKEN VERIFICATION] Saved token: ${savedToken?.substring(0, 20)}...');
       print('[TOKEN VERIFICATION] Token matches: ${savedToken == token}');
 
-      // Remember me durumunu ayarla
+      // Eğer token kaydedilemediyse hata ver
+      if (savedToken != token) {
+        print('[TOKEN ERROR] Token could not be saved properly!');
+        SnackbarUtils.showErrorSnackbar('token_save_error'.tr);
+        return;
+      }
+
+      // Remember me durumunu GetStorage ile ayarla
       if (rememberMe) {
-        await _storage.write(key: 'rememberMe', value: 'true');
+        GetStorage().write('rememberMe', true);
         print('[REMEMBER ME SAVED] true');
       } else {
-        await _storage.write(key: 'rememberMe', value: 'false');
+        GetStorage().write('rememberMe', false);
         print('[REMEMBER ME SAVED] false');
       }
 
-      // Home endpoint'ini çağır
+      // Token storage işleminin tamamlanması için bekleme
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      // Token'ın gerçekten kaydedildiğini tekrar kontrol et
+      final finalToken = await _storage.read(key: SecureStorageConfig.tokenKey);
+      print('[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
+      print('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
+      print('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
+
+      // Home endpoint'ini çağır - storage'dan token okunacak
       print('[CALLING HOME ENDPOINT]');
       final homeResponse = await _authService.home();
       print('[HOME RESPONSE] success: ${homeResponse?.success}');

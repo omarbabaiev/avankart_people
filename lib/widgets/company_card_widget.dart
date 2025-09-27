@@ -1,11 +1,14 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/screens/other/restoraunt_detail_screen.dart';
+import 'package:avankart_people/services/companies_service.dart';
+import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:avankart_people/utils/snackbar_utils.dart';
 
-class RestaurantCard extends StatelessWidget {
+class CompanyCard extends StatelessWidget {
   final String name;
   final int index;
   final String location;
@@ -14,8 +17,10 @@ class RestaurantCard extends StatelessWidget {
   final bool isOpen;
   final bool hasGift;
   final String type;
+  final String companyId;
+  final bool isFavorite;
 
-  const RestaurantCard({
+  const CompanyCard({
     Key? key,
     required this.name,
     required this.index,
@@ -23,8 +28,10 @@ class RestaurantCard extends StatelessWidget {
     required this.distance,
     required this.imageUrl,
     required this.type,
+    required this.companyId,
     this.isOpen = true,
     this.hasGift = false,
+    this.isFavorite = false,
   }) : super(key: key);
 
   @override
@@ -50,12 +57,7 @@ class RestaurantCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
-                  child: Image.asset(
-                    imageUrl,
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: _buildCompanyImage(context),
                 ),
                 Positioned(
                   top: 8,
@@ -68,10 +70,10 @@ class RestaurantCard extends StatelessWidget {
                           .onPrimary
                           .withOpacity(.2),
                     ),
-                    onPressed: () {},
+                    onPressed: () => _toggleFavorite(),
                     icon: Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.white,
                       size: 24,
                     ),
                   ),
@@ -92,11 +94,11 @@ class RestaurantCard extends StatelessWidget {
                           Theme.of(context)
                               .colorScheme
                               .onBackground
-                              .withOpacity(.9),
+                              .withOpacity(.5),
                           Theme.of(context)
                               .colorScheme
                               .onBackground
-                              .withOpacity(.3),
+                              .withOpacity(.1),
                         ],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
@@ -118,6 +120,13 @@ class RestaurantCard extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.5, 0.5),
+                              blurRadius: 2,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -140,8 +149,10 @@ class RestaurantCard extends StatelessWidget {
                       Text(
                         name,
                         textAlign: TextAlign.left,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-    fontFamily: 'Poppins',
+                          fontFamily: 'Poppins',
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground,
@@ -151,8 +162,10 @@ class RestaurantCard extends StatelessWidget {
                       Text(
                         location,
                         textAlign: TextAlign.left,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-    fontFamily: 'Poppins',
+                          fontFamily: 'Poppins',
                           fontSize: 12,
                           color: Theme.of(context).unselectedWidgetColor,
                         ),
@@ -201,9 +214,49 @@ class RestaurantCard extends StatelessWidget {
                                             .colorScheme
                                             .onBackground),
                                   ),
+                                'hotel' => Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(Icons.hotel,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
+                                'market' => Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(Icons.store,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
+                                'gym' => Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(Icons.fitness_center,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
+                                'pharmacy' => Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(Icons.local_pharmacy,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
+                                'beauty' => Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(Icons.face,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
                                 _ => Padding(
                                     padding: const EdgeInsets.all(6.0),
-                                    child: Icon(Icons.place,
+                                    child: Icon(Icons.business,
                                         size: 20,
                                         color: Theme.of(context)
                                             .colorScheme
@@ -262,5 +315,130 @@ class RestaurantCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildCompanyImage(BuildContext context) {
+    // Eğer imageUrl network URL ise CachedNetworkImage kullan
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('https')) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => _buildImagePlaceholder(context),
+        errorWidget: (context, url, error) => _buildImagePlaceholder(context),
+      );
+    }
+
+    // Eğer local asset ise Image.asset kullan
+    if (imageUrl.startsWith('assets/')) {
+      return Image.asset(
+        imageUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildImagePlaceholder(context),
+      );
+    }
+
+    // Default placeholder
+    return _buildImagePlaceholder(context);
+  }
+
+  Widget _buildImagePlaceholder(BuildContext context) {
+    return Container(
+      height: 160,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getCompanyIcon(),
+            size: 48,
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.7),
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getCompanyIcon() {
+    switch (type) {
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'cafe':
+        return Icons.local_cafe;
+      case 'petrol':
+        return Icons.local_gas_station;
+      case 'market':
+        return Icons.store;
+      case 'hotel':
+        return Icons.hotel;
+      case 'gym':
+        return Icons.fitness_center;
+      case 'pharmacy':
+        return Icons.local_pharmacy;
+      case 'beauty':
+        return Icons.face;
+      default:
+        return Icons.business;
+    }
+  }
+
+  /// Favorite toggle functionality
+  Future<void> _toggleFavorite() async {
+    try {
+      DebugLogger.apiRequest('FAVORITE_TOGGLE', {
+        'company_id': companyId,
+        'company_name': name,
+        'is_favorite': isFavorite,
+      });
+
+      final companiesService = CompaniesService();
+
+      if (isFavorite) {
+        // Remove from favorites
+        await companiesService.addToFavorites(muessiseId: companyId);
+        SnackbarUtils.showSuccessSnackbar(
+          'company_removed_from_favorites'.tr,
+        );
+      } else {
+        // Add to favorites
+        final response =
+            await companiesService.addToFavorites(muessiseId: companyId);
+
+        if (response['status'] == 'added') {
+          // API'den gelen mesajı kullan, yoksa localization'dan al
+          final message =
+              response['message'] ?? 'company_added_to_favorites'.tr;
+          SnackbarUtils.showSuccessSnackbar(message);
+        }
+      }
+
+      DebugLogger.apiResponse('FAVORITE_TOGGLE', {
+        'company_id': companyId,
+        'action': isFavorite ? 'removed' : 'added',
+      });
+    } catch (e) {
+      DebugLogger.apiError('FAVORITE_TOGGLE', e);
+      SnackbarUtils.showErrorSnackbar('favorite_error'.tr);
+    }
   }
 }

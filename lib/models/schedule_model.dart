@@ -59,4 +59,44 @@ class ScheduleModel {
           json['sunday'] != null ? WorkingHours.fromJson(json['sunday']) : null,
     );
   }
+
+  factory ScheduleModel.empty() {
+    return ScheduleModel();
+  }
+
+  // Get day schedule as Map for easier access
+  Map<String, String>? getDaySchedule(String dayName) {
+    switch (dayName.toLowerCase()) {
+      case 'monday':
+        return monday != null
+            ? {'open': monday!.open ?? '', 'close': monday!.close ?? ''}
+            : null;
+      case 'tuesday':
+        return tuesday != null
+            ? {'open': tuesday!.open ?? '', 'close': tuesday!.close ?? ''}
+            : null;
+      case 'wednesday':
+        return wednesday != null
+            ? {'open': wednesday!.open ?? '', 'close': wednesday!.close ?? ''}
+            : null;
+      case 'thursday':
+        return thursday != null
+            ? {'open': thursday!.open ?? '', 'close': thursday!.close ?? ''}
+            : null;
+      case 'friday':
+        return friday != null
+            ? {'open': friday!.open ?? '', 'close': friday!.close ?? ''}
+            : null;
+      case 'saturday':
+        return saturday != null
+            ? {'open': saturday!.open ?? '', 'close': saturday!.close ?? ''}
+            : null;
+      case 'sunday':
+        return sunday != null
+            ? {'open': sunday!.open ?? '', 'close': sunday!.close ?? ''}
+            : null;
+      default:
+        return null;
+    }
+  }
 }

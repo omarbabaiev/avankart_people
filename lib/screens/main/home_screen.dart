@@ -1,16 +1,22 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/controllers/home_controller.dart';
 import 'package:avankart_people/controllers/notifications_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
+import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/models/companies_response.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+import '../../widgets/company_card_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final HomeController controller = Get.find<HomeController>();
     return SafeArea(
       bottom: false,
       child: Scaffold(
@@ -30,22 +36,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           actions: [
-            // IconButton.filledTonal(
-            //   icon: Image.asset(
-            //     ImageAssets.trophy,
-            //     width: 24,
-            //     height: 24,
-            //     color: Theme.of(context).colorScheme.onBackground,
-            //   ),
-            //   onPressed: () {
-            //     Get.toNamed(AppRoutes.benefits);
-            //   },
-            //   style: IconButton.styleFrom(
-            //     backgroundColor: Theme.of(context).colorScheme.secondary,
-            //     fixedSize: Size(44, 44),
-            //   ),
-            // ),
-            // SizedBox(width: 4),
             IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -110,7 +100,6 @@ class HomeScreen extends StatelessWidget {
                 ],
               );
             }),
-
             SizedBox(width: 15),
           ],
         ),
@@ -280,84 +269,73 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 5),
-            ),
 
             // Restaurant List
-            SliverGrid.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 1.5,
-                crossAxisSpacing: 0,
-                childAspectRatio: 0.68,
-              ),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                final List<Map<String, dynamic>> restaurants = [
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': false,
-                    'type': 'restaurant',
-                  },
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': true,
-                    'type': 'petrol',
-                  },
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': false,
-                    'type': 'cafe',
-                  },
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': false,
-                    'type': 'restaurant',
-                  },
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': false,
-                    'type': 'petrol',
-                  },
-                  {
-                    'name': 'Özsüt Restoran',
-                    'location': 'Bakı, Malakan',
-                    'distance': '1.2 km',
-                    'isOpen': true,
-                    'hasGift': false,
-                    'type': 'cafe',
-                  },
-                ];
+            Obx(() {
+              final isLoading = controller.isLoadingCompanies;
+              final companies = controller.companies;
+              final error = controller.companiesError;
 
-                final restaurant = restaurants[index];
-                return RestaurantCard(
-                  name: restaurant['name'].toString(),
-                  location: restaurant['location'].toString(),
-                  distance: restaurant['distance'].toString(),
-                  imageUrl: 'assets/images/image.png',
-                  isOpen: restaurant['isOpen'] as bool,
-                  hasGift: restaurant['hasGift'] as bool,
-                  type: restaurant['type'],
-                  index: index,
+              // Error state
+              if (error.isNotEmpty) {
+                return SliverToBoxAdapter(
+                  child: _buildErrorState(context, error),
                 );
-              },
-            ),
+              }
+
+              // Empty state (loading false ve companies empty)
+              if (!isLoading && companies.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: _buildEmptyState(context),
+                );
+              }
+
+              return SliverGrid.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 1.5,
+                  crossAxisSpacing: 0,
+                  childAspectRatio: 0.68,
+                ),
+                itemCount: companies.isEmpty ? 6 : companies.length,
+                itemBuilder: (context, index) {
+                  if (companies.isEmpty) {
+                    // Skeleton card
+                    return Skeletonizer(
+                      enabled: true,
+                      child: CompanyCard(
+                        name: 'Company Name',
+                        location: 'Company Location',
+                        distance: '0.0 km',
+                        imageUrl: 'assets/images/image.png',
+                        isOpen: true,
+                        hasGift: false,
+                        type: 'business',
+                        index: index,
+                        companyId: '0',
+                      ),
+                    );
+                  }
+
+                  final company = companies[index];
+                  return Skeletonizer(
+                    enabled: isLoading,
+                    child: CompanyCard(
+                      name: company.muessiseName,
+                      location: company.location,
+                      distance: company.displayDistance,
+                      imageUrl:
+                          company.profileImagePath ?? 'assets/images/image.png',
+                      isOpen: company.isOpen,
+                      hasGift: false, // TODO: Bu bilgiyi API'den al
+                      type: _getCompanyType(
+                          company), // TODO: Bu bilgiyi API'den al
+                      index: index, companyId: company.id,
+                    ),
+                  );
+                },
+              );
+            }),
             SliverToBoxAdapter(
               child: SizedBox(
                 height: 150,
@@ -367,5 +345,159 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildErrorState(BuildContext context, String error) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'error_loading_companies'.tr,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            style: AppTheme.primaryButtonStyle(),
+            onPressed: () {
+              final controller = Get.find<HomeController>();
+              controller.refreshCompanies();
+            },
+            child: Text('retry'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.business_outlined,
+          size: 48,
+          color: Theme.of(context).colorScheme.outline,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'no_companies_available'.tr,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'pull_to_refresh'.tr,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          style: AppTheme.primaryButtonStyle(),
+          onPressed: () {
+            final controller = Get.find<HomeController>();
+            controller.refreshCompanies();
+          },
+          child: Text('refresh'.tr),
+        ),
+      ],
+    );
+  }
+
+  String _getCompanyType(MuessiseModel company) {
+    final name = company.muessiseName.toLowerCase();
+
+    // Restoran detection
+    if (name.contains('restoran') ||
+        name.contains('restaurant') ||
+        name.contains('kebab') ||
+        name.contains('pizza') ||
+        name.contains('burger')) {
+      return 'restaurant';
+    }
+
+    // Cafe detection
+    if (name.contains('kafe') ||
+        name.contains('cafe') ||
+        name.contains('coffee')) {
+      return 'cafe';
+    }
+
+    // Petrol station detection
+    if (name.contains('benzin') ||
+        name.contains('yanacaq') ||
+        name.contains('fuel') ||
+        name.contains('petrol') ||
+        name.contains('azpetrol')) {
+      return 'petrol';
+    }
+
+    // Hotel detection
+    if (name.contains('hotel') || name.contains('otel')) {
+      return 'hotel';
+    }
+
+    // Market detection
+    if (name.contains('market') ||
+        name.contains('mağaza') ||
+        name.contains('supermarket')) {
+      return 'market';
+    }
+
+    // Gym/Fitness detection
+    if (name.contains('gym') ||
+        name.contains('fitness') ||
+        name.contains('spor')) {
+      return 'gym';
+    }
+
+    // Pharmacy detection
+    if (name.contains('eczane') ||
+        name.contains('pharmacy') ||
+        name.contains('əczanə')) {
+      return 'pharmacy';
+    }
+
+    // Beauty salon detection
+    if (name.contains('beauty') ||
+        name.contains('salon') ||
+        name.contains('güzellik')) {
+      return 'beauty';
+    }
+
+    // Default
+    return 'business';
   }
 }

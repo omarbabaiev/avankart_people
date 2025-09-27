@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import '../utils/api_response_parser.dart';
 import '../utils/debug_logger.dart';
+import '../utils/secure_storage_config.dart';
 import '../models/membership_models.dart';
 import 'auth_service.dart';
 
@@ -15,12 +16,12 @@ class MembershipService {
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
 
   MembershipService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await _storage.read(key: 'token');
+        final token = await _storage.read(key: SecureStorageConfig.tokenKey);
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }

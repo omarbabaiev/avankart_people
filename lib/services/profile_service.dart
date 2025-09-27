@@ -1,4 +1,5 @@
 import 'package:avankart_people/utils/api_response_parser.dart';
+import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -15,7 +16,7 @@ class ProfileService {
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
   FirebaseService? _firebaseService;
 
   FirebaseService get _firebaseServiceInstance {
@@ -26,7 +27,7 @@ class ProfileService {
   ProfileService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await _storage.read(key: 'token');
+        final token = await _storage.read(key: SecureStorageConfig.tokenKey);
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }

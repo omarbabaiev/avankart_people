@@ -1,8 +1,16 @@
+import 'package:avankart_people/services/query_service.dart';
+import 'package:avankart_people/utils/toast_utils.dart';
 import 'package:get/get.dart';
 
 class QueryController extends GetxController {
   final RxList<Map<String, dynamic>> queries = <Map<String, dynamic>>[].obs;
   final RxBool isLoading = false.obs;
+  final RxInt currentPage = 1.obs;
+  final RxInt totalPages = 1.obs;
+  final RxInt totalItems = 0.obs;
+  final RxBool hasMoreData = true.obs;
+
+  final QueryService _queryService = QueryService();
 
   @override
   void onInit() {
@@ -10,62 +18,59 @@ class QueryController extends GetxController {
     fetchQueries();
   }
 
-  // API'dan sorguları çekmek (şimdilik mock veri)
-  Future<void> fetchQueries() async {
+  // API'dan sorguları çekmek
+  Future<void> fetchQueries({bool isRefresh = false}) async {
+    if (isRefresh) {
+      currentPage.value = 1;
+      hasMoreData.value = true;
+    }
+
+    if (!hasMoreData.value && !isRefresh) return;
+
     isLoading.value = true;
 
     try {
-      // Burada gerçek API çağrısı yapılabilir
-      // Şimdilik mock veri kullanıyoruz
-      await Future.delayed(
-          Duration(milliseconds: 800)); // API gecikmesi simülasyonu
+      final response = await _queryService.getMyTickets(
+        page: currentPage.value,
+        limit: 10,
+      );
 
-      queries.value = [
-        {
-          'id': 'S-12345678',
-          'title': 'İstifadəçinin ödəniş edə bilməməsi',
-          'description':
-              'Ödəniş zamanı "Kart məlumatları yanlışdır" xətası alıram. Kartımla başqa yerlərdə ödəniş edə bilirəm.',
-          'date': '15.06.2023',
-          'status': 'solved',
-          'files': ['https://via.placeholder.com/150', 'avankart.pdf']
-        },
-        {
-          'id': 'S-87654321',
-          'title': 'Hesabımdan yanlış məbləğ çıxılıb',
-          'description':
-              '25 AZN ödəniş etdim, lakin hesabımdan 50 AZN çıxılıb. Lütfən, məsələni araşdırın.',
-          'date': '12.06.2023',
-          'status': 'solved',
-          'files': [
-            'assets/images/cards_backgrounds/card1.png',
-          ]
-        },
-        {
-          'id': 'S-55443322',
-          'title': 'Tətbiqdə məlumatlarım görünmür',
-          'description':
-              'Son əməliyyat tarixçəm və balansım görünmür. Tətbiqi yenidən yükləməyimə baxmayaraq, problem davam edir.',
-          'date': '08.06.2023',
-          'status': 'pending',
-          'files': [
-            'assets/images/cards_backgrounds/card1.png',
-          ]
-        },
-        {
-          'id': 'S-98765432',
-          'title': 'Bonus hesablanmır',
-          'description':
-              'Son 3 alış-verişimdən bonus hesablanmayıb. Şərtlərə uyğun alış-veriş etməyimə baxmayaraq.',
-          'date': '05.06.2023',
-          'status': 'draft',
-          'files': [
-            'assets/images/cards_backgrounds/card1.png',
-          ]
+      if (response['success'] == true) {
+        final List<dynamic> data = response['data'] ?? [];
+
+        // API'den gelen data formatını UI'ya uygun formata çevir
+        final List<Map<String, dynamic>> formattedQueries = data.map((item) {
+          return {
+            'id': item['ticket_id'] ?? item['_id'],
+            'title': item['title'] ?? '',
+            'description': item['content'] ?? '',
+            'date': item['date'] ?? '',
+            'status': item['status'] ?? '',
+            'files': [], // API'de files field'ı yok gibi görünüyor
+            'reason': [], // API'de reason field'ı yok gibi görünüyor
+          };
+        }).toList();
+
+        if (isRefresh) {
+          queries.value = formattedQueries;
+        } else {
+          queries.addAll(formattedQueries);
         }
-      ];
+
+        // Pagination bilgilerini güncelle
+        totalPages.value = response['totalPages'] ?? 1;
+        totalItems.value = response['total'] ?? 0;
+        hasMoreData.value = currentPage.value < totalPages.value;
+
+        if (hasMoreData.value) {
+          currentPage.value++;
+        }
+      } else {
+        ToastUtils.showErrorToast(response['message'] ?? 'error_occurred'.tr);
+      }
     } catch (error) {
       print('Error fetching queries: $error');
+      ToastUtils.showErrorToast('error_occurred'.tr);
     } finally {
       isLoading.value = false;
     }
@@ -79,6 +84,50 @@ class QueryController extends GetxController {
   // Yeni sorgu ekle
   void addQuery(Map<String, dynamic> query) {
     queries.insert(0, query);
-    // Gerçek uygulamada burada bir API çağrısı yapılabilir
+  }
+
+  // Load more data for pagination
+  Future<void> loadMore() async {
+    if (!isLoading.value && hasMoreData.value) {
+      await fetchQueries();
+    }
+  }
+
+  // Refresh data
+  Future<void> refresh() async {
+    await fetchQueries(isRefresh: true);
+  }
+
+  // Create new query
+  Future<bool> createQuery({
+    required String title,
+    required String content,
+    required String description,
+    required String category,
+    List<String>? files,
+  }) async {
+    try {
+      final response = await _queryService.createTicket(
+        title: title,
+        content: content,
+        description: description,
+        category: category,
+        files: files,
+      );
+
+      if (response['success'] == true) {
+        ToastUtils.showSuccessToast('query_created_successfully'.tr);
+        // Refresh the queries list
+        await refresh();
+        return true;
+      } else {
+        ToastUtils.showErrorToast(response['message'] ?? 'error_occurred'.tr);
+        return false;
+      }
+    } catch (error) {
+      print('Error creating query: $error');
+      ToastUtils.showErrorToast('error_occurred'.tr);
+      return false;
+    }
   }
 }

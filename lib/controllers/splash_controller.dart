@@ -9,7 +9,7 @@ import 'login_controller.dart';
 import 'package:get_storage/get_storage.dart';
 
 class SplashController extends GetxController {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
   final AuthService _authService = AuthService();
   final isInitialized = false.obs;
   final isRetrying = false.obs;
@@ -39,17 +39,50 @@ class SplashController extends GetxController {
       // Debug: Tüm key'leri kontrol et
       await _debugAllKeys();
 
-      final token = await _storage.read(key: 'token');
-      final rememberMe = await _storage.read(key: 'rememberMe');
+      // Token'ı storage'dan oku - tüm olası key'leri kontrol et
+      var token = await _storage.read(key: SecureStorageConfig.tokenKey);
+
+      // Eğer yeni key'de token yoksa, tüm olası key'leri kontrol et
+      if (token == null || token.isEmpty) {
+        // Eski key'leri kontrol et
+        final oldToken = await _storage.read(key: 'token');
+        final authToken = await _storage.read(key: 'auth_token');
+        final userToken = await _storage.read(key: 'user_token');
+
+        if (oldToken != null && oldToken.isNotEmpty) {
+          print('[SPLASH] Found token in old key, migrating to new key');
+          await _storage.write(
+              key: SecureStorageConfig.tokenKey, value: oldToken);
+          token = oldToken;
+        } else if (authToken != null && authToken.isNotEmpty) {
+          print('[SPLASH] Found token in auth_token key, migrating to new key');
+          await _storage.write(
+              key: SecureStorageConfig.tokenKey, value: authToken);
+          token = authToken;
+        } else if (userToken != null && userToken.isNotEmpty) {
+          print('[SPLASH] Found token in user_token key, migrating to new key');
+          await _storage.write(
+              key: SecureStorageConfig.tokenKey, value: userToken);
+          token = userToken;
+        } else {
+          print('[SPLASH] No token found in any key');
+        }
+      }
+
+      // Remember me'yi GetStorage'dan oku
+      final rememberMe = GetStorage().read('rememberMe') ?? false;
 
       print('[SPLASH] Token check - token: ${token?.substring(0, 20)}...');
+      print('[SPLASH] Token is null: ${token == null}');
+      print('[SPLASH] Token is empty: ${token?.isEmpty}');
       print('[SPLASH] Remember me: $rememberMe');
+      print('[SPLASH] Remember me is true: $rememberMe');
 
       await Future.delayed(
           const Duration(seconds: 2)); // Lottie animasyonu için bekleme
 
-      // Token varsa ve remember me true ise home request at
-      if (token != null && token.isNotEmpty && rememberMe == 'true') {
+      // Token varsa home request at (remember me kontrolü opsiyonel)
+      if (token != null && token.isNotEmpty) {
         print('[SPLASH] Token found, calling home endpoint');
         try {
           final homeResponse = await _authService.home();
@@ -75,8 +108,15 @@ class SplashController extends GetxController {
           retryMessage.value = _extractErrorMessage(e);
         }
       } else {
-        print('[SPLASH] No token or remember me false, navigating to login');
-        // Token yoksa veya remember me false ise login'e git
+        // Token yoksa remember me'yi temizle ve login'e git (GÜVENLİK)
+        if (rememberMe == true) {
+          print(
+              '[SPLASH] No token found but remember me is true, clearing remember me and navigating to login');
+          // Remember me'yi temizle çünkü token yok - GÜVENLİK
+          GetStorage().remove('rememberMe');
+        } else {
+          print('[SPLASH] No token found, navigating to login');
+        }
         _clearPasswordField();
         Get.offAllNamed(AppRoutes.login);
       }
@@ -154,20 +194,39 @@ class SplashController extends GetxController {
       final allKeys = await _storage.readAll();
       print('[SPLASH DEBUG] All stored keys: ${allKeys.keys.toList()}');
 
-      // Token key'lerini ayrı ayrı kontrol et
-      final token1 = await _storage.read(key: 'token');
-      final token2 = await _storage.read(key: SecureStorageConfig.tokenKey);
-      final rememberMe1 = await _storage.read(key: 'rememberMe');
-      final rememberMe2 =
-          await _storage.read(key: SecureStorageConfig.rememberMeKey);
+      // Tüm key'lerin değerlerini kontrol et
+      for (final key in allKeys.keys) {
+        final value = allKeys[key];
+        if (value != null && value.isNotEmpty) {
+          if (value.length > 50) {
+            print(
+                '[SPLASH DEBUG] $key: ${value.substring(0, 20)}... (${value.length} chars)');
+          } else {
+            print('[SPLASH DEBUG] $key: $value');
+          }
+        }
+      }
 
-      print('[SPLASH DEBUG] token key: ${token1?.substring(0, 20)}...');
-      print('[SPLASH DEBUG] auth_token key: ${token2?.substring(0, 20)}...');
-      print('[SPLASH DEBUG] rememberMe key: $rememberMe1');
-      print('[SPLASH DEBUG] remember_me key: $rememberMe2');
+      // Token key'lerini kontrol et
+      final token = await _storage.read(key: SecureStorageConfig.tokenKey);
+      final rememberMe = GetStorage().read('rememberMe');
+
+      // Tüm olası token key'lerini kontrol et
+      final oldToken = await _storage.read(key: 'token');
+      final authToken = await _storage.read(key: 'auth_token');
+      final userToken = await _storage.read(key: 'user_token');
+      final oldRememberMe = await _storage.read(key: 'rememberMe');
+
+      print('[SPLASH DEBUG] auth_token key: ${token?.substring(0, 20)}...');
+      print('[SPLASH DEBUG] rememberMe (GetStorage): $rememberMe');
+      print('[SPLASH DEBUG] old token key: ${oldToken?.substring(0, 20)}...');
+      print(
+          '[SPLASH DEBUG] auth_token key (direct): ${authToken?.substring(0, 20)}...');
+      print('[SPLASH DEBUG] user_token key: ${userToken?.substring(0, 20)}...');
+      print('[SPLASH DEBUG] old rememberMe key: $oldRememberMe');
 
       // Eğer readAll() boş ama read() token buluyorsa, bu Flutter Secure Storage bug'ı
-      if (allKeys.isEmpty && token1 != null) {
+      if (allKeys.isEmpty && token != null) {
         print(
             '[SPLASH DEBUG] ⚠️ Flutter Secure Storage bug detected! readAll() empty but read() finds token');
       }

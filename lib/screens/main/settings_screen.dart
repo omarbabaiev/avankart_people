@@ -2,7 +2,7 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/theme_controller.dart';
 import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:avankart_people/widgets/settings_widgets/logout_button.dart';
 import 'package:avankart_people/widgets/settings_widgets/profile_section.dart';
 import 'package:avankart_people/widgets/settings_widgets/settings_section.dart';

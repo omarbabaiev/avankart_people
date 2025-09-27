@@ -1,6 +1,6 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/widgets/restaurant_card_widget.dart';
+import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

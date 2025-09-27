@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'secure_storage_config.dart';
 
 class TokenDebug {
@@ -10,8 +11,7 @@ class TokenDebug {
 
     // Token'ı oku
     final token = await _storage.read(key: SecureStorageConfig.tokenKey);
-    final rememberMe =
-        await _storage.read(key: SecureStorageConfig.rememberMeKey);
+    final rememberMe = GetStorage().read('rememberMe');
 
     print('[TOKEN DEBUG] Token: ${token?.substring(0, 20)}...');
     print('[TOKEN DEBUG] Token length: ${token?.length}');
