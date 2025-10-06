@@ -430,13 +430,7 @@ class NotificationItem extends StatelessWidget {
                       onAccept!(notification['id']);
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  style: AppTheme.primaryButtonStyle(),
                   child: Text(
                     'accept'.tr,
                     style: TextStyle(
@@ -559,7 +553,7 @@ class NotificationItem extends StatelessWidget {
                     ),
                   )
                 : Text(
-                    'Qəbul et',
+                    'accept'.tr,
                     style: TextStyle(
                       fontFamily: "Poppins",
                       fontWeight: FontWeight.w500,
@@ -591,7 +585,7 @@ class NotificationItem extends StatelessWidget {
                     ),
                   )
                 : Text(
-                    'Redd et',
+                    'reject'.tr,
                     style: TextStyle(
                       fontFamily: "Poppins",
                       fontSize: 13,
