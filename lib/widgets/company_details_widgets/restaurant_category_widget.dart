@@ -10,10 +10,10 @@ class CategoryItem {
   });
 }
 
-class RestaurantCategoryWidget extends StatelessWidget {
+class CompanyCategoryWidget extends StatelessWidget {
   final List<CategoryItem> categories;
 
-  const RestaurantCategoryWidget({
+  const CompanyCategoryWidget({
     Key? key,
     required this.categories,
   }) : super(key: key);

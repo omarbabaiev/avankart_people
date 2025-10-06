@@ -36,7 +36,7 @@ class QueryCard extends StatelessWidget {
             Text(
               id,
               style: TextStyle(
-    fontFamily: 'Poppins',
+                fontFamily: 'Poppins',
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: Theme.of(context).unselectedWidgetColor,
@@ -46,7 +46,7 @@ class QueryCard extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-    fontFamily: 'Poppins',
+                fontFamily: 'Poppins',
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -55,7 +55,7 @@ class QueryCard extends StatelessWidget {
             Text(
               description,
               style: TextStyle(
-    fontFamily: 'Poppins',
+                fontFamily: 'Poppins',
                 fontSize: 11,
                 fontWeight: FontWeight.w400,
                 color: Theme.of(context).unselectedWidgetColor,
@@ -84,7 +84,7 @@ class QueryCard extends StatelessWidget {
                       Text(
                         date,
                         style: TextStyle(
-    fontFamily: 'Poppins',
+                          fontFamily: 'Poppins',
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onBackground,
@@ -99,28 +99,32 @@ class QueryCard extends StatelessWidget {
                       Icons.circle,
                       size: 6,
                       color: switch (status) {
-                        "pending" => Color(0xffF9B100),
-                        "solved" => AppTheme.greenColor,
-                        "draft" => Theme.of(context).unselectedWidgetColor,
+                        "baxilir" => Color(0xffF9B100),
+                        "hell_olundu" => AppTheme.greenColor,
+                        "qaralama" => Theme.of(context).unselectedWidgetColor,
+                        "redd_edildi" => Theme.of(context).colorScheme.error,
                         _ => Colors.transparent,
                       },
                     ),
                     SizedBox(width: 4),
                     Text(
                       switch (status) {
-                        "pending" => "pending".tr,
-                        "solved" => "solved".tr,
-                        "draft" => "draft".tr,
+                        "baxilir" => "pending".tr,
+                        "hell_olundu" => "solved".tr,
+                        "qaralama" => "draft".tr,
+                        "redd_edildi" => "rejected".tr,
                         _ => "status_not_found".tr,
                       },
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: switch (status) {
-                          "pending" => Color(0xffF9B100),
-                          "solved" => AppTheme.greenColor,
-                          "draft" => Theme.of(context).colorScheme.onBackground,
+                          "baxilir" => Color(0xffF9B100),
+                          "hell_olundu" => AppTheme.greenColor,
+                          "qaralama" =>
+                            Theme.of(context).colorScheme.onBackground,
+                          "redd_edildi" => Theme.of(context).colorScheme.error,
                           _ => Theme.of(context).colorScheme.onBackground,
                         },
                       ),

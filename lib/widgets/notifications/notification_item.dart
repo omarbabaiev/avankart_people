@@ -29,7 +29,8 @@ class NotificationItem extends StatelessWidget {
     try {
       if (date is String) {
         // ISO 8601 format'ındaki tarihi parse et
-        final DateTime dateTime = DateTime.parse(date);
+        final DateTime? dateTime = DateTime.tryParse(date);
+        if (dateTime == null) return '';
 
         // Cihazın lokal saatine çevir
         final DateTime localDateTime = dateTime.toLocal();
@@ -135,6 +136,7 @@ class NotificationItem extends StatelessWidget {
                 notification['text'] ?? '',
                 style: TextStyle(
                   fontSize: 13,
+                  fontWeight: FontWeight.w500,
                   color: theme.unselectedWidgetColor,
                 ),
               ),
@@ -397,7 +399,7 @@ class NotificationItem extends StatelessWidget {
 
               // Title
               Text(
-                'restaurant_name'.tr,
+                'Company_name'.tr,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -408,7 +410,7 @@ class NotificationItem extends StatelessWidget {
 
               // Description
               Text(
-                'restaurant_invitation'.tr,
+                'Company_invitation'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,

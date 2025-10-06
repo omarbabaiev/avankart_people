@@ -1,8 +1,17 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
+import 'package:avankart_people/models/phone_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class RestaurantContactWidget extends StatelessWidget {
-  const RestaurantContactWidget({Key? key}) : super(key: key);
+class CompanyContactWidget extends StatelessWidget {
+  final List<PhoneModel>? phones;
+  final List<String>? websites;
+
+  const CompanyContactWidget({
+    Key? key,
+    this.phones,
+    this.websites,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +28,7 @@ class RestaurantContactWidget extends StatelessWidget {
               Text(
                 "Əlaqə",
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   color: Theme.of(context).hintColor,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -33,41 +42,68 @@ class RestaurantContactWidget extends StatelessWidget {
           child: Wrap(
             spacing: 5,
             runSpacing: 5,
-            children: [
-              _buildContactItem(
-                  context, ImageAssets.phoneCallIconDark, "+994 12 404 40 40"),
-              _buildContactItem(
-                  context, ImageAssets.phoneCallIconDark, "+994 12 404 40 40"),
-            ],
+            children: _buildPhoneItems(context),
           ),
         ),
         Container(
           height: 4,
           color: Theme.of(context).colorScheme.secondary,
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 26, vertical: 20),
-          child: Row(
-            children: [
-              Image.asset(ImageAssets.linkSimpleIcon, height: 20),
-              SizedBox(width: 6),
-              Text(
-                "ozsut.com.tr",
-                style: TextStyle(
-                  color: Theme.of(context).unselectedWidgetColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+        if (websites != null && websites!.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 26, vertical: 20),
+            child: Column(
+              children: websites!
+                  .map(
+                    (website) => GestureDetector(
+                      onTap: () => _launchUrl(website),
+                      child: Row(
+                        children: [
+                          Image.asset(ImageAssets.linkSimpleIcon, height: 20),
+                          SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              website,
+                              style: TextStyle(
+                                color: Theme.of(context).unselectedWidgetColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
-        ),
         Container(
           height: 100,
           color: Theme.of(context).colorScheme.secondary,
         ),
       ],
     );
+  }
+
+  List<Widget> _buildPhoneItems(BuildContext context) {
+    if (phones == null || phones!.isEmpty) {
+      return [
+        _buildContactItem(
+            context, ImageAssets.phoneCallIconDark, "Telefon nömrəsi yoxdur"),
+      ];
+    }
+
+    return phones!
+        .map(
+          (phone) => GestureDetector(
+            onTap: () =>
+                _makePhoneCall("${phone.prefix ?? ''}${phone.number ?? ''}"),
+            child: _buildContactItem(context, ImageAssets.phoneCallIconDark,
+                "${phone.prefix ?? ''} ${phone.number ?? ''}"),
+          ),
+        )
+        .toList();
   }
 
   Widget _buildContactItem(
@@ -98,5 +134,22 @@ class RestaurantContactWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(50),
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://$url';
+    }
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
   }
 }

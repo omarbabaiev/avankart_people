@@ -14,8 +14,6 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find<ThemeController>();
-
     return Container(
       margin: EdgeInsets.only(bottom: 4),
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -63,8 +61,7 @@ class SettingsSection extends StatelessWidget {
             isSwitch: true,
             switchValue: controller.isNotificationEnabled.value,
             onSwitchChanged: (value) => controller.toggleNotification(value),
-            // Burada switch yerine loading göstermiyoruz
-
+            onTap: () => controller.openAppNotificationSettings(),
             context: context,
           ),
         ));
@@ -184,8 +181,6 @@ class SettingsSection extends StatelessWidget {
   }
 
   void _showLanguageSelectionDialog(BuildContext context) {
-    final languageController = Get.find<LanguageController>();
-
     context.showPerformantBottomSheet(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       builder: (context) {

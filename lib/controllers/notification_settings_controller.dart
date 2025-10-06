@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_handler/permission_handler.dart' as AppSettings;
+import 'package:app_settings/app_settings.dart';
 import '../services/firebase_service.dart';
 import '../services/notifications_service.dart';
 import '../utils/api_response_parser.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import '../utils/snackbar_utils.dart';
 
 class NotificationSettingsController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();
   final NotificationsService _notificationsService = NotificationsService();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final GetStorage _storage = GetStorage();
 
   final isNotificationEnabled = false.obs;
   final isPermissionGranted = false.obs;
@@ -28,10 +27,10 @@ class NotificationSettingsController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Firebase token durumunu kontrol et
-      await _checkFirebaseTokenStatus();
+      // Önce notification_enabled flag'ini kontrol et
+      await _checkNotificationEnabledFlag();
 
-      // Sonra permission kontrolü yap (async)
+      // Sonra permission kontrolü yap
       await checkNotificationPermission();
     } catch (e) {
       print('[NOTIFICATION] Error initializing settings: $e');
@@ -40,43 +39,40 @@ class NotificationSettingsController extends GetxController {
     }
   }
 
-  /// Firebase token durumunu kontrol et
-  Future<void> _checkFirebaseTokenStatus() async {
+  /// Notification enabled flag'ini kontrol et
+  Future<void> _checkNotificationEnabledFlag() async {
     try {
-      // Önce notification ayarını kontrol et
-      String? notificationEnabled =
-          await _storage.read(key: 'notification_enabled');
+      // GetStorage'dan notification_enabled değerini oku
+      bool? notificationEnabled = _storage.read('notification_enabled');
 
-      if (notificationEnabled == 'false') {
-        isNotificationEnabled.value = false;
-        print('[NOTIFICATION] Notifications disabled in settings');
-        return;
+      if (notificationEnabled == null) {
+        // İlk kez açılıyorsa default olarak true yap
+        _storage.write('notification_enabled', true);
+        isNotificationEnabled.value = true;
+        print('[NOTIFICATION] First login - notifications enabled by default');
+      } else {
+        // Daha önce ayarlanmışsa o değeri kullan
+        isNotificationEnabled.value = notificationEnabled;
+        print(
+            '[NOTIFICATION] Notification setting loaded: $notificationEnabled');
       }
-
-      // Notification enabled ise Firebase token'ı kontrol et
-      String? firebaseToken = await _storage.read(key: 'firebase_token');
-      isNotificationEnabled.value =
-          firebaseToken != null && firebaseToken.isNotEmpty;
-      print(
-          '[NOTIFICATION] Firebase token status: ${firebaseToken != null ? 'enabled' : 'disabled'}');
     } catch (e) {
-      print('[NOTIFICATION] Error checking Firebase token status: $e');
-      isNotificationEnabled.value = false;
+      print('[NOTIFICATION] Error checking notification enabled flag: $e');
+      isNotificationEnabled.value = true; // Default olarak true
     }
   }
 
   /// Notification permission durumunu kontrol et
   Future<void> checkNotificationPermission() async {
     try {
-      // Notification permission durumunu kontrol et
+      // Notification permission durumunu kontrol et (sadece bilgilendirme amaçlı)
       PermissionStatus status = await Permission.notification.status;
       isPermissionGranted.value = status.isGranted;
 
-      // Eğer permission yoksa, notification'ı kapat
-      if (!status.isGranted) {
-        isNotificationEnabled.value = false;
-        await _storage.delete(key: 'firebase_token');
-      }
+      // Permission durumu notification ayarını etkilemez
+      // Sadece bilgilendirme amaçlı tutulur
+      print(
+          '[NOTIFICATION] Permission status: ${status.isGranted ? 'granted' : 'denied'}');
     } catch (e) {
       print('[NOTIFICATION] Error checking permission: $e');
     }
@@ -88,20 +84,14 @@ class NotificationSettingsController extends GetxController {
     isLoading.value = true;
 
     try {
-      PermissionStatus status = await Permission.notification.status;
-
-      if (!status.isGranted) {
-        await _openAppSettings();
-        return;
-      }
-
-      // Permission varsa, notification ayarını değiştir
+      // Permission kontrolü yapmadan direkt notification ayarını değiştir
       if (value) {
         await _enableAppNotification();
       } else {
         await _disableAppNotification();
       }
 
+      // UI'ı güncelle
       isNotificationEnabled.value = value;
 
       SnackbarUtils.showSuccessSnackbar(
@@ -119,8 +109,8 @@ class NotificationSettingsController extends GetxController {
   /// Uygulama dahili notification'ı etkinleştir
   Future<void> _enableAppNotification() async {
     try {
-      // Notification ayarını storage'a kaydet
-      await _storage.write(key: 'notification_enabled', value: 'true');
+      // GetStorage'a notification enabled olarak kaydet
+      _storage.write('notification_enabled', true);
 
       // Firebase notification'ı etkinleştir
       await _firebaseService.enableNotifications();
@@ -146,8 +136,8 @@ class NotificationSettingsController extends GetxController {
   /// Uygulama dahili notification'ı devre dışı bırak
   Future<void> _disableAppNotification() async {
     try {
-      // Notification ayarını storage'a kaydet
-      await _storage.write(key: 'notification_enabled', value: 'false');
+      // GetStorage'a notification disabled olarak kaydet
+      _storage.write('notification_enabled', false);
 
       // Firebase notification'ı devre dışı bırak
       await _firebaseService.disableNotifications();
@@ -163,22 +153,64 @@ class NotificationSettingsController extends GetxController {
     }
   }
 
-  /// App settings'e yönlendir
-  Future<void> _openAppSettings() async {
-    try {
-      await AppSettings.openAppSettings();
-
-      SnackbarUtils.showErrorSnackbar(
-        'notification_permission_required'.tr,
-      );
-    } catch (e) {
-      print('[NOTIFICATION] Error opening app settings: $e');
-    }
-  }
-
   /// App settings'den döndükten sonra permission'ı tekrar kontrol et
   Future<void> refreshPermissionStatus() async {
     await checkNotificationPermission();
-    await _checkFirebaseTokenStatus();
+    await _checkNotificationEnabledFlag();
+  }
+
+  /// Cihazın uygulama bildirim ayarlarını aç
+  Future<void> openAppNotificationSettings() async {
+    try {
+      print('[NOTIFICATION] Opening app notification settings...');
+      await AppSettings.openAppSettings(type: AppSettingsType.notification);
+      print('[NOTIFICATION] App notification settings opened');
+    } catch (e) {
+      print('[NOTIFICATION] Error opening app notification settings: $e');
+      SnackbarUtils.showErrorSnackbar('notification_settings_error'.tr);
+    }
+  }
+
+  /// Uygulama açıldığında notification durumunu API'ye gönder
+  Future<void> syncNotificationStatusOnAppStart() async {
+    try {
+      print('[NOTIFICATION] Syncing notification status on app start...');
+
+      // GetStorage'dan notification durumunu kontrol et
+      bool notificationEnabled = _storage.read('notification_enabled') ?? true;
+
+      if (notificationEnabled) {
+        // Notification açıksa, Firebase token'ı al ve API'ye gönder
+        String? firebaseToken = await _firebaseService.getStoredToken();
+        if (firebaseToken != null && firebaseToken.isNotEmpty) {
+          await _notificationsService.updateNotificationSettings(
+              enabled: true, token: firebaseToken);
+          print(
+              '[NOTIFICATION] App start: Notification enabled, token sent to API');
+        } else {
+          // Token yoksa yeni token almayı dene
+          firebaseToken = await _firebaseService.getAndSaveToken();
+          if (firebaseToken != null) {
+            await _notificationsService.updateNotificationSettings(
+                enabled: true, token: firebaseToken);
+            print('[NOTIFICATION] New token generated and sent to API');
+          } else {
+            // Token alınamazsa notification'ı kapat
+            _storage.write('notification_enabled', false);
+            await _notificationsService.updateNotificationSettings(
+                enabled: false, token: null);
+            print('[NOTIFICATION] Failed to get token, notifications disabled');
+          }
+        }
+      } else {
+        // Notification kapalıysa, API'ye disabled gönder
+        await _notificationsService.updateNotificationSettings(
+            enabled: false, token: null);
+        print('[NOTIFICATION] App start: Notification disabled, sent to API');
+      }
+    } catch (e) {
+      print(
+          '[NOTIFICATION] Error syncing notification status on app start: $e');
+    }
   }
 }

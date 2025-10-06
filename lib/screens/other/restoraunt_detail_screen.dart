@@ -1,20 +1,30 @@
-import 'package:avankart_people/utils/app_theme.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:avankart_people/widgets/company_details_widgets/restaurant_header_widget.dart';
-import 'package:avankart_people/widgets/company_details_widgets/restaurant_info_widget.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_action_buttons_widget.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_address_widget.dart';
-import 'package:avankart_people/widgets/company_details_widgets/restaurant_working_hours_widget.dart';
-import 'package:avankart_people/widgets/company_details_widgets/restaurant_social_media_widget.dart';
-import 'package:avankart_people/widgets/company_details_widgets/restaurant_contact_widget.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_category_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_contact_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_header_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_info_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_social_media_widget.dart';
+import 'package:avankart_people/widgets/company_details_widgets/restaurant_working_hours_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:avankart_people/models/company_detail_model.dart';
 
-class RestorauntDetailScreen extends StatelessWidget {
-  const RestorauntDetailScreen({super.key});
+class CompanyDetailScreen extends StatelessWidget {
+  const CompanyDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get arguments from navigation
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    final companyDetailResponse =
+        arguments?['company_detail'] as CompanyDetailResponse?;
+    final companyId = arguments?['company_id'] as String?;
+    final companyDetail = companyDetailResponse?.data.responseData;
+
+    print('[Company DETAIL] Company ID: $companyId');
+    print('[Company DETAIL] Company Detail: $companyDetail');
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onPrimary,
       extendBodyBehindAppBar: true,
@@ -59,39 +69,43 @@ class RestorauntDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RestaurantHeaderWidget(
-              imageUrl: "assets/images/image.png",
-              distance: "1.2 km",
+            CompanyHeaderWidget(
+              profileImageUrl:
+                  companyDetail?.profileImageUrl ?? "assets/images/image.png",
+              imageUrl:
+                  companyDetail?.coverImageUrl ?? "assets/images/image.png",
+              distance: companyDetail?.displayDistance ?? "0.0 km",
             ),
-            RestaurantInfoWidget(
-              name: "Özsüt Restoran",
+            CompanyInfoWidget(
+              name: companyDetail?.muessiseName ?? "Company Name",
               description:
-                  "ÖzSüt-ün hekayəsi İzmir Kemeraltında 16 kv. metrlik bir məkanda başlayıb. Daha sonra Səfər ustanın yolu Osmanlı sarayından çıxan bir usta ilə kəsişir. Bu 1938-ci ilə təsadüf edir.",
-              rating: "4.8",
-              isOpen: false,
+                  companyDetail?.description ?? "No description available",
+              rating: "4.8", // TODO: Get rating from API
+              schedule:
+                  companyDetail?.schedule, // TODO: Calculate from schedule
             ),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantActionButtonsWidget(),
+            CompanyActionButtonsWidget(),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantAddressWidget(
-              address: "Azerbaycan, Bakı şəhəri, Nərimanov rayonu",
+            CompanyAddressWidget(
+              address: companyDetail?.address ?? "Address not available",
             ),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantWorkingHoursWidget(),
+            CompanyWorkingHoursWidget(),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantCategoryWidget(
+            CompanyCategoryWidget(
               categories: [
                 CategoryItem(
                   name: "Yemək",
@@ -114,7 +128,7 @@ class RestorauntDetailScreen extends StatelessWidget {
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantCategoryWidget(
+            CompanyCategoryWidget(
               categories: [
                 CategoryItem(
                   name: "Yemək",
@@ -125,12 +139,12 @@ class RestorauntDetailScreen extends StatelessWidget {
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantSocialMediaWidget(),
+            CompanySocialMediaWidget(),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            RestaurantContactWidget(),
+            CompanyContactWidget(),
           ],
         ),
       ),

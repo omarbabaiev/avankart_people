@@ -3,7 +3,9 @@ import 'package:avankart_people/controllers/home_controller.dart';
 import 'package:avankart_people/controllers/notifications_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:avankart_people/models/companies_response.dart';
@@ -11,8 +13,27 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../widgets/company_card_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,61 +124,363 @@ class HomeScreen extends StatelessWidget {
             SizedBox(width: 15),
           ],
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(height: 4),
-            ),
-            SliverAppBar(
-              pinned: true,
-              floating: true,
-              snap: true,
-              backgroundColor: Theme.of(context).colorScheme.onPrimary,
-              title: GestureDetector(
-                onTap: () {
-                  Get.toNamed(AppRoutes.searchCompany,
-                      arguments: {'heroTag': 'home_search_company'});
+        body: Platform.isIOS
+            ? CustomScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () async {
+                      final controller = Get.find<HomeController>();
+                      await controller.refreshCompanies();
+                    },
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 4),
+                  ),
+                  SliverAppBar(
+                    pinned: true,
+                    floating: true,
+                    snap: true,
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    title: GestureDetector(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.searchCompany,
+                            arguments: {'heroTag': 'home_search_company'});
+                      },
+                      child: Hero(
+                        tag: 'home_search_company',
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  margin: EdgeInsets.symmetric(vertical: 4),
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        ImageAssets.searchNormal,
+                                        width: 24,
+                                        height: 24,
+                                        color: Theme.of(context)
+                                            .bottomNavigationBarTheme
+                                            .unselectedItemColor,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Material(
+                                        child: Text(
+                                          'search_placeholder'.tr,
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w500,
+                                            color: Theme.of(context)
+                                                .bottomNavigationBarTheme
+                                                .unselectedItemColor
+                                                ?.withOpacity(.8),
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.filterSearch);
+                                },
+                                child: Container(
+                                  height: 44,
+                                  width: 44,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Image.asset(
+                                    ImageAssets.funnel,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Header
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(top: 5, left: 16, right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'establishments'.tr,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              showMenu(
+                                menuPadding: EdgeInsets.all(5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                color: Theme.of(context).colorScheme.secondary,
+                                context: context,
+                                position: RelativeRect.fromLTRB(1, 250, 0, 0),
+                                items: [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Text(
+                                      'a_to_z'.tr,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Text(
+                                      'by_distance'.tr,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            icon: Image.asset(
+                              ImageAssets.sortAscending,
+                              width: 24,
+                              height: 24,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                            label: Text(
+                              'sort'.tr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Restaurant List
+                  Obx(() {
+                    final isLoading = controller.isLoadingCompanies;
+                    final companies = controller.companies;
+                    final error = controller.companiesError;
+
+                    // Error state
+                    if (error.isNotEmpty) {
+                      return SliverToBoxAdapter(
+                        child: _buildErrorState(context, error),
+                      );
+                    }
+
+                    // Empty state (loading false ve companies empty)
+                    if (!isLoading && companies.isEmpty) {
+                      return SliverToBoxAdapter(
+                        child: _buildEmptyState(context),
+                      );
+                    }
+
+                    return SliverGrid.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 1.5,
+                        crossAxisSpacing: 0,
+                        childAspectRatio: 0.68,
+                      ),
+                      itemCount: companies.isEmpty ? 6 : companies.length,
+                      itemBuilder: (context, index) {
+                        if (companies.isEmpty) {
+                          // Skeleton card
+                          return Skeletonizer(
+                            enabled: true,
+                            child: CompanyCard(
+                              name: 'Company Name',
+                              location: 'Company Location',
+                              distance: '0.0 km',
+                              imageUrl: 'assets/images/image.png',
+                              isOpen: true,
+                              hasGift: false,
+                              type: 'business',
+                              index: index,
+                              companyId: '0',
+                            ),
+                          );
+                        }
+
+                        final company = companies[index];
+                        return Skeletonizer(
+                          enabled: isLoading,
+                          child: CompanyCard(
+                            name: company.muessiseName,
+                            location: company.location,
+                            distance: company.displayDistance,
+                            imageUrl: company.profileImagePath ??
+                                'assets/images/image.png',
+                            isOpen: company.isOpen,
+                            hasGift: false, // TODO: Bu bilgiyi API'den al
+                            type: _getCompanyType(
+                                company), // TODO: Bu bilgiyi API'den al
+                            index: index, companyId: company.id,
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 150,
+                    ),
+                  )
+                ],
+              )
+            : RefreshIndicator(
+                onRefresh: () async {
+                  final controller = Get.find<HomeController>();
+                  await controller.refreshCompanies();
                 },
-                child: Hero(
-                  tag: 'home_search_company',
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            margin: EdgeInsets.symmetric(vertical: 4),
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: SizedBox(height: 4),
+                    ),
+                    SliverAppBar(
+                      pinned: true,
+                      floating: true,
+                      snap: true,
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      title: GestureDetector(
+                        onTap: () {
+                          Get.toNamed(AppRoutes.searchCompany,
+                              arguments: {'heroTag': 'home_search_company'});
+                        },
+                        child: Hero(
+                          tag: 'home_search_company',
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Row(
                               children: [
-                                Image.asset(
-                                  ImageAssets.searchNormal,
-                                  width: 24,
-                                  height: 24,
-                                  color: Theme.of(context)
-                                      .bottomNavigationBarTheme
-                                      .unselectedItemColor,
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
+                                    margin: EdgeInsets.symmetric(vertical: 4),
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          ImageAssets.searchNormal,
+                                          width: 24,
+                                          height: 24,
+                                          color: Theme.of(context)
+                                              .bottomNavigationBarTheme
+                                              .unselectedItemColor,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Obx(() {
+                                          final homeController =
+                                              Get.find<HomeController>();
+                                          final searchText = homeController
+                                                  .currentSearchQuery.isNotEmpty
+                                              ? homeController
+                                                  .currentSearchQuery
+                                              : 'search_placeholder'.tr;
+
+                                          return Material(
+                                            child: Text(
+                                              searchText,
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.w500,
+                                                color: Theme.of(context)
+                                                    .bottomNavigationBarTheme
+                                                    .unselectedItemColor
+                                                    ?.withOpacity(.8),
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                                 SizedBox(width: 8),
-                                Material(
-                                  child: Text(
-                                    'search_placeholder'.tr,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w500,
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.toNamed(AppRoutes.filterSearch);
+                                  },
+                                  child: Container(
+                                    height: 44,
+                                    width: 44,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
                                       color: Theme.of(context)
-                                          .bottomNavigationBarTheme
-                                          .unselectedItemColor
-                                          ?.withOpacity(.8),
-                                      fontSize: 14,
+                                          .colorScheme
+                                          .secondary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset(
+                                      ImageAssets.funnel,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
                                     ),
                                   ),
                                 ),
@@ -165,184 +488,196 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.filterSearch);
-                          },
-                          child: Container(
-                            height: 44,
-                            width: 44,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Image.asset(
-                              ImageAssets.funnel,
-                              color: Theme.of(context).colorScheme.onBackground,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5, left: 16, right: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'establishments'.tr,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
-                    TextButton.icon(
-                      onPressed: () {
-                        showMenu(
-                          menuPadding: EdgeInsets.all(5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          color: Theme.of(context).colorScheme.secondary,
-                          context: context,
-                          position: RelativeRect.fromLTRB(1, 250, 0, 0),
-                          items: [
-                            PopupMenuItem(
-                              value: 0,
-                              child: Text(
-                                'a_to_z'.tr,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+
+                    // Header
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(top: 5, left: 16, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'establishments'.tr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                               ),
                             ),
-                            PopupMenuItem(
-                              value: 1,
-                              child: Text(
-                                'by_distance'.tr,
+                            TextButton.icon(
+                              onPressed: () {
+                                showMenu(
+                                  menuPadding: EdgeInsets.all(5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(1, 250, 0, 0),
+                                  items: [
+                                    PopupMenuItem(
+                                      value: 0,
+                                      child: Text(
+                                        'a_to_z'.tr,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Text(
+                                        'by_distance'.tr,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              icon: Image.asset(
+                                ImageAssets.sortAscending,
+                                width: 24,
+                                height: 24,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                              label: Text(
+                                'sort'.tr,
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onBackground,
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
                           ],
-                        );
-                      },
-                      icon: Image.asset(
-                        ImageAssets.sortAscending,
-                        width: 24,
-                        height: 24,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                      label: Text(
-                        'sort'.tr,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Theme.of(context).colorScheme.onBackground,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
+
+                    // Company List
+                    Obx(() {
+                      final isLoading = controller.isLoadingCompanies;
+                      final companies = controller.companies;
+                      final error = controller.companiesError;
+
+                      // Error state
+                      if (error.isNotEmpty) {
+                        return SliverToBoxAdapter(
+                          child: _buildErrorState(context, error),
+                        );
+                      }
+
+                      // Empty state (loading false ve companies empty)
+                      if (!isLoading && companies.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: _buildEmptyState(context),
+                        );
+                      }
+
+                      return SliverGrid.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 1.5,
+                          crossAxisSpacing: 0,
+                          childAspectRatio: 0.68,
+                        ),
+                        itemCount: companies.isEmpty
+                            ? 6
+                            : companies.length +
+                                (controller.hasMoreDataCompanies ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (companies.isEmpty) {
+                            // Skeleton card
+                            return Skeletonizer(
+                              enabled: true,
+                              child: CompanyCard(
+                                name: 'Company Name',
+                                location: 'Company Location',
+                                distance: '0.0 km',
+                                imageUrl: 'assets/images/image.png',
+                                isOpen: true,
+                                hasGift: false,
+                                type: 'business',
+                                index: index,
+                                companyId: '0',
+                              ),
+                            );
+                          }
+
+                          // Load more indicator
+                          if (index == companies.length) {
+                            return Container(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(
+                                child: Platform.isIOS
+                                    ? CupertinoActivityIndicator(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      )
+                                    : CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Theme.of(context).colorScheme.primary,
+                                        ),
+                                      ),
+                              ),
+                            );
+                          }
+
+                          final company = companies[index];
+                          return Skeletonizer(
+                            enabled: isLoading,
+                            enableSwitchAnimation: true,
+                            child: CompanyCard(
+                              name: company.muessiseName,
+                              location: company.location,
+                              distance: company.displayDistance,
+                              imageUrl: company.profileImagePath ??
+                                  'assets/images/image.png',
+                              isOpen: company.isOpen,
+                              hasGift: false, // TODO: Bu bilgiyi API'den al
+                              type: _getCompanyType(
+                                  company), // TODO: Bu bilgiyi API'den al
+                              index: index,
+                              companyId: company.id,
+                              isFavorite: company.isFavorite,
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 150,
+                      ),
+                    )
                   ],
                 ),
               ),
-            ),
-
-            // Restaurant List
-            Obx(() {
-              final isLoading = controller.isLoadingCompanies;
-              final companies = controller.companies;
-              final error = controller.companiesError;
-
-              // Error state
-              if (error.isNotEmpty) {
-                return SliverToBoxAdapter(
-                  child: _buildErrorState(context, error),
-                );
-              }
-
-              // Empty state (loading false ve companies empty)
-              if (!isLoading && companies.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: _buildEmptyState(context),
-                );
-              }
-
-              return SliverGrid.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 1.5,
-                  crossAxisSpacing: 0,
-                  childAspectRatio: 0.68,
-                ),
-                itemCount: companies.isEmpty ? 6 : companies.length,
-                itemBuilder: (context, index) {
-                  if (companies.isEmpty) {
-                    // Skeleton card
-                    return Skeletonizer(
-                      enabled: true,
-                      child: CompanyCard(
-                        name: 'Company Name',
-                        location: 'Company Location',
-                        distance: '0.0 km',
-                        imageUrl: 'assets/images/image.png',
-                        isOpen: true,
-                        hasGift: false,
-                        type: 'business',
-                        index: index,
-                        companyId: '0',
-                      ),
-                    );
-                  }
-
-                  final company = companies[index];
-                  return Skeletonizer(
-                    enabled: isLoading,
-                    child: CompanyCard(
-                      name: company.muessiseName,
-                      location: company.location,
-                      distance: company.displayDistance,
-                      imageUrl:
-                          company.profileImagePath ?? 'assets/images/image.png',
-                      isOpen: company.isOpen,
-                      hasGift: false, // TODO: Bu bilgiyi API'den al
-                      type: _getCompanyType(
-                          company), // TODO: Bu bilgiyi API'den al
-                      index: index, companyId: company.id,
-                    ),
-                  );
-                },
-              );
-            }),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 150,
-              ),
-            )
-          ],
-        ),
       ),
     );
   }
@@ -436,7 +771,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  String _getCompanyType(MuessiseModel company) {
+  String _getCompanyType(CompanyInListModel company) {
     final name = company.muessiseName.toLowerCase();
 
     // Restoran detection

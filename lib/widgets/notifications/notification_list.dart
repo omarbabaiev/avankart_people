@@ -11,8 +11,8 @@ class NotificationList extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> notifications = [
       {
-        'title': 'restaurant_invitation'.tr,
-        'message': 'restaurant_invitation'.tr,
+        'title': 'Company_invitation'.tr,
+        'message': 'Company_invitation'.tr,
         'time': '25.11.2024, 09:41',
         'type': 'accept_reject',
         'isRead': false,

@@ -2,10 +2,10 @@ import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'auth_service.dart';
-import 'firebase_service.dart';
 
 class NotificationsService {
   final Dio _dio = Dio(
@@ -16,13 +16,14 @@ class NotificationsService {
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
-  final FlutterSecureStorage _storage = SecureStorageConfig.storage;
-  final FirebaseService _firebaseService = FirebaseService();
+  final FlutterSecureStorage _secureStorage = SecureStorageConfig.storage;
+  final GetStorage _storage = GetStorage();
 
   NotificationsService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await _storage.read(key: SecureStorageConfig.tokenKey);
+        final token =
+            await _secureStorage.read(key: SecureStorageConfig.tokenKey);
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }
@@ -118,13 +119,12 @@ class NotificationsService {
   /// Notification'ların etkin olup olmadığını kontrol et
   Future<bool> isNotificationEnabled() async {
     try {
-      // Storage'dan notification ayarını kontrol et
-      final notificationEnabled =
-          await _storage.read(key: 'notification_enabled');
-      return notificationEnabled == 'true';
+      // GetStorage'dan notification ayarını kontrol et
+      final notificationEnabled = _storage.read('notification_enabled') ?? true;
+      return notificationEnabled;
     } catch (e) {
       print('[NOTIFICATIONS] Error checking notification status: $e');
-      return false;
+      return true; // Default true
     }
   }
 

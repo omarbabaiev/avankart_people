@@ -1,6 +1,7 @@
 import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
+import 'package:avankart_people/models/reason_model.dart';
 import 'package:dio/dio.dart' hide FormData, MultipartFile;
 import 'package:dio/dio.dart' as dio show FormData, MultipartFile;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -107,6 +108,7 @@ class QueryService {
     required String content,
     required String description,
     required String category,
+    required List<String> reason,
     List<String>? files,
   }) async {
     try {
@@ -116,6 +118,7 @@ class QueryService {
         'description': description,
         'category': category,
         'files': files,
+        'reason': reason.join(','),
       });
 
       dio.FormData formData = dio.FormData.fromMap({
@@ -123,6 +126,7 @@ class QueryService {
         'content': content,
         'description': description,
         'category': category,
+        'reason': reason.join(','),
         if (files != null && files.isNotEmpty)
           'files': files
               .map((file) => dio.MultipartFile.fromFileSync(file))
@@ -149,6 +153,72 @@ class QueryService {
       } else {
         throw QueryException('network_error'.tr + ': ${e.message}');
       }
+    }
+  }
+
+  /// Get reasons grouped by category (general, account, pay)
+  Future<ReasonsResponse> getReasons() async {
+    try {
+      DebugLogger.apiRequest('/sorgu/reasons', {});
+
+      final response = await _dio.get('/sorgu/reasons');
+
+      DebugLogger.apiResponse('/sorgu/reasons', response.data);
+
+      // API response format'ını kontrol et
+      print('[DEBUG] Reasons response: ${response.data}');
+
+      // Eğer response sadece {status: ok} format'ındaysa, mock data döndür
+      if (response.data is Map<String, dynamic>) {
+        final data = response.data as Map<String, dynamic>;
+        if (data.containsKey('status') && !data.containsKey('success')) {
+          // API henüz implement edilmemiş, mock data döndür
+          return ReasonsResponse(
+            success: true,
+            data: {
+              'general': [
+                ReasonModel(
+                    id: '1',
+                    name: 'Ümumi sual',
+                    text: 'Ümumi məsələlər və suallar haqqında'),
+                ReasonModel(
+                    id: '2',
+                    name: 'Şikayət',
+                    text: 'Xidmət keyfiyyəti ilə bağlı şikayət'),
+              ],
+              'account': [
+                ReasonModel(
+                    id: '3',
+                    name: 'Hesaba daxil ola bilmirəm',
+                    text: 'Login və ya parol problemi'),
+                ReasonModel(
+                    id: '4',
+                    name: 'Hesab bloklanıb',
+                    text: 'Hesabım bloklanıb, açılmasını istəyirəm'),
+              ],
+              'pay': [
+                ReasonModel(
+                    id: '5',
+                    name: 'Ödəniş edə bilmirəm',
+                    text: 'Ödəniş zamanı xəta baş verir'),
+                ReasonModel(
+                    id: '6',
+                    name: 'Pul geri qaytarılması',
+                    text: 'Səhv ödənişin geri qaytarılması'),
+              ],
+            },
+            message: 'Mock reasons data',
+          );
+        }
+      }
+
+      return ReasonsResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      DebugLogger.apiError('/sorgu/reasons', e.response?.data ?? e.message);
+      throw QueryException('Failed to load reasons: ${e.message}');
+    } catch (e) {
+      DebugLogger.apiError('/sorgu/reasons', e);
+      throw QueryException('Error getting reasons: $e');
     }
   }
 }

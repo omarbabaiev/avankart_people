@@ -1,10 +1,11 @@
 import 'package:avankart_people/models/schedule_model.dart';
+import 'package:avankart_people/models/location_point_model.dart';
 
 class CompaniesResponse {
   final int page;
   final int limit;
   final int total;
-  final List<MuessiseModel> muessises;
+  final List<CompanyInListModel> muessises;
 
   CompaniesResponse({
     required this.page,
@@ -20,43 +21,60 @@ class CompaniesResponse {
       total: json['total'] ?? 0,
       muessises: json['muessises'] != null
           ? (json['muessises'] as List)
-              .map((item) => MuessiseModel.fromJson(item))
+              .map((item) => CompanyInListModel.fromJson(item))
               .toList()
           : [],
     );
   }
+
+  // Yardımcı methodlar
+  bool get hasMore => (page * limit) < total;
+  int get totalPages => (total / limit).ceil();
+  bool get isEmpty => muessises.isEmpty;
+  bool get isNotEmpty => muessises.isNotEmpty;
 }
 
-class MuessiseModel {
+class CompanyInListModel {
   final String id;
   final String muessiseName;
   final String location;
+  final LocationPoint? locationPoint;
   final List<String> cards;
   final String? profileImagePath;
+  final String? xariciCoverImagePath;
   final ScheduleModel schedule;
   final double distance;
+  final bool isFavorite;
 
-  MuessiseModel({
+  CompanyInListModel({
     required this.id,
     required this.muessiseName,
     required this.location,
+    this.locationPoint,
     required this.cards,
     this.profileImagePath,
+    this.xariciCoverImagePath,
     required this.schedule,
     required this.distance,
+    required this.isFavorite,
   });
 
-  factory MuessiseModel.fromJson(Map<String, dynamic> json) {
-    return MuessiseModel(
+  factory CompanyInListModel.fromJson(Map<String, dynamic> json) {
+    return CompanyInListModel(
       id: json['_id'] ?? '',
       muessiseName: json['muessise_name'] ?? '',
       location: json['location'] ?? '',
+      locationPoint: json['location_point'] != null
+          ? LocationPoint.fromJson(json['location_point'])
+          : null,
       cards: json['cards'] != null ? List<String>.from(json['cards']) : [],
       profileImagePath: json['profile_image_path'],
+      xariciCoverImagePath: json['xarici_cover_image_path'],
       schedule: json['schedule'] != null
           ? ScheduleModel.fromJson(json['schedule'])
           : ScheduleModel.empty(),
       distance: (json['distance'] ?? 0).toDouble(),
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
 
@@ -106,6 +124,11 @@ class MuessiseModel {
   }
 
   bool _isTimeBetween(String current, String open, String close) {
+    // Check if any time is "closed"
+    if (open.toLowerCase() == 'closed' || close.toLowerCase() == 'closed') {
+      return false;
+    }
+
     final currentMinutes = _timeToMinutes(current);
     final openMinutes = _timeToMinutes(open);
     final closeMinutes = _timeToMinutes(close);
@@ -114,9 +137,36 @@ class MuessiseModel {
   }
 
   int _timeToMinutes(String time) {
-    final parts = time.split(':');
-    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+    try {
+      // Check if time is "closed" or invalid
+      if (time.toLowerCase() == 'closed' || time.isEmpty) {
+        return 0;
+      }
+
+      final parts = time.split(':');
+      if (parts.length != 2) return 0;
+
+      final hour = int.tryParse(parts[0]);
+      final minute = int.tryParse(parts[1]);
+
+      if (hour == null || minute == null) return 0;
+
+      return hour * 60 + minute;
+    } catch (e) {
+      print('[ERROR] Failed to parse time: $time, error: $e');
+      return 0;
+    }
   }
+
+  // Yeni alanlar için yardımcı methodlar
+  String? get coverImageUrl => xariciCoverImagePath;
+  String? get profileImageUrl => profileImagePath;
+
+  bool get hasLocationPoint => locationPoint != null;
+  double? get longitude => locationPoint?.longitude;
+  double? get latitude => locationPoint?.latitude;
+
+  String get favoriteStatus => isFavorite ? 'Favorilerde' : 'Favorilere Ekle';
 }
 
 class CompaniesException implements Exception {

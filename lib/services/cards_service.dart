@@ -31,11 +31,28 @@ class CardsService {
   }
 
   // Get user's cards
-  Future<CardsResponse?> getMyCards() async {
+  Future<CardsResponse?> getMyCards({String? sirketId}) async {
     try {
-      DebugLogger.apiRequest('/people/cards/my-cards', {});
+      print('[CARDS SERVICE] ===== GET MY CARDS DEBUG =====');
+      print('[CARDS SERVICE] Received sirketId: $sirketId');
 
-      final response = await _dio.post('/people/cards/my-cards');
+      final requestData = <String, dynamic>{};
+      if (sirketId != null && sirketId.isNotEmpty) {
+        requestData['sirket_id'] = sirketId;
+        print('[CARDS SERVICE] Added sirket_id to request: $sirketId');
+      } else {
+        print('[CARDS SERVICE] No sirket_id provided, sending empty request');
+      }
+
+      print('[CARDS SERVICE] Final request data: $requestData');
+      print('[CARDS SERVICE] ===============================');
+
+      DebugLogger.apiRequest('/people/cards/my-cards', requestData);
+
+      final response = await _dio.post(
+        '/people/cards/my-cards',
+        data: requestData,
+      );
 
       DebugLogger.apiResponse('/people/cards/my-cards', response.data);
 
@@ -46,6 +63,11 @@ class CardsService {
       }
     } on DioException catch (e) {
       DebugLogger.apiError('/people/cards/my-cards', e);
+
+      // 404 hatası durumunda özel mesaj
+      if (e.response?.statusCode == 404) {
+        throw CardsException('user_not_found');
+      }
 
       if (e.response != null && e.response?.data != null) {
         throw CardsException(ApiResponseParser.parseApiError(e.response?.data));
@@ -99,6 +121,11 @@ class CardsService {
     int limit = 10,
   }) async {
     try {
+      print('[CARDS SERVICE] ===== GET CARD TRANSACTIONS DEBUG =====');
+      print('[CARDS SERVICE] Card ID: $cardId');
+      print('[CARDS SERVICE] Page: $page, Limit: $limit');
+      print('[CARDS SERVICE] ======================================');
+
       DebugLogger.apiRequest('/people/cards/transactions', {
         'card_id': cardId,
         'page': page,

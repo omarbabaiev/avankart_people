@@ -42,6 +42,7 @@ class Card {
   final List<CardCondition> conditions;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final double? balance; // API'den gelen balance bilgisi
 
   Card({
     required this.id,
@@ -55,6 +56,7 @@ class Card {
     this.conditions = const [],
     this.createdAt,
     this.updatedAt,
+    this.balance,
   });
 
   factory Card.fromJson(Map<String, dynamic> json) {
@@ -85,6 +87,8 @@ class Card {
           : json['updatedAt'] != null
               ? DateTime.tryParse(json['updatedAt'])
               : null,
+      balance:
+          json['balance'] != null ? (json['balance'] as num).toDouble() : null,
     );
   }
 
@@ -101,6 +105,7 @@ class Card {
       'conditions': conditions.map((condition) => condition.toJson()).toList(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'balance': balance,
     };
   }
 }

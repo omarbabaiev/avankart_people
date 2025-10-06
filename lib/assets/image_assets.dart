@@ -15,6 +15,13 @@ class ImageAssets {
   static const manat = "assets/icons/manat.png";
   static const caretRight = "assets/icons/CaretRight.png";
   static const distanceIcon = "assets/icons/distance.png";
+  static const avankartPartnerLogo = "assets/images/playstore.png";
+  static const chatIcon = "assets/icons/Chats.png";
+  static const sendIcon = "assets/icons/TelegramLogo.png";
+  static const pepIcon = "assets/icons/pepicons-pop_bank.png";
+  static const passwordCopy = "assets/icons/Password copy.png";
+  static const fingerprint = "assets/icons/FingerprintSimple.png";
+  static const markerIcon = "assets/icons/marker_icon.png";
 
   static const linkedinIcon = "assets/icons/linkedin.png";
   static const linkSimpleIcon = "assets/icons/LinkSimple.png";

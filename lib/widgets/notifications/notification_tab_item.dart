@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NotificationTabItem extends StatelessWidget {
   final String text;
@@ -19,33 +20,36 @@ class NotificationTabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: Get.width * 0.3,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isSelected ? Theme.of(context).colorScheme.onPrimary : null,
           borderRadius: BorderRadius.circular(4),
-          boxShadow:
-              isSelected
-                  ? [
-                    BoxShadow(
-                      color: Theme.of(context).shadowColor.withOpacity(.5),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                  : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Theme.of(context).shadowColor.withOpacity(.5),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               text,
+              maxLines: 1,
               style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 13,
+                overflow: TextOverflow.ellipsis,
                 fontWeight: FontWeight.w600,
-                color:
-                    isSelected
-                        ? Theme.of(context).colorScheme.onBackground
-                        : Theme.of(context).unselectedWidgetColor,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).unselectedWidgetColor,
               ),
             ),
             const SizedBox(width: 8),
@@ -58,6 +62,7 @@ class NotificationTabItem extends StatelessWidget {
               child: Text(
                 count,
                 style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 11,
                   color: Theme.of(context).colorScheme.onBackground,
                 ),

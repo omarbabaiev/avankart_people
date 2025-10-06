@@ -20,11 +20,13 @@ import 'package:avankart_people/screens/other/benefits_screen.dart';
 import 'package:avankart_people/screens/other/favorites_screen.dart';
 import 'package:avankart_people/screens/other/notifications_screen.dart';
 import 'package:avankart_people/screens/other/profil_screen.dart';
-import 'package:avankart_people/screens/other/restoraunt_detail_screen.dart';
+import 'package:avankart_people/screens/other/company_detail_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
 import 'package:avankart_people/screens/security/pin_code_screen.dart';
+import 'package:avankart_people/screens/security/enter_pin_code_screen.dart';
 import 'package:avankart_people/screens/security/security_screen.dart';
 import 'package:avankart_people/screens/security/two_factor_authentication_screen.dart';
+import 'package:avankart_people/middleware/auth_middleware.dart';
 import 'package:avankart_people/screens/main/settings_screen.dart';
 import 'package:avankart_people/screens/support/faq_screen.dart';
 import 'package:avankart_people/screens/support/query_detail_screen.dart';
@@ -53,7 +55,7 @@ class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String newPassword = '/new-password';
   static const String changePassword = '/change-password';
-  static const String restaurantDetail = '/restaurant-detail';
+  static const String CompanyDetail = '/Company-detail';
   static const String query = '/query';
   static const String faq = '/faq';
   static const String initialCard = '/initial-card-select';
@@ -74,6 +76,7 @@ class AppRoutes {
   static const String security = '/security';
   static const String twoFactorAuthentication = '/two-factor-authentication';
   static const String setPinCode = '/set-pin-code';
+  static const String enterPinCode = '/enter-pin-code';
   static const String profil = '/profil';
   static const String qrPayment = '/qr-payment';
   static const String searchCompany = '/search-company';
@@ -140,6 +143,11 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
+      name: enterPinCode,
+      page: () => const EnterPinCodeScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
       name: twoFactorAuthentication,
       page: () => const TwoFactorAuthenticationScreen(),
       transition: Transition.cupertino,
@@ -179,7 +187,7 @@ class AppRoutes {
     ),
     GetPage(
       name: favorites,
-      page: () => const FavoritesScreen(),
+      page: () => FavoritesScreen(),
       transition: Transition.cupertino,
     ),
     GetPage(
@@ -193,8 +201,8 @@ class AppRoutes {
       transition: Transition.cupertino,
     ),
     GetPage(
-      name: restaurantDetail,
-      page: () => const RestorauntDetailScreen(),
+      name: CompanyDetail,
+      page: () => const CompanyDetailScreen(),
       transition: Transition.cupertino,
     ),
     GetPage(
@@ -210,6 +218,7 @@ class AppRoutes {
     GetPage(
       name: settings,
       page: () => const SettingsScreen(),
+      middlewares: [AuthMiddleware()],
       transition: Transition.cupertino,
     ),
     GetPage(
@@ -255,6 +264,7 @@ class AppRoutes {
     GetPage(
       name: main,
       page: () => const MainScreen(),
+      middlewares: [AuthMiddleware()],
       transition: Transition.cupertino,
     ),
   ];

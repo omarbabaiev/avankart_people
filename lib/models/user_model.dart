@@ -1,10 +1,11 @@
-import 'package:avankart_people/models/company_models.dart';
+import 'package:avankart_people/models/sirket_models.dart';
 
 class UserModel {
+  final String? imtiyaz;
   final String? id;
   final String? name;
   final String? surname;
-  final CompanyModel? companyInfo;
+  final SirketIdModel? sirketId;
   final double? totalBalance;
   final DateTime? lastPaymentDate;
   final String? lastPaymentLocation;
@@ -42,10 +43,11 @@ class UserModel {
   final int? version;
 
   UserModel({
+    this.imtiyaz,
     this.id,
     this.name,
     this.surname,
-    this.companyInfo,
+    this.sirketId,
     this.totalBalance,
     this.lastPaymentDate,
     this.lastPaymentLocation,
@@ -85,26 +87,27 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      imtiyaz: json['imtiyaz'],
       id: json['_id'],
       name: json['name'],
       surname: json['surname'],
-      companyInfo: json['sirket_id'] != null
-          ? CompanyModel.fromJson(json['sirket_id'])
+      sirketId: json['sirket_id'] != null
+          ? SirketIdModel.fromJson(json['sirket_id'])
           : null,
       totalBalance: json['totalBalance']?.toDouble(),
       lastPaymentDate: json['lastPaymentDate'] != null
-          ? DateTime.parse(json['lastPaymentDate'])
+          ? DateTime.tryParse(json['lastPaymentDate'])
           : null,
       lastPaymentLocation: json['lastPaymentLocation'],
       email: json['email'],
       password: json['password'],
       lastPasswordUpdate: json['last_password_update'] != null
-          ? DateTime.parse(json['last_password_update'])
+          ? DateTime.tryParse(json['last_password_update'])
           : null,
       phoneSuffix: json['phone_suffix'],
       phone: json['phone'],
       birthDate: json['birth_date'] != null
-          ? DateTime.parse(json['birth_date'])
+          ? DateTime.tryParse(json['birth_date'])
           : null,
       totalQrCodes: json['total_qr_codes'],
       todayQrCodes: json['today_qr_codes'],
@@ -116,10 +119,11 @@ class UserModel {
       theme: json['theme'],
       gender: json['gender'],
       otpCode: json['otp_code'],
-      hireDate:
-          json['hire_date'] != null ? DateTime.parse(json['hire_date']) : null,
+      hireDate: json['hire_date'] != null
+          ? DateTime.tryParse(json['hire_date'])
+          : null,
       dismissalDate: json['dismissal_date'] != null
-          ? DateTime.parse(json['dismissal_date'])
+          ? DateTime.tryParse(json['dismissal_date'])
           : null,
       otpDestination: json['otp_destination'],
       otpEmailStatus: json['otp_email_status'],
@@ -130,15 +134,17 @@ class UserModel {
       firebaseToken: json['firebase_token'],
       deleted: json['deleted'],
       lastQrCode: json['last_qr_code'] != null
-          ? DateTime.parse(json['last_qr_code'])
+          ? DateTime.tryParse(json['last_qr_code'])
           : null,
       otpSendTime: json['otp_send_time'] != null
-          ? DateTime.parse(json['otp_send_time'])
+          ? DateTime.tryParse(json['otp_send_time'])
           : null,
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt:
-          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
       peopleId: json['people_id'],
       version: json['__v'],
     );

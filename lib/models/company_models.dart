@@ -3,7 +3,7 @@ import 'package:avankart_people/models/phone_model.dart';
 import 'package:avankart_people/models/social_model.dart';
 import 'package:avankart_people/models/authorized_person_model.dart';
 
-class CompanyModel {
+class SirketModel {
   final AuthorizedPersonModel? authorizedPerson;
   final String? id;
   final String? activityType;
@@ -36,7 +36,7 @@ class CompanyModel {
   final int? version;
   final double? companyBalance;
 
-  CompanyModel({
+  SirketModel({
     this.authorizedPerson,
     this.id,
     this.activityType,
@@ -70,8 +70,8 @@ class CompanyModel {
     this.companyBalance,
   });
 
-  factory CompanyModel.fromJson(Map<String, dynamic> json) {
-    return CompanyModel(
+  factory SirketModel.fromJson(Map<String, dynamic> json) {
+    return SirketModel(
       authorizedPerson: json['authorized_person'] != null
           ? AuthorizedPersonModel.fromJson(json['authorized_person'])
           : null,
@@ -107,10 +107,12 @@ class CompanyModel {
       creatorId: json['creator_id'],
       rekvizitler: json['rekvizitler'],
       deleted: json['deleted'],
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt:
-          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
       companyId: json['sirket_id'],
       version: json['__v'],
       companyBalance: json['sirket_balance']?.toDouble(),

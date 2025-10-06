@@ -20,13 +20,16 @@ class SplashScreen extends StatelessWidget {
       body: Stack(
         children: [
           Center(
-            child: Lottie.asset(
-              addRepaintBoundary: true,
-              frameRate: FrameRate.max,
-              ImageAssets.splashLottie,
-              width: size.width * 1.3,
-              fit: BoxFit.contain,
-            ),
+            child: Obx(() => Lottie.asset(
+                  addRepaintBoundary: true,
+                  frameRate: FrameRate.max,
+                  ImageAssets.splashLottie,
+                  width: size.width * 1.3,
+                  fit: BoxFit.contain,
+                  // Animasyon tamamlandıysa durdur
+                  repeat: !controller.isAnimationCompleted.value,
+                  animate: true,
+                )),
           ),
           Positioned(
             left: 0,

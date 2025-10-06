@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../routes/app_routes.dart';
 import '../services/auth_service.dart';
 import '../utils/api_response_parser.dart';
 import '../utils/secure_storage_config.dart';
+import '../utils/auth_utils.dart';
 import 'login_controller.dart';
+import 'security_controller.dart';
 import 'package:get_storage/get_storage.dart';
 
 class SplashController extends GetxController {
@@ -15,6 +16,7 @@ class SplashController extends GetxController {
   final isRetrying = false.obs;
   final showRetryButton = false.obs;
   final retryMessage = ''.obs;
+  final isAnimationCompleted = false.obs; // Animasyon tamamlandı mı?
   final GetStorage _getStorage = GetStorage();
 
   @override
@@ -78,8 +80,8 @@ class SplashController extends GetxController {
       print('[SPLASH] Remember me: $rememberMe');
       print('[SPLASH] Remember me is true: $rememberMe');
 
-      await Future.delayed(
-          const Duration(seconds: 2)); // Lottie animasyonu için bekleme
+      // 4 saniye animasyon oynat, sonra dur
+      await _playAnimationOnce();
 
       // Token varsa home request at (remember me kontrolü opsiyonel)
       if (token != null && token.isNotEmpty) {
@@ -89,8 +91,17 @@ class SplashController extends GetxController {
           print('[SPLASH] Home response success: ${homeResponse?.success}');
 
           if (homeResponse?.success == true) {
-            print('[SPLASH] Home success, navigating to main');
-            Get.offAllNamed(AppRoutes.main);
+            print('[SPLASH] Home success, checking PIN code requirements');
+
+            // Remember me true ise PIN kod kontrolü yap
+            if (rememberMe == true) {
+              print('[SPLASH] Remember me is true, checking PIN code');
+              await _checkPinCodeAndNavigate();
+            } else {
+              print(
+                  '[SPLASH] Remember me is false, navigating directly to main');
+              Get.offAllNamed(AppRoutes.main);
+            }
           } else {
             print('[SPLASH] Home failed, navigating to login');
             // Token geçersiz, tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
@@ -115,7 +126,11 @@ class SplashController extends GetxController {
           // Remember me'yi temizle çünkü token yok - GÜVENLİK
           GetStorage().remove('rememberMe');
         } else {
-          print('[SPLASH] No token found, navigating to login');
+          print(
+              '[SPLASH] No token found and remember me is false, performing logout');
+          // Remember me false ise logout işlemi yap
+          await AuthUtils.logout();
+          return; // logout zaten login'e yönlendiriyor
         }
         _clearPasswordField();
         Get.offAllNamed(AppRoutes.login);
@@ -185,6 +200,74 @@ class SplashController extends GetxController {
   void _clearPasswordField() {
     if (Get.isRegistered<LoginController>()) {
       Get.find<LoginController>().passwordController.clear();
+    }
+  }
+
+  /// Animasyonu bir kez oynat ve 4 saniye sonra dur
+  Future<void> _playAnimationOnce() async {
+    try {
+      print('[SPLASH] Starting animation...');
+
+      // 4 saniye bekle (animasyon oynatılacak)
+      await Future.delayed(const Duration(seconds: 4));
+
+      // Animasyon tamamlandı olarak işaretle
+      isAnimationCompleted.value = true;
+      print('[SPLASH] Animation completed');
+    } catch (e) {
+      print('[SPLASH] Error during animation: $e');
+      // Hata durumunda da animasyon tamamlandı olarak işaretle
+      isAnimationCompleted.value = true;
+    }
+  }
+
+  /// Splash işlemlerini yap (home endpoint çağrısı)
+  Future<void> performSplashOperations() async {
+    try {
+      print('[SPLASH] Performing splash operations...');
+
+      // Home endpoint'ini çağır
+      final homeResponse = await _authService.home();
+      print('[SPLASH] Home response success: ${homeResponse?.success}');
+
+      if (homeResponse?.success != true) {
+        print('[SPLASH] Home failed during splash operations');
+        // Home başarısız olursa logout yap
+        await AuthUtils.logout();
+        return;
+      }
+
+      print('[SPLASH] Splash operations completed successfully');
+    } catch (e) {
+      print('[SPLASH] Error during splash operations: $e');
+      // Hata durumunda logout yap
+      await AuthUtils.logout();
+    }
+  }
+
+  /// PIN kod kontrolü yap ve uygun ekrana yönlendir
+  Future<void> _checkPinCodeAndNavigate() async {
+    try {
+      // SecurityController'ı başlat
+      final securityController = Get.put(SecurityController());
+
+      // PIN kod enabled mi kontrol et
+      final isPinEnabled = await securityController.isPinEnabled.value;
+      print('[SPLASH] PIN code enabled: $isPinEnabled');
+
+      if (isPinEnabled) {
+        print('[SPLASH] PIN code is enabled, navigating to PIN code screen');
+        // PIN kod ekranına git
+        Get.offAllNamed(AppRoutes.enterPinCode);
+      } else {
+        print('[SPLASH] PIN code is not enabled, navigating directly to main');
+        // PIN kod yoksa direkt main'e git
+        Get.offAllNamed(AppRoutes.main);
+      }
+    } catch (e) {
+      print('[SPLASH] Error checking PIN code: $e');
+      // Hata durumunda direkt main'e git
+      Get.offAllNamed(AppRoutes.main);
     }
   }
 

@@ -1,10 +1,7 @@
-import 'package:avankart_people/routes/app_routes.dart';
+import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/widgets/company_card_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class TwoFactorAuthenticationScreen extends StatelessWidget {
   const TwoFactorAuthenticationScreen({super.key});
@@ -19,7 +16,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            'Təhlükəsizlik',
+            'security'.tr,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 17,
@@ -35,6 +32,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
           children: [
             SizedBox(height: 4),
             Container(
+              width: Get.width,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onPrimary,
@@ -42,7 +40,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "2 addımlı doğrulama",
+                    "two_factor_authentication".tr,
                     style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 15,
@@ -51,7 +49,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Hesabınızın təhlükəsizliyi bizim üçün önəmlidir. İki addımlı doğrulama ilə hesabınıza girişləri tam idarə edin.",
+                    "two_fact or_authentication_description".tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: 'Poppins',
@@ -69,38 +67,38 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: _buildSettingsTile(
-                  icon: Icons.phone,
-                  title: "E-poçt doğrulama",
-                  subtitle:
-                      "Email adresinizi təsdiqləyərək hesabınızı daha güvənli saxlayın",
+                  icon: ImageAssets.envelope,
+                  title: "email_authentication".tr,
+                  subtitle: "email_authentication_description".tr,
                   context: context,
-                  isSwitch: true),
+                  isSwitch: true,
+                  isEnabled: false),
             ),
+            // Container(
+            //   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //   decoration: BoxDecoration(
+            //     color: Theme.of(context).colorScheme.onPrimary,
+            //   ),
+            //   child: _buildSettingsTile(
+            //       icon: Icons.phone,
+            //       title: "Nömrə ilə doğrulama",
+            //       subtitle:
+            //           "Telefon nömrənizi əlavə edərək hesabınızı daha güvənli saxlayın",
+            //       context: context,
+            //       isSwitch: true),
+            // ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: _buildSettingsTile(
-                  icon: Icons.phone,
-                  title: "Nömrə ilə doğrulama",
-                  subtitle:
-                      "Telefon nömrənizi əlavə edərək hesabınızı daha güvənli saxlayın",
+                  icon: ImageAssets.qrcode,
+                  title: "authenticator".tr,
+                  subtitle: "authenticator_description".tr,
                   context: context,
-                  isSwitch: true),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              child: _buildSettingsTile(
-                  icon: Icons.phone,
-                  title: "Authenticator",
-                  subtitle:
-                      "QR kod və ya Auth key ilə hesabınızı daha güvənli saxlayın",
-                  context: context,
-                  isSwitch: true),
+                  isSwitch: true,
+                  isEnabled: false),
             ),
           ],
         ),
@@ -109,10 +107,11 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsTile({
-    required IconData icon,
+    required String icon,
     required String title,
     required String subtitle,
     bool isSwitch = false,
+    bool isEnabled = true,
     VoidCallback? onTap,
     required BuildContext context,
   }) {
@@ -126,9 +125,9 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
           color: Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(
+        child: Image.asset(
           icon,
-          size: 23,
+          height: 23,
           color: Theme.of(context).colorScheme.onBackground,
         ),
       ),
@@ -153,7 +152,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
       trailing: isSwitch
           ? Switch.adaptive(
               value: true,
-              onChanged: (value) {},
+              onChanged: isEnabled ? (value) {} : null,
               activeColor: AppTheme.primaryColor,
             )
           : Icon(

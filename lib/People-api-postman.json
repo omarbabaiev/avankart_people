@@ -1601,9 +1601,65 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": null,\n  \"card_id\": null,\n  \"muessise_category\": [],\n  \"page\": 1,\n  \"limit\": 10\n}"
+							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": null,\n  \"card_id\": null,\n  \"cards\": [],\n  \"muessise_category\": [],\n  \"page\": 1,\n  \"limit\": 10\n}"
 						},
 						"url": "{{base_url}}/muessise"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Company detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"muessise_id\": \"object_id\"\n}"
+						},
+						"url": "{{base_url}}/muessise/details"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorite Companies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": null,\n  \"cards\": [],\n  \"muessise_category\": [],\n  \"page\": 1,\n  \"limit\": 10\n}"
+						},
+						"url": "{{base_url}}/muessise/favorites"
 					},
 					"response": []
 				}

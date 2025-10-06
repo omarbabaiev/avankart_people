@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../utils/snackbar_utils.dart';
 
 // Background message handler - top level function olmalı
@@ -13,7 +13,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 class FirebaseService {
   FirebaseMessaging? _messaging;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final GetStorage _storage = GetStorage();
 
   // Singleton pattern
   static final FirebaseService _instance = FirebaseService._internal();
@@ -70,10 +71,9 @@ class FirebaseService {
       // Notification handlers
       setupNotificationHandling();
 
-      // Notification ayarını kontrol et, sadece enabled ise token al
-      final notificationEnabled =
-          await _storage.read(key: 'notification_enabled');
-      if (notificationEnabled != 'false') {
+      // GetStorage'dan notification ayarını kontrol et, sadece enabled ise token al
+      final notificationEnabled = _storage.read('notification_enabled') ?? true;
+      if (notificationEnabled) {
         // Initial token al
         await getAndSaveToken();
       } else {
@@ -94,17 +94,16 @@ class FirebaseService {
         return null;
       }
 
-      // Notification ayarını kontrol et
-      final notificationEnabled =
-          await _storage.read(key: 'notification_enabled');
-      if (notificationEnabled == 'false') {
+      // GetStorage'dan notification ayarını kontrol et
+      final notificationEnabled = _storage.read('notification_enabled') ?? true;
+      if (!notificationEnabled) {
         print('[FIREBASE] Notifications disabled, not getting token');
         return null;
       }
 
       String? token = await _messagingInstance!.getToken();
       if (token != null) {
-        await _storage.write(key: 'firebase_token', value: token);
+        await _secureStorage.write(key: 'firebase_token', value: token);
         print('[FIREBASE] Token saved: ${token.substring(0, 20)}...');
       } else {
         print('[FIREBASE] Failed to get token');
@@ -119,7 +118,7 @@ class FirebaseService {
   /// Saklanan token'ı al
   Future<String?> getStoredToken() async {
     try {
-      String? token = await _storage.read(key: 'firebase_token');
+      String? token = await _secureStorage.read(key: 'firebase_token');
       if (token == null) {
         // Token yoksa yeniden al
         token = await getAndSaveToken();
@@ -140,15 +139,15 @@ class FirebaseService {
 
     _messagingInstance!.onTokenRefresh.listen((newToken) async {
       try {
-        // Notification ayarını kontrol et
+        // GetStorage'dan notification ayarını kontrol et
         final notificationEnabled =
-            await _storage.read(key: 'notification_enabled');
-        if (notificationEnabled == 'false') {
+            _storage.read('notification_enabled') ?? true;
+        if (!notificationEnabled) {
           print('[FIREBASE] Notifications disabled, ignoring token refresh');
           return;
         }
 
-        await _storage.write(key: 'firebase_token', value: newToken);
+        await _secureStorage.write(key: 'firebase_token', value: newToken);
         print('[FIREBASE] Token refreshed: ${newToken.substring(0, 20)}...');
 
         // Backend'e yeni token'ı gönder (opsiyonel)
@@ -227,10 +226,9 @@ class FirebaseService {
   /// Notification gösterilip gösterilmeyeceğini kontrol et
   Future<bool> _shouldShowNotification() async {
     try {
-      // Storage'dan notification ayarını kontrol et
-      final notificationEnabled =
-          await _storage.read(key: 'notification_enabled');
-      return notificationEnabled == 'true';
+      // GetStorage'dan notification ayarını kontrol et
+      final notificationEnabled = _storage.read('notification_enabled') ?? true;
+      return notificationEnabled;
     } catch (e) {
       print('[FIREBASE] Error checking notification status: $e');
       return true; // Hata durumunda varsayılan olarak göster
@@ -291,7 +289,7 @@ class FirebaseService {
   /// Token'ı temizle (logout sırasında)
   Future<void> clearToken() async {
     try {
-      await _storage.delete(key: 'firebase_token');
+      await _secureStorage.delete(key: 'firebase_token');
       print('[FIREBASE] Token cleared');
     } catch (e) {
       print('[FIREBASE] Error clearing token: $e');

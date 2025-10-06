@@ -1,17 +1,73 @@
 import 'package:avankart_people/controllers/qr_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-class QrPaymentScreen extends GetView<QrPaymentController> {
+class QrPaymentScreen extends StatefulWidget {
   const QrPaymentScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<QrPaymentScreen> createState() => _QrPaymentScreenState();
+}
+
+class _QrPaymentScreenState extends State<QrPaymentScreen> {
+  MobileScannerController? scannerController;
+  bool isFlashOn = false;
+  bool isScanning = true;
+
+  @override
+  void initState() {
+    super.initState();
     // Controller'ı başlat
     Get.put(QrPaymentController());
+    scannerController = MobileScannerController();
 
+    // Flash state'ini controller ile senkronize et
+    final qrPaymentController = Get.find<QrPaymentController>();
+    isFlashOn = qrPaymentController.isFlashOn.value;
+  }
+
+  @override
+  void dispose() {
+    scannerController?.dispose();
+    super.dispose();
+  }
+
+  void _toggleFlash() async {
+    print('[QR PAYMENT SCREEN] ===== TOGGLE FLASH =====');
+    print('[QR PAYMENT SCREEN] scannerController: $scannerController');
+    print('[QR PAYMENT SCREEN] Current isFlashOn: $isFlashOn');
+
+    if (scannerController != null) {
+      try {
+        await scannerController!.toggleTorch();
+        print(
+            '[QR PAYMENT SCREEN] Scanner Controller flash toggled successfully');
+
+        setState(() {
+          isFlashOn = !isFlashOn;
+        });
+
+        // Controller'ın state'ini de güncelle
+        final controller = Get.find<QrPaymentController>();
+        controller.isFlashOn.value = isFlashOn;
+
+        print('[QR PAYMENT SCREEN] Flash toggled: $isFlashOn');
+        print(
+            '[QR PAYMENT SCREEN] Controller flash state: ${controller.isFlashOn.value}');
+      } catch (e) {
+        print('[QR PAYMENT SCREEN] Error toggling flash: $e');
+      }
+    } else {
+      print('[QR PAYMENT SCREEN] QR Controller is null!');
+    }
+    print('[QR PAYMENT SCREEN] =========================');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final controller = Get.find<QrPaymentController>();
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1C21),
@@ -32,7 +88,7 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                     Obx(() => Text(
                           controller.cardName.value,
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontSize: 13,
                             fontWeight: FontWeight.normal,
                             color: Colors.white,
@@ -45,7 +101,7 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                     Obx(() => Text(
                           '${controller.balance.value}',
                           style: TextStyle(
-    fontFamily: 'Poppins',
+                            fontFamily: 'Poppins',
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -60,59 +116,33 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          // QR kod
+                          // QR kod scanner
+                          MobileScanner(
+                            controller: scannerController!,
+                            onDetect: (capture) {
+                              if (isScanning && capture.barcodes.isNotEmpty) {
+                                final barcode = capture.barcodes.first;
+                                if (barcode.rawValue != null) {
+                                  print(
+                                      '[QR PAYMENT SCREEN] QR Code scanned: ${barcode.rawValue}');
+
+                                  setState(() {
+                                    isScanning = false;
+                                  });
+
+                                  // QR kod tespit edildi, controller'a gönder
+                                  final qrPaymentController =
+                                      Get.find<QrPaymentController>();
+                                  qrPaymentController.checkQrCode(
+                                      barcode.rawValue!.toUpperCase());
+                                }
+                              }
+                            },
+                          ),
+
+                          // Loading indicator
 
                           // Çerçeve kenarları - Sol üst
-                          Positioned(
-                            left: 0,
-                            top: 0,
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CustomPaint(
-                                painter: CornerPainter(isTopLeft: true),
-                              ),
-                            ),
-                          ),
-
-                          // Çerçeve kenarları - Sağ üst
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CustomPaint(
-                                painter: CornerPainter(isTopRight: true),
-                              ),
-                            ),
-                          ),
-
-                          // Çerçeve kenarları - Sol alt
-                          Positioned(
-                            left: 0,
-                            bottom: 0,
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CustomPaint(
-                                painter: CornerPainter(isBottomLeft: true),
-                              ),
-                            ),
-                          ),
-
-                          // Çerçeve kenarları - Sağ alt
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CustomPaint(
-                                painter: CornerPainter(isBottomRight: true),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -123,7 +153,7 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                     Text(
                       'cant_scan_qr_code'.tr,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 17,
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -132,9 +162,50 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
 
                     const SizedBox(height: 16),
 
+                    // QR Scanner butonu
+                    // Obx(() => ElevatedButton(
+                    //       onPressed: controller.isLoading.value
+                    //           ? null
+                    //           : () {
+                    //               controller.restartScanning();
+                    //               _restartScanning();
+                    //             },
+                    //       style: ElevatedButton.styleFrom(
+                    //         backgroundColor: AppTheme.primaryColor,
+                    //         minimumSize: const Size(180, 44),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(22),
+                    //         ),
+                    //       ),
+                    //       child: Row(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         children: [
+                    //           const Icon(
+                    //             Icons.qr_code_scanner,
+                    //             color: Colors.white,
+                    //             size: 18,
+                    //           ),
+                    //           const SizedBox(width: 8),
+                    //           Text(
+                    //             controller.isLoading.value
+                    //                 ? 'processing'.tr
+                    //                 : 'scan_qr_code'.tr,
+                    //             style: const TextStyle(
+                    //               fontFamily: 'Poppins',
+                    //               fontSize: 13,
+                    //               color: Colors.white,
+                    //               fontWeight: FontWeight.w600,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     )),
+
+                    const SizedBox(height: 12),
+
                     // Manuel giriş butonu
                     ElevatedButton(
-                      onPressed: controller.navigateToManualEntry,
+                      onPressed: controller.showManualQrInput,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.2),
                         minimumSize: const Size(180, 44),
@@ -143,9 +214,9 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
                         ),
                       ),
                       child: Text(
-                        'Əlnən daxil et',
-                        style: TextStyle(
-    fontFamily: 'Poppins',
+                        'manual_entry'.tr,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
                           fontSize: 13,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
@@ -157,7 +228,7 @@ class QrPaymentScreen extends GetView<QrPaymentController> {
 
                     // Flaş butonu
                     Obx(() => GestureDetector(
-                          onTap: controller.toggleFlash,
+                          onTap: _toggleFlash,
                           child: Container(
                             width: 80,
                             height: 80,

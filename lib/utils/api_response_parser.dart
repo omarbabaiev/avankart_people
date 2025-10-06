@@ -96,6 +96,13 @@ class ApiResponseParser {
       return 'error.email_already_exists'.tr;
     }
 
+    // QR Payment hataları
+    if (apiMessage.toLowerCase().contains('qr code not found')) {
+      print(
+          '[API PARSER] QR code not found detected, using error.qr_code_not_found');
+      return 'error.qr_code_not_found'.tr;
+    }
+
     if (apiMessage.toLowerCase().contains('change request not found')) {
       print(
           '[API PARSER] Change request not found detected, using error.change_request_not_found');

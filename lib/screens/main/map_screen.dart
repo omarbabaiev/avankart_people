@@ -2,10 +2,10 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../controllers/map_controller.dart';
-import '../../utils/app_theme.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -25,9 +25,6 @@ class MapScreen extends StatelessWidget {
 
   // Optimized AppBar
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    final _searchController = TextEditingController();
-    final _searchFocusNode = FocusNode();
-
     return AppBar(
       toolbarHeight: 90,
       backgroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -141,7 +138,9 @@ class _LoadingWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
+          Platform.isIOS
+              ? CupertinoActivityIndicator()
+              : CircularProgressIndicator(),
           SizedBox(height: 16),
           Text('map_loading'.tr),
         ],
@@ -233,37 +232,39 @@ class _MapContent extends StatelessWidget {
     return Builder(
       builder: (context) {
         try {
-          return Obx(() {
+          return GetBuilder<MapController>(builder: (controller) {
             // Controller'ın dispose olup olmadığını kontrol et
-            if (mapController.isDisposed) {
+            if (controller.isDisposed) {
               return _buildMapErrorWidget('Map controller disposed');
             }
 
-            return GoogleMap(
-              onMapCreated: mapController.onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: mapController.currentPosition.value != null
-                    ? LatLng(
-                        mapController.currentPosition.value!.latitude,
-                        mapController.currentPosition.value!.longitude,
-                      )
-                    : mapController.defaultLocation,
-                zoom: 15.0,
-              ),
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              markers: mapController.markers,
-              circles: _buildCircles(),
-              onTap: _onMapTap,
-              // Performance optimizations
-              liteModeEnabled: false,
-              mapToolbarEnabled: false,
-              zoomControlsEnabled: false,
-              compassEnabled: false,
-              indoorViewEnabled: false,
-              trafficEnabled: false,
-              buildingsEnabled: false,
-            );
+            return Obx(() => GoogleMap(
+                  onMapCreated: controller.onMapCreated,
+                  onCameraMove: controller.onCameraMove,
+                  onCameraIdle: controller.onCameraIdle,
+                  initialCameraPosition: CameraPosition(
+                    target: controller.currentPosition.value != null
+                        ? LatLng(
+                            controller.currentPosition.value!.latitude,
+                            controller.currentPosition.value!.longitude,
+                          )
+                        : controller.defaultLocation,
+                    zoom: 15.0,
+                  ),
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  markers: Set<Marker>.from(controller.markers),
+                  circles: _buildCircles(),
+                  onTap: _onMapTap,
+                  // Performance optimizations
+                  liteModeEnabled: false,
+                  mapToolbarEnabled: false,
+                  zoomControlsEnabled: false,
+                  compassEnabled: false,
+                  indoorViewEnabled: false,
+                  trafficEnabled: false,
+                  buildingsEnabled: false,
+                ));
           });
         } catch (e) {
           print('GoogleMap widget hatası: $e');

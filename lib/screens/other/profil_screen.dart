@@ -1,12 +1,6 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/profile_controller.dart';
-import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/screens/security/pin_code_screen.dart';
-import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/utils/bottom_sheet_extension.dart';
-import 'package:avankart_people/utils/masked_text_formatter.dart';
 import 'package:avankart_people/utils/toast_utils.dart';
-import 'package:avankart_people/widgets/company_card_widget.dart';
 import 'package:avankart_people/widgets/bottom_sheets/name_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/birth_date_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/phone_change_bottom_sheet.dart';
@@ -75,7 +69,9 @@ class ProfilScreen extends StatelessWidget {
               _buildProfileTile(
                 context,
                 'name_surname'.tr,
-                '${user?.name} ${user?.surname}' ?? 'undefined'.tr,
+                user?.name != null && user?.surname != null
+                    ? '${user!.name} ${user.surname}'
+                    : 'undefined'.tr,
                 ImageAssets.pencil,
                 () => NameChangeBottomSheet.show(context),
               ),
@@ -114,9 +110,12 @@ class ProfilScreen extends StatelessWidget {
               _buildProfileTile(
                 context,
                 'company'.tr,
-                user?.companyInfo?.companyName ?? 'undefined'.tr,
+                user?.sirketId?.sirketId ??
+                    user?.sirketId?.id ??
+                    'undefined'.tr,
                 ImageAssets.copySimple,
-                () => _copyToClipboard(user?.companyInfo?.companyName),
+                () => _copyToClipboard(
+                    user?.sirketId?.sirketId ?? user?.sirketId?.id),
               ),
             ],
           ),

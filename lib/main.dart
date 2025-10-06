@@ -1,4 +1,5 @@
 import 'package:avankart_people/controllers/notifications_controller.dart';
+import 'package:avankart_people/controllers/security_controller.dart';
 
 import 'screens/empty_state/not_found_screen.dart';
 import 'utils/conts_texts.dart';
@@ -24,6 +25,12 @@ import 'services/firebase_service.dart';
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
+  // Cihaz yönlendirmesini sadece portrait (normal) modda sabitle
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   try {
@@ -45,6 +52,7 @@ void main() async {
   Get.put(ThemeController(), permanent: true);
   Get.put(LanguageController(), permanent: true);
   Get.put(NotificationsController(), permanent: true);
+  Get.put(SecurityController(), permanent: true);
 
   // // API konfigürasyon bilgilerini yazdır
   // ApiConfig.printDebugInfo();
@@ -55,8 +63,39 @@ void main() async {
   runApp(const AvankartPeople());
 }
 
-class AvankartPeople extends StatelessWidget {
+class AvankartPeople extends StatefulWidget {
   const AvankartPeople({super.key});
+
+  @override
+  State<AvankartPeople> createState() => _AvankartPeopleState();
+}
+
+class _AvankartPeopleState extends State<AvankartPeople>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      // Uygulama kapatıldığında authentication session'ı sıfırla
+      if (Get.isRegistered<SecurityController>()) {
+        Get.find<SecurityController>().resetAuthentication();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,12 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/query_controller.dart';
+import 'package:avankart_people/models/reason_model.dart';
+import 'package:avankart_people/services/query_service.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:avankart_people/utils/toast_utils.dart';
+import 'package:avankart_people/widgets/pagination_widgets/platform_reload_widget.dart';
 import 'package:avankart_people/widgets/settings_widgets/settings_radio_item.dart';
 import 'package:avankart_people/widgets/support_widgets/query_card.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,12 +15,24 @@ import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class QueryScreen extends GetView<QueryController> {
-  const QueryScreen({super.key});
+  QueryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Controller'ı başlat
     Get.put(QueryController());
+
+    // Scroll controller'ı build metodunda oluştur
+    final ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        // Son 200 piksel kaldığında daha fazla veri yükle
+        if (controller.hasMoreData.value && !controller.isLoading.value) {
+          controller.loadMore();
+        }
+      }
+    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -67,12 +82,14 @@ class QueryScreen extends GetView<QueryController> {
               enableSwitchAnimation: true,
               enabled: isLoading,
               child: ListView.builder(
+                controller: scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 itemCount: isLoading
                     ? 5
                     : isEmpty
                         ? 1
-                        : controller.queries.length,
+                        : controller.queries.length +
+                            (controller.hasMoreData.value ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (isLoading) {
                     // Fake shimmer item
@@ -119,6 +136,20 @@ class QueryScreen extends GetView<QueryController> {
                     );
                   }
 
+                  // Load more indicator
+                  if (index == controller.queries.length) {
+                    return PlatformReloadWidget(
+                      isLoading: controller.isLoading.value,
+                      hasMoreData: controller.hasMoreData.value,
+                      onRetry: () {
+                        controller.loadMore();
+                      },
+                      errorMessage: controller.errorMessage.value.isNotEmpty
+                          ? controller.errorMessage.value
+                          : null,
+                    );
+                  }
+
                   final query = controller.queries[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -156,6 +187,9 @@ class QueryScreen extends GetView<QueryController> {
     final TextEditingController _descriptionController =
         TextEditingController();
 
+    // Query service'i başlat
+    final QueryService _queryService = QueryService();
+
     // Kategori seçenekleri
     final List<String> categoryOptions = [
       'general'.tr,
@@ -164,18 +198,53 @@ class QueryScreen extends GetView<QueryController> {
     ];
     String? _selectedCategory;
 
-    // Problem sebepleri ve seçimleri için map
-    final Map<String, bool> problemReasons = {
-      'card_incorrectly_activated'.tr: false,
-      'cannot_make_payment'.tr: false,
-      'qr_code_not_scanning'.tr: false,
+    // Kategori mapping (UI -> API)
+    final Map<String, String> categoryMapping = {
+      'general'.tr: 'general',
+      'account_problem'.tr: 'account',
+      'payment_problem'.tr: 'pay',
     };
+
+    // Problem sebepleri ve seçimleri için map
+    final Map<String, bool> problemReasons = {};
 
     // Seçili sebep sayısı
     final RxInt selectedReasonCount = 0.obs;
 
     // Seçili dosyalar
     final RxList<String> selectedFiles = <String>[].obs;
+
+    // Reason data'sını yükle
+    final RxBool isLoadingReasons = false.obs;
+    final RxList<ReasonModel> currentReasons = <ReasonModel>[].obs;
+
+    // Reason'ları yükle
+    Future<void> loadReasons() async {
+      if (_selectedCategory == null) return;
+
+      try {
+        isLoadingReasons.value = true;
+        final response = await _queryService.getReasons();
+
+        // Seçili kategoriye göre reason'ları filtrele
+        final categoryKey = categoryMapping[_selectedCategory!];
+        if (categoryKey != null) {
+          final categoryReasons = response.getReasonsForCategory(categoryKey);
+          currentReasons.assignAll(categoryReasons);
+
+          // Problem reasons map'ini güncelle
+          problemReasons.clear();
+          for (final reason in categoryReasons) {
+            problemReasons[reason.text] =
+                false; // reason.name yerine reason.text kullan
+          }
+        }
+      } catch (e) {
+        ToastUtils.showErrorToast('Reason\'ları yüklerken hata oluştu: $e');
+      } finally {
+        isLoadingReasons.value = false;
+      }
+    }
 
     context.showPerformantBottomSheet(
       isScrollControlled: true,
@@ -239,6 +308,8 @@ class QueryScreen extends GetView<QueryController> {
                           context, categoryOptions, _selectedCategory, (value) {
                         setState(() {
                           _selectedCategory = value;
+                          // Kategori seçildiğinde reason'ları yükle
+                          loadReasons();
                         });
                       });
                     },
@@ -289,18 +360,22 @@ class QueryScreen extends GetView<QueryController> {
                   ),
                   const SizedBox(height: 8),
                   InkWell(
-                    onTap: () {
-                      // Bottom sheet ile problem sebepleri seçimi
-                      _showProblemReasonsBottomSheet(context, problemReasons,
-                          (updatedReasons) {
-                        setState(() {
-                          problemReasons.clear();
-                          problemReasons.addAll(updatedReasons);
-                          selectedReasonCount.value =
-                              problemReasons.values.where((v) => v).length;
-                        });
-                      });
-                    },
+                    onTap: _selectedCategory == null
+                        ? null
+                        : () {
+                            // Bottom sheet ile problem sebepleri seçimi
+                            _showProblemReasonsBottomSheet(
+                                context, problemReasons, (updatedReasons) {
+                              setState(() {
+                                problemReasons.clear();
+                                problemReasons.addAll(updatedReasons);
+                                selectedReasonCount.value = problemReasons
+                                    .values
+                                    .where((v) => v)
+                                    .length;
+                              });
+                            });
+                          },
                     child: Container(
                       width: double.infinity,
                       padding:
@@ -509,11 +584,24 @@ class QueryScreen extends GetView<QueryController> {
 
                         // Create query
                         final success = await controller.createQuery(
-                          title: _titleController.text.trim(),
-                          content: _titleController.text
-                              .trim(), // Kısa açıklama için title kullan
+                          reason: selectedReasonCount.value > 0
+                              ? problemReasons.entries
+                                  .where((entry) => entry.value)
+                                  .map((entry) => entry.key)
+                                  .toList()
+                              : [],
+                          title: selectedReasonCount.value > 0
+                              ? problemReasons.entries
+                                  .where((entry) => entry.value)
+                                  .map((entry) => entry.key)
+                                  .join(
+                                      ', ') // Seçilen reason'ları title olarak gönder
+                              : _titleController.text.trim(),
+                          content: _descriptionController.text
+                              .trim(), // Problem description'ı content olarak gönder
                           description: _descriptionController.text.trim(),
-                          category: _selectedCategory!,
+                          category:
+                              categoryMapping[_selectedCategory!] ?? 'general',
                           files: selectedFiles, // Seçili dosyaları gönder
                         );
 
@@ -599,6 +687,7 @@ class QueryScreen extends GetView<QueryController> {
       Map<String, bool> reasons, Function(Map<String, bool>) onUpdate) {
     // Geçici bir map oluştur, orijinali güncellememek için
     final Map<String, bool> tempReasons = Map.from(reasons);
+    final RxBool isLoadingReasons = false.obs;
 
     context.showPerformantBottomSheet(
       isScrollControlled: true,
@@ -617,82 +706,116 @@ class QueryScreen extends GetView<QueryController> {
                 SizedBox(height: 10),
                 Center(child: context.buildBottomSheetHandle()),
                 const SizedBox(height: 10),
-                ...tempReasons.keys.map((reason) {
-                  return Column(
-                    children: [
-                      Theme(
-                        data: Theme.of(context).copyWith(
-                          checkboxTheme: CheckboxThemeData(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            fillColor: MaterialStateProperty.resolveWith<Color>(
-                                (states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return Theme.of(context).colorScheme.primary;
-                              }
-                              return Colors.transparent;
-                            }),
-                            side: BorderSide(
-                              color: Theme.of(context).unselectedWidgetColor,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              tempReasons[reason] = !tempReasons[reason]!;
-                            });
-                            // Anlık olarak güncelle
-                            onUpdate(Map.from(tempReasons));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: AppTheme.adaptiveCheckbox(
-                                    value: tempReasons[reason] ?? false,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        tempReasons[reason] = value!;
-                                      });
-                                      // Anlık olarak güncelle
-                                      onUpdate(Map.from(tempReasons));
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    reason,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 15,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onBackground,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                Obx(() {
+                  if (isLoadingReasons.value) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  if (tempReasons.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(
+                        child: Text(
+                          'Önce kategori seçin',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            color: Theme.of(context).unselectedWidgetColor,
                           ),
                         ),
                       ),
-                      if (reason != tempReasons.keys.last)
-                        Divider(
-                          height: 1,
-                          thickness: 0.5,
-                          color: Theme.of(context).dividerColor,
-                        ),
-                    ],
+                    );
+                  }
+
+                  return Column(
+                    children: tempReasons.keys.map((reason) {
+                      return Column(
+                        children: [
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              checkboxTheme: CheckboxThemeData(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                fillColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (states) {
+                                  if (states.contains(MaterialState.selected)) {
+                                    return Theme.of(context)
+                                        .colorScheme
+                                        .primary;
+                                  }
+                                  return Colors.transparent;
+                                }),
+                                side: BorderSide(
+                                  color:
+                                      Theme.of(context).unselectedWidgetColor,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  tempReasons[reason] = !tempReasons[reason]!;
+                                });
+                                // Anlık olarak güncelle
+                                onUpdate(Map.from(tempReasons));
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: AppTheme.adaptiveCheckbox(
+                                        value: tempReasons[reason] ?? false,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            tempReasons[reason] = value!;
+                                          });
+                                          // Anlık olarak güncelle
+                                          onUpdate(Map.from(tempReasons));
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: Text(
+                                        reason,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 15,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (reason != tempReasons.keys.last)
+                            Divider(
+                              height: 1,
+                              thickness: 0.5,
+                              color: Theme.of(context).dividerColor,
+                            ),
+                        ],
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                }),
                 SizedBox(height: 30),
               ],
             ),

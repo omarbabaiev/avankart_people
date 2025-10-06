@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class RestaurantAddressWidget extends StatelessWidget {
+class CompanyAddressWidget extends StatelessWidget {
   final String address;
+  final double? latitude;
+  final double? longitude;
 
-  const RestaurantAddressWidget({
+  const CompanyAddressWidget({
     Key? key,
     required this.address,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -23,7 +28,7 @@ class RestaurantAddressWidget extends StatelessWidget {
           Text(
             "Ünvan",
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               color: Theme.of(context).hintColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -33,7 +38,7 @@ class RestaurantAddressWidget extends StatelessWidget {
           Text(
             address,
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,
@@ -41,12 +46,14 @@ class RestaurantAddressWidget extends StatelessWidget {
           ),
           SizedBox(height: 8),
           CupertinoButton(
-            onPressed: () {},
+            onPressed: (latitude != null && longitude != null)
+                ? () => _openInMaps(latitude!, longitude!)
+                : null,
             padding: EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               "Xəritədə aç",
               style: TextStyle(
-    fontFamily: 'Poppins',
+                fontFamily: 'Poppins',
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w500,
@@ -56,5 +63,21 @@ class RestaurantAddressWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openInMaps(double lat, double lng) async {
+    // Try Google Maps, then Apple Maps as fallback
+    final googleMapsUrl =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final appleMapsUrl = Uri.parse('http://maps.apple.com/?ll=$lat,$lng');
+
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+      return;
+    }
+    if (await canLaunchUrl(appleMapsUrl)) {
+      await launchUrl(appleMapsUrl, mode: LaunchMode.externalApplication);
+      return;
+    }
   }
 }

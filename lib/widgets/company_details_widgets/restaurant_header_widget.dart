@@ -1,14 +1,17 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class RestaurantHeaderWidget extends StatelessWidget {
+class CompanyHeaderWidget extends StatelessWidget {
   final String imageUrl;
   final String distance;
+  final String profileImageUrl;
 
-  const RestaurantHeaderWidget({
+  const CompanyHeaderWidget({
     Key? key,
     required this.imageUrl,
     required this.distance,
+    required this.profileImageUrl,
   }) : super(key: key);
 
   @override
@@ -16,10 +19,18 @@ class RestaurantHeaderWidget extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Image.asset(
-          imageUrl,
-          fit: BoxFit.cover,
-          height: 235,
+        Container(
+          color: Theme.of(context).colorScheme.onBackground.withOpacity(.1),
+          child: FadeInImage(
+            placeholder: AssetImage(ImageAssets.notFound),
+            image: CachedNetworkImageProvider(
+              "https://merchant.avankart.com/$imageUrl",
+            ),
+            imageErrorBuilder: (context, error, stackTrace) =>
+                Image.asset(ImageAssets.notFound),
+            fit: BoxFit.cover,
+          ),
+          height: 250,
           width: double.infinity,
         ),
         Positioned(
@@ -31,8 +42,8 @@ class RestaurantHeaderWidget extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.onBackground.withOpacity(.9),
-                  Theme.of(context).colorScheme.onBackground.withOpacity(.2),
+                  Theme.of(context).colorScheme.onBackground.withOpacity(.09),
+                  Theme.of(context).colorScheme.onBackground.withOpacity(.07),
                 ],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
@@ -51,7 +62,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
               Text(
                 distance,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -64,6 +75,15 @@ class RestaurantHeaderWidget extends StatelessWidget {
           bottom: -35,
           left: 16,
           child: Container(
+            child: FadeInImage(
+              placeholder: AssetImage(ImageAssets.notFound),
+              image: CachedNetworkImageProvider(
+                "https://merchant.avankart.com/$profileImageUrl",
+              ),
+              imageErrorBuilder: (context, error, stackTrace) =>
+                  Image.asset(ImageAssets.notFound),
+              fit: BoxFit.cover,
+            ),
             height: 70,
             width: 70,
             padding: EdgeInsets.all(2),

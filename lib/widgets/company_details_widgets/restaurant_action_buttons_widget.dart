@@ -4,8 +4,8 @@ import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class RestaurantActionButtonsWidget extends StatelessWidget {
-  const RestaurantActionButtonsWidget({Key? key}) : super(key: key);
+class CompanyActionButtonsWidget extends StatelessWidget {
+  const CompanyActionButtonsWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "call".tr,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                          fontFamily: 'Poppins',
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
                           fontSize: 14),
@@ -111,7 +111,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "whatsapp".tr,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -162,7 +162,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "Bolt ilə davam et",
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -194,7 +194,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "Uber ilə davam et",
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -226,7 +226,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "Wolt ilə davam et",
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -258,7 +258,7 @@ class RestaurantActionButtonsWidget extends StatelessWidget {
                     Text(
                       "Google map ilə davam et",
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),

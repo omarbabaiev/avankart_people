@@ -3,12 +3,11 @@ import 'package:avankart_people/controllers/membership_controller.dart';
 import 'package:avankart_people/models/membership_models.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/widgets/company_card_widget.dart';
+import 'package:avankart_people/widgets/bottom_sheets/become_member_bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 
 class MembershipListScreen extends GetView<MembershipController> {
   const MembershipListScreen({super.key});
@@ -71,6 +70,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                       SizedBox(height: 8),
                       Text(
                         'you_have_not_been_a_member_of_any_company'.tr,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,
@@ -79,7 +79,9 @@ class MembershipListScreen extends GetView<MembershipController> {
                       ),
                       SizedBox(height: 20),
                       CupertinoButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          BecomeMemberBottomSheet.show(context);
+                        },
                         child: Text(
                           'become_a_member'.tr,
                           style: TextStyle(
