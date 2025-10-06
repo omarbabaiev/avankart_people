@@ -1,5 +1,7 @@
 import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/controllers/notifications_controller.dart';
+import 'package:avankart_people/controllers/card_controller.dart';
+import 'package:avankart_people/controllers/map_controller.dart';
 import 'package:avankart_people/screens/main/card_screen.dart';
 import 'package:avankart_people/screens/main/home_screen.dart';
 import 'package:avankart_people/screens/main/settings_screen.dart';
@@ -14,6 +16,7 @@ import '../utils/auth_utils.dart';
 import '../utils/api_response_parser.dart';
 import '../services/auth_service.dart';
 import '../services/companies_service.dart';
+import '../services/location_service.dart';
 import '../models/user_model.dart';
 import '../models/companies_response.dart';
 import '../routes/app_routes.dart';
@@ -38,9 +41,18 @@ class HomeController extends GetxController
   final _retryMessage = ''.obs;
 
   // Companies bilgileri
-  final _companies = <MuessiseModel>[].obs;
+  final _companies = <CompanyInListModel>[].obs;
   final _isLoadingCompanies = false.obs;
   final _companiesError = ''.obs;
+
+  // Search query
+  final _currentSearchQuery = ''.obs;
+
+  // Pagination
+  final _currentPageCompanies = 1.obs;
+  final _totalPagesCompanies = 1.obs;
+  final _totalItemsCompanies = 0.obs;
+  final _hasMoreDataCompanies = true.obs;
 
   // Global retry yönetimi
   final _globalShowRetryButton = false.obs;
@@ -54,6 +66,7 @@ class HomeController extends GetxController
   // Services
   final AuthService _authService = AuthService();
   final CompaniesService _companiesService = CompaniesService();
+  final LocationService _locationService = LocationService();
 
   // Animasyon controller
   late AnimationController _animationController;
@@ -76,14 +89,23 @@ class HomeController extends GetxController
   // Global retry getters
   bool get globalShowRetryButton => _globalShowRetryButton.value;
   String get globalRetryMessage => _globalRetryMessage.value;
+
+  // Search query getter
+  String get currentSearchQuery => _currentSearchQuery.value;
   bool get globalIsLoading => _globalIsLoading.value;
   Future<void> Function()? get globalRetryCallback =>
       _globalRetryCallback.value;
 
   // Companies getters
-  List<MuessiseModel> get companies => _companies;
+  List<CompanyInListModel> get companies => _companies;
   bool get isLoadingCompanies => _isLoadingCompanies.value;
   String get companiesError => _companiesError.value;
+
+  // Pagination getters
+  int get currentPageCompanies => _currentPageCompanies.value;
+  int get totalPagesCompanies => _totalPagesCompanies.value;
+  int get totalItemsCompanies => _totalItemsCompanies.value;
+  bool get hasMoreDataCompanies => _hasMoreDataCompanies.value;
 
   // Controller başlatıldığında gerekli ayarları yapar
   @override
@@ -226,26 +248,59 @@ class HomeController extends GetxController
     List<String>? muessiseCategory,
     int page = 1,
     int limit = 10,
+    bool isRefresh = false,
   }) async {
+    if (isRefresh) {
+      _currentPageCompanies.value = 1;
+      _hasMoreDataCompanies.value = true;
+    }
+
+    if (!_hasMoreDataCompanies.value && !isRefresh) return;
+
     try {
       _isLoadingCompanies.value = true;
       _companiesError.value = '';
 
-      print('[HOME CONTROLLER] Loading companies...');
+      print(
+          '[HOME CONTROLLER] Loading companies... Page: ${_currentPageCompanies.value}');
+
+      // Kullanıcının konumunu al
+      final position = await _locationService.getCurrentLocation();
+      double? lat = position?.latitude;
+      double? lng = position?.longitude;
+
+      print('[HOME CONTROLLER] Location: lat=$lat, lng=$lng');
 
       final response = await _companiesService.getCompanies(
+        lat: lat,
+        lng: lng,
         filterType: filterType,
         search: search,
         cardId: cardId,
         muessiseCategory: muessiseCategory,
-        page: page,
+        page: _currentPageCompanies.value,
         limit: limit,
       );
 
       if (response != null) {
-        _companies.value = response.muessises;
+        if (isRefresh) {
+          _companies.value = response.muessises;
+        } else {
+          _companies.addAll(response.muessises);
+        }
+
+        // Pagination bilgilerini güncelle
+        _totalPagesCompanies.value = response.totalPages;
+        _totalItemsCompanies.value = response.total;
+        _hasMoreDataCompanies.value =
+            _currentPageCompanies.value < _totalPagesCompanies.value;
+
+        if (_hasMoreDataCompanies.value) {
+          _currentPageCompanies.value++;
+        }
+
         print(
-            '[HOME CONTROLLER] Companies loaded successfully: ${response.muessises.length} items');
+            '[HOME CONTROLLER] Companies loaded successfully: ${response.muessises.length} items, Total: ${_totalItemsCompanies.value}');
         update();
       } else {
         _companiesError.value = 'failed_to_load_companies'.tr;
@@ -261,7 +316,14 @@ class HomeController extends GetxController
 
   /// Companies'leri yenile (pull to refresh için)
   Future<void> refreshCompanies() async {
-    await loadCompanies();
+    await loadCompanies(isRefresh: true);
+  }
+
+  /// Load more data for pagination
+  Future<void> loadMoreCompanies() async {
+    if (!_isLoadingCompanies.value && _hasMoreDataCompanies.value) {
+      await loadCompanies();
+    }
   }
 
   // User bilgilerini yükle
@@ -295,24 +357,24 @@ class HomeController extends GetxController
       print('[HOME CONTROLLER] Token: ${homeResponse.token}');
 
       if (homeResponse.user != null) {
-        print('[HOME CONTROLLER] ===== USER DETAILS =====');
-        print('[HOME CONTROLLER] ID: ${homeResponse.user?.id}');
-        print('[HOME CONTROLLER] Name: ${homeResponse.user?.name}');
-        print('[HOME CONTROLLER] Surname: ${homeResponse.user?.surname}');
-        print('[HOME CONTROLLER] People ID: ${homeResponse.user?.peopleId}');
-        print(
-            '[HOME CONTROLLER] Sirket Name: ${homeResponse.user?.companyInfo?.companyName}');
+        // print('[HOME CONTROLLER] ===== USER DETAILS =====');
+        // print('[HOME CONTROLLER] ID: ${homeResponse.user?.id}');
+        // print('[HOME CONTROLLER] Name: ${homeResponse.user?.name}');
+        // print('[HOME CONTROLLER] Surname: ${homeResponse.user?.surname}');
+        // print('[HOME CONTROLLER] People ID: ${homeResponse.user?.peopleId}');
+        // print(
+        //     '[HOME CONTROLLER] Sirket Name: ${homeResponse.user?.sirketId?.sirketName}');
 
-        print('[HOME CONTROLLER] Email: ${homeResponse.user?.email}');
+        // print('[HOME CONTROLLER] Email: ${homeResponse.user?.email}');
 
-        print('[HOME CONTROLLER] Phone: ${homeResponse.user?.phone}');
-        print('[HOME CONTROLLER] Birth Date: ${homeResponse.user?.birthDate}');
-        print(
-            '[HOME CONTROLLER] Total QR Codes: ${homeResponse.user?.totalQrCodes}');
-        print(
-            '[HOME CONTROLLER] Today QR Codes: ${homeResponse.user?.todayQrCodes}');
-        print('[HOME CONTROLLER] Status: ${homeResponse.user?.status}');
-        print('[HOME CONTROLLER] ===== END USER DETAILS =====');
+        // print('[HOME CONTROLLER] Phone: ${homeResponse.user?.phone}');
+        // print('[HOME CONTROLLER] Birth Date: ${homeResponse.user?.birthDate}');
+        // print(
+        //     '[HOME CONTROLLER] Total QR Codes: ${homeResponse.user?.totalQrCodes}');
+        // print(
+        //     '[HOME CONTROLLER] Today QR Codes: ${homeResponse.user?.todayQrCodes}');
+        // print('[HOME CONTROLLER] Status: ${homeResponse.user?.status}');
+        // print('[HOME CONTROLLER] ===== END USER DETAILS =====');
       } else {
         print('[HOME CONTROLLER] User is null!');
       }
@@ -401,6 +463,82 @@ class HomeController extends GetxController
 
     // İlgili sayfayı yükle ve animasyonu başlat
     _changePageWithAnimation(index);
+
+    // Home sekmesine tıklandığında profile request AT
+    if (index == 0) {
+      _loadUserData();
+    }
+
+    // My Cards sekmesine tıklandığında CardController'ı başlat ve API request yap
+    if (index == 2) {
+      // My Cards sekmesi index 2
+      _loadCardData();
+    }
+  }
+
+  // My Cards sekmesine tıklandığında CardController'ı başlat ve API request yap
+  void _loadCardData() {
+    try {
+      // CardController'ı al veya oluştur
+      final cardController = Get.find<CardController>();
+
+      // Debug: User ve sirket bilgilerini kontrol et
+      print('[HOME CONTROLLER] ===== CARD DATA DEBUG =====');
+      print('[HOME CONTROLLER] User: ${_user.value != null}');
+      if (_user.value != null) {
+        print('[HOME CONTROLLER] User ID: ${_user.value!.id}');
+        print('[HOME CONTROLLER] User Name: ${_user.value!.name}');
+        print('[HOME CONTROLLER] SirketId: ${_user.value!.sirketId != null}');
+        if (_user.value!.sirketId != null) {
+          print('[HOME CONTROLLER] Sirket ID: ${_user.value!.sirketId!.id}');
+          print(
+              '[HOME CONTROLLER] Sirket Name: ${_user.value!.sirketId!.sirketName}');
+        }
+      }
+      print('[HOME CONTROLLER] ===========================');
+
+      // Eğer kartlar henüz yüklenmemişse, API request yap
+      if (cardController.cards.isEmpty) {
+        // User'dan sirket_id'yi al
+        String? sirketId;
+        if (_user.value?.sirketId != null) {
+          sirketId = _user.value!.sirketId!.id;
+        }
+
+        // Geçici test için statik sirket_id
+        if (sirketId == null || sirketId.isEmpty) {
+          sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
+          print('[HOME CONTROLLER] Using static sirketId for test: $sirketId');
+        }
+
+        print('[HOME CONTROLLER] Final sirketId for API: $sirketId');
+
+        // API request'i yap
+        cardController.loadMyCards(sirketId: sirketId);
+      }
+    } catch (e) {
+      print('[HOME CONTROLLER] Error loading card data: $e');
+      // CardController bulunamazsa oluştur
+      final cardController = Get.put(CardController());
+
+      // User'dan sirket_id'yi al
+      String? sirketId;
+      if (_user.value?.sirketId != null) {
+        sirketId = _user.value!.sirketId!.id;
+      }
+
+      // Geçici test için statik sirket_id
+      if (sirketId == null || sirketId.isEmpty) {
+        sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
+        print(
+            '[HOME CONTROLLER] Using static sirketId for test (fallback): $sirketId');
+      }
+
+      print('[HOME CONTROLLER] Fallback sirketId for API: $sirketId');
+
+      // API request'i yap
+      cardController.loadMyCards(sirketId: sirketId);
+    }
   }
 
   // Seçilen indekse göre ilgili sayfayı yükler
@@ -408,12 +546,17 @@ class HomeController extends GetxController
     Widget newPage;
     switch (index) {
       case 0:
-        newPage = const HomeScreen();
-        // Home screen'e geçerken profile request ATMA
+        newPage = HomeScreen();
+        // Home screen'e geçerken profile request AT
+        if (!skipProfileRequest && !_isHotReload) {
+          _loadUserData();
+        }
         break;
       case 1:
         // Map screen - profile request ATMA
         newPage = Container(); // Map screen placeholder
+        // MapController'ı güncelle
+        _updateMapController();
         break;
       case 2:
         // My Cards screen - profile request ATMA
@@ -427,7 +570,7 @@ class HomeController extends GetxController
         }
         break;
       default:
-        newPage = const HomeScreen();
+        newPage = HomeScreen();
     }
 
     _animatePageChange(newPage);
@@ -524,5 +667,40 @@ class HomeController extends GetxController
   void navigateToQRDisplay(String amount, String qrData, String qrCode,
       {String? qrImageUrl}) {
     Get.toNamed(AppRoutes.qrDisplay);
+  }
+
+  // MapController'ı güncelle
+  void _updateMapController() {
+    try {
+      if (Get.isRegistered<MapController>()) {
+        final mapController = Get.find<MapController>();
+        // Async fonksiyonu fire-and-forget olarak çağır
+        mapController.refreshCompanies();
+      }
+    } catch (e) {
+      print('[HOME CONTROLLER] MapController güncellenirken hata: $e');
+    }
+  }
+
+  // Search results'ı home screen'de göster
+  void showSearchResults(List<CompanyInListModel> searchResults,
+      {String? searchQuery}) {
+    print('[HOME CONTROLLER] Showing ${searchResults.length} search results');
+    _companies.value = searchResults;
+    _isLoadingCompanies.value = false;
+    _companiesError.value = '';
+    if (searchQuery != null) {
+      _currentSearchQuery.value = searchQuery;
+    }
+    print('[HOME CONTROLLER] Search results assigned to companies list');
+  }
+
+  // Search'i temizle ve normal companies'leri yükle
+  void clearSearchResults() {
+    print('[HOME CONTROLLER] clearSearchResults called');
+    _currentSearchQuery.value = '';
+    print(
+        '[HOME CONTROLLER] Calling loadCompanies() to reload normal companies');
+    loadCompanies(isRefresh: true);
   }
 }
