@@ -161,7 +161,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                     controller: _controllers[index],
                     focusNode: _focusNodes[index],
                     textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                     maxLength: 1,
                     style: TextStyle(
                       fontSize: 18,
