@@ -36,12 +36,14 @@ class QrPaymentController extends GetxController {
         print(
             '[QR PAYMENT CONTROLLER] Cards count: ${cardController.cards.length}');
         print(
-            '[QR PAYMENT CONTROLLER] Selected index: ${cardController.selectedIndex.value}');
+            '[QR PAYMENT CONTROLLER] Selected payment index: ${cardController.selectedPaymentIndex.value}');
 
         if (cardController.cards.isNotEmpty &&
-            cardController.selectedIndex.value < cardController.cards.length) {
+            cardController.selectedPaymentIndex.value >= 0 &&
+            cardController.selectedPaymentIndex.value <
+                cardController.cards.length) {
           final selectedCard =
-              cardController.cards[cardController.selectedIndex.value];
+              cardController.cards[cardController.selectedPaymentIndex.value];
           currentCardId.value = selectedCard['cardId'] ?? '';
           cardName.value = selectedCard['title'] ?? 'card'.tr;
           balance.value = (selectedCard['balance'] ?? 0.0).toDouble();

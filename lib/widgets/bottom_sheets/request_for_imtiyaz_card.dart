@@ -1,17 +1,12 @@
-import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/routes/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/bottom_sheet_extension.dart';
-import '../../utils/snackbar_utils.dart';
-import '../../controllers/profile_controller.dart';
-import 'verification_bottom_sheet.dart';
+import '../../assets/image_assets.dart';
 
-class DeleteAccountBottomSheet {
+class RequestForImtiyazCardBottomSheet {
   static void show(BuildContext context) {
-    final ProfileController profileController = Get.find<ProfileController>();
-
     context.showPerformantBottomSheet(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -32,18 +27,18 @@ class DeleteAccountBottomSheet {
                 height: 55,
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onError,
+                  color: Theme.of(context).hoverColor,
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset(
-                  ImageAssets.trash2,
+                  ImageAssets.cardholder,
                   height: 5,
                   color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
               SizedBox(height: 24),
               Text(
-                'account_delete'.tr,
+                'your_card_is_not_active'.tr,
                 style: TextStyle(
                   fontFamily: "Poppins",
                   fontSize: 22,
@@ -55,7 +50,7 @@ class DeleteAccountBottomSheet {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  'account_delete_confirmation'.tr,
+                  'your_card_is_not_active_description'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -72,13 +67,9 @@ class DeleteAccountBottomSheet {
                   child: ElevatedButton(
                     onPressed: () async {
                       Get.back();
-
-                      final success =
-                          await profileController.requestDeleteProfile();
-
-                      if (success) {
-                        _showVerificationSheet(context, profileController);
-                      }
+                      Get.toNamed(
+                        AppRoutes.selectCard,
+                      );
                     },
                     style: AppTheme.primaryButtonStyle().copyWith(
                       backgroundColor: MaterialStateProperty.all(
@@ -86,7 +77,7 @@ class DeleteAccountBottomSheet {
                       ),
                     ),
                     child: Text(
-                      'delete_account'.tr,
+                      'request_for_imtiyaz_card'.tr,
                       style: TextStyle(
                         fontFamily: "Poppins",
                         fontSize: 16,
@@ -101,7 +92,7 @@ class DeleteAccountBottomSheet {
               TextButton(
                 onPressed: () => Get.back(),
                 child: Text(
-                  'no'.tr,
+                  'cancel'.tr,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -113,55 +104,6 @@ class DeleteAccountBottomSheet {
             ],
           ),
         );
-      },
-    );
-  }
-
-  static void _showVerificationSheet(
-      BuildContext context, ProfileController controller) {
-    // Context'in geçerli olup olmadığını kontrol et
-    if (!context.mounted) {
-      print('[VERIFICATION SHEET] Context is not mounted, using Get.context');
-      // Eğer context geçerli değilse Get.context kullan
-      final currentContext = Get.context;
-      if (currentContext != null) {
-        VerificationBottomSheet.show(
-          currentContext,
-          title: 'otp'.tr,
-          subtitle:
-              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
-          showTimer: true,
-          onVerify: (otp) async {
-            final success = await controller.submitDeleteProfileOTP(otp);
-            if (success) {
-              Get.back();
-            }
-          },
-          onResend: () async {
-            await controller.requestDeleteProfile();
-          },
-        );
-      } else {
-        print('[VERIFICATION SHEET] Get.context is also null');
-      }
-      return;
-    }
-
-    // Context geçerliyse normal şekilde devam et
-    VerificationBottomSheet.show(
-      context,
-      title: 'otp'.tr,
-      subtitle:
-          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
-      showTimer: true,
-      onVerify: (otp) async {
-        final success = await controller.submitDeleteProfileOTP(otp);
-        if (success) {
-          Get.back();
-        }
-      },
-      onResend: () async {
-        await controller.requestDeleteProfile();
       },
     );
   }

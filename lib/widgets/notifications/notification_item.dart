@@ -275,7 +275,7 @@ class NotificationItem extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -374,7 +374,7 @@ class NotificationItem extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -399,23 +399,27 @@ class NotificationItem extends StatelessWidget {
 
               // Title
               Text(
-                'Company_name'.tr,
+                notification['title'] ?? '',
                 style: TextStyle(
                   fontSize: 20,
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
               const SizedBox(height: 12),
 
               // Description
               Text(
-                'Company_invitation'.tr,
+                notification['text'] ?? '',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  fontFamily: 'Poppins',
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
                 ),
               ),
               const SizedBox(height: 24),
@@ -466,7 +470,7 @@ class NotificationItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: Theme.of(context)
                           .colorScheme
-                          .onSurface
+                          .onBackground
                           .withOpacity(0.6),
                     ),
                   ),

@@ -469,9 +469,8 @@ class HomeController extends GetxController
       _loadUserData();
     }
 
-    // My Cards sekmesine tıklandığında CardController'ı başlat ve API request yap
+    // My Cards sekmesine tıklandığında kartları yükle
     if (index == 2) {
-      // My Cards sekmesi index 2
       _loadCardData();
     }
   }
@@ -497,25 +496,23 @@ class HomeController extends GetxController
       }
       print('[HOME CONTROLLER] ===========================');
 
-      // Eğer kartlar henüz yüklenmemişse, API request yap
-      if (cardController.cards.isEmpty) {
-        // User'dan sirket_id'yi al
-        String? sirketId;
-        if (_user.value?.sirketId != null) {
-          sirketId = _user.value!.sirketId!.id;
-        }
-
-        // Geçici test için statik sirket_id
-        if (sirketId == null || sirketId.isEmpty) {
-          sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
-          print('[HOME CONTROLLER] Using static sirketId for test: $sirketId');
-        }
-
-        print('[HOME CONTROLLER] Final sirketId for API: $sirketId');
-
-        // API request'i yap
-        cardController.loadMyCards(sirketId: sirketId);
+      // Her My Cards açıldığında kartları yeniden yükle
+      // User'dan sirket_id'yi al
+      String? sirketId;
+      if (_user.value?.sirketId != null) {
+        sirketId = _user.value!.sirketId!.id;
       }
+
+      // Geçici test için statik sirket_id
+      if (sirketId == null || sirketId.isEmpty) {
+        sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
+        print('[HOME CONTROLLER] Using static sirketId for test: $sirketId');
+      }
+
+      print('[HOME CONTROLLER] Final sirketId for API: $sirketId');
+
+      // API request'i yap
+      cardController.loadMyCards(sirketId: sirketId);
     } catch (e) {
       print('[HOME CONTROLLER] Error loading card data: $e');
       // CardController bulunamazsa oluştur

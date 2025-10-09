@@ -4,6 +4,7 @@ import 'package:avankart_people/models/membership_models.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/widgets/bottom_sheets/become_member_bottom_sheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -192,24 +193,21 @@ class MembershipListScreen extends GetView<MembershipController> {
                       Theme.of(context).colorScheme.tertiaryContainer,
                   child: membership.fullProfileImageUrl != null
                       ? ClipOval(
-                          child: Image.network(
-                            membership.fullProfileImageUrl!,
+                          child: CachedNetworkImage(
+                            imageUrl: membership.fullProfileImageUrl!,
                             width: 56,
                             height: 56,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Icon(
+                            errorWidget: (context, error, stackTrace) => Icon(
                               Icons.business_center_outlined,
                               color: Theme.of(context).unselectedWidgetColor,
                               size: 28,
                             ),
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Icon(
-                                Icons.business_center_outlined,
-                                color: Theme.of(context).unselectedWidgetColor,
-                                size: 28,
-                              );
-                            },
+                            placeholder: (context, url) => Icon(
+                              Icons.business_center_outlined,
+                              color: Theme.of(context).unselectedWidgetColor,
+                              size: 28,
+                            ),
                           ),
                         )
                       : Icon(Icons.business,
@@ -223,6 +221,7 @@ class MembershipListScreen extends GetView<MembershipController> {
                   style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15,
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontWeight: FontWeight.w500),
                 ),
               ],

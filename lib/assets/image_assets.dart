@@ -22,6 +22,9 @@ class ImageAssets {
   static const passwordCopy = "assets/icons/Password copy.png";
   static const fingerprint = "assets/icons/FingerprintSimple.png";
   static const markerIcon = "assets/icons/marker_icon.png";
+  static const locationIcon = "assets/icons/Crosshair.png";
+  static const searchfavoriteicon = "assets/icons/Group.png";
+  static const walletEmpty = "assets/icons/Wallet 05.png";
 
   static const linkedinIcon = "assets/icons/linkedin.png";
   static const linkSimpleIcon = "assets/icons/LinkSimple.png";

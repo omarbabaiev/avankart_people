@@ -49,7 +49,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "two_fact or_authentication_description".tr,
+                    "two_factor_authentication_description".tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: 'Poppins',

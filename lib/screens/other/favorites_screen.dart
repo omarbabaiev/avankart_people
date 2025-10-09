@@ -20,12 +20,21 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   late ScrollController _scrollController;
+  late FavoritesController favoritesController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
+    // Initialize controller
+    favoritesController = Get.put(FavoritesController());
+
+    // Her screen açıldığında favorileri yükle
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      favoritesController.refreshFavorites();
+    });
   }
 
   @override
@@ -36,17 +45,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize FavoritesController
-    final favoritesController = Get.put(FavoritesController());
-
-    // Screen'e girince request at
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (favoritesController.favorites.isEmpty &&
-          !favoritesController.isLoading) {
-        favoritesController.loadFavorites();
-      }
-    });
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
@@ -186,6 +184,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                     ),
                                     SizedBox(width: 8),
                                     Material(
+                                      color: Colors.transparent,
                                       child: Text(
                                         'search_placeholder'.tr,
                                         style: TextStyle(
@@ -282,13 +281,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(height: Get.height / 3 - 100),
-                              Icon(
-                                Icons.favorite_border,
-                                size: 64,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.5),
+                              Image.asset(
+                                ImageAssets.searchfavoriteicon,
+                                height: 80,
                               ),
                               SizedBox(height: 16),
                               Text(
@@ -367,7 +362,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                   company), // TODO: Bu bilgiyi API'den al
                               index: index,
                               companyId: company.id,
-                              isFavorite: company.isFavorite,
+                              isFavorite:
+                                  true, // Favoriler listesindeki tüm şirketler zaten favoride
                             ),
                           ),
                         );
@@ -609,7 +605,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                   company), // TODO: Bu bilgiyi API'den al
                               index: index,
                               companyId: company.id,
-                              isFavorite: company.isFavorite,
+                              isFavorite:
+                                  true, // Favoriler listesindeki tüm şirketler zaten favoride
                             ),
                           );
                         },

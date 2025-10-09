@@ -35,7 +35,7 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
           automaticallyImplyLeading:
               finalAllowBack, // Settings'den geliyorsa geri tuşunu göster
           title: Text(
-            'PIN kod ayarla',
+            'set_pin_code'.tr,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 17,

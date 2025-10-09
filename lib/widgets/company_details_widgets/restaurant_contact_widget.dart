@@ -1,6 +1,7 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:avankart_people/models/phone_model.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyContactWidget extends StatelessWidget {
@@ -26,7 +27,7 @@ class CompanyContactWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Əlaqə",
+                "contact".tr,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   color: Theme.of(context).hintColor,
@@ -59,7 +60,11 @@ class CompanyContactWidget extends StatelessWidget {
                       onTap: () => _launchUrl(website),
                       child: Row(
                         children: [
-                          Image.asset(ImageAssets.linkSimpleIcon, height: 20),
+                          Image.asset(
+                            ImageAssets.linkSimpleIcon,
+                            height: 20,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                           SizedBox(width: 6),
                           Expanded(
                             child: Text(
@@ -90,7 +95,7 @@ class CompanyContactWidget extends StatelessWidget {
     if (phones == null || phones!.isEmpty) {
       return [
         _buildContactItem(
-            context, ImageAssets.phoneCallIconDark, "Telefon nömrəsi yoxdur"),
+            context, ImageAssets.phoneCallIconDark, 'no_phone_number'.tr),
       ];
     }
 
@@ -115,6 +120,7 @@ class CompanyContactWidget extends StatelessWidget {
           Image.asset(
             imagePath,
             height: 20,
+            color: Theme.of(context).colorScheme.onBackground,
           ),
           SizedBox(width: 6),
           Text(

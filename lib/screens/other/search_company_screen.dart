@@ -329,7 +329,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
             ),
             SizedBox(height: 16),
             Text(
-              'Sonuç bulunamadı',
+              'no_results_found'.tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w500,
@@ -339,7 +339,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              'Aradığınız kriterlere uygun şirket bulunamadı',
+              'no_company_found_description'.tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w400,
@@ -365,7 +365,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
             ),
             SizedBox(height: 16),
             Text(
-              'Arama yapın',
+              'start_searching'.tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w500,
@@ -375,7 +375,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              'Şirket adı yazarak arama yapabilirsiniz',
+              'search_company_hint'.tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w400,

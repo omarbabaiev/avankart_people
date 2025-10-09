@@ -71,7 +71,7 @@ class Card {
       id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'],
-      backgroundColor: json['background_color'] ?? '#4CAF50',
+      backgroundColor: json['color'] ?? json['background_color'] ?? '#4CAF50',
       icon: json['icon'] ?? '',
       category: json['category'],
       currentStatus: json['current_status'] ?? 'inactive',

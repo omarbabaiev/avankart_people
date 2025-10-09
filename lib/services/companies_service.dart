@@ -7,6 +7,7 @@ import '../utils/secure_storage_config.dart';
 import '../models/companies_response.dart';
 import '../models/companies_on_map_response.dart';
 import '../models/company_detail_model.dart';
+import '../models/favorite_toggle_response.dart';
 import 'auth_service.dart';
 
 class CompaniesService {
@@ -292,11 +293,19 @@ class CompaniesService {
     }
   }
 
-  /// Add company to favorites
-  Future<Map<String, dynamic>> addToFavorites({
+  /// Toggle favorite status for a company (add/remove)
+  Future<FavoriteToggleResponse?> toggleFavorite({
     required String muessiseId,
   }) async {
     try {
+      print('═══════════════════════════════════════════════════');
+      print('[FAVORITES SERVICE] 🔄 Toggle Favorite Request');
+      print('═══════════════════════════════════════════════════');
+      print('[FAVORITES SERVICE] 📍 Endpoint: POST /people/favorites/muessise');
+      print('[FAVORITES SERVICE] 📤 Request Body:');
+      print('[FAVORITES SERVICE]   - muessise_id: $muessiseId');
+      print('[FAVORITES SERVICE] ⏱️  Request Time: ${DateTime.now()}');
+
       DebugLogger.apiRequest('/people/favorites/muessise', {
         'muessise_id': muessiseId,
       });
@@ -308,17 +317,48 @@ class CompaniesService {
         },
       );
 
+      print('───────────────────────────────────────────────────');
+      print('[FAVORITES SERVICE] 📥 Response Received');
+      print('───────────────────────────────────────────────────');
+      print('[FAVORITES SERVICE] ✅ Status Code: ${response.statusCode}');
+      print('[FAVORITES SERVICE] 📦 Full Response Data:');
+      print('[FAVORITES SERVICE]   RAW: ${response.data}');
+      print('[FAVORITES SERVICE] 📦 Parsed Fields:');
+      print('[FAVORITES SERVICE]   - status: ${response.data['status']}');
+      print('[FAVORITES SERVICE]   - message: ${response.data['message']}');
+      print('[FAVORITES SERVICE] 📋 All Keys: ${response.data.keys.toList()}');
+      print('[FAVORITES SERVICE] ⏱️  Response Time: ${DateTime.now()}');
+      print('═══════════════════════════════════════════════════');
+
       DebugLogger.apiResponse('/people/favorites/muessise', response.data);
 
-      return response.data;
+      final parsedResponse = FavoriteToggleResponse.fromJson(response.data);
+      print('[FAVORITES SERVICE] 🔍 Parsed Response:');
+      print('[FAVORITES SERVICE]   - isAdded: ${parsedResponse.isAdded}');
+      print('[FAVORITES SERVICE]   - isRemoved: ${parsedResponse.isRemoved}');
+      print('[FAVORITES SERVICE]   - isValid: ${parsedResponse.isValid}');
+
+      return parsedResponse;
     } on DioException catch (e) {
+      print('═══════════════════════════════════════════════════');
+      print('[FAVORITES SERVICE] ❌ Request Failed');
+      print('═══════════════════════════════════════════════════');
+      print('[FAVORITES SERVICE] 🚫 Error Type: ${e.type}');
+      print('[FAVORITES SERVICE] 💬 Error Message: ${e.message}');
+      if (e.response != null) {
+        print('[FAVORITES SERVICE] 📥 Error Response:');
+        print('[FAVORITES SERVICE]   - Status Code: ${e.response?.statusCode}');
+        print('[FAVORITES SERVICE]   - Response Data: ${e.response?.data}');
+      }
+      print('═══════════════════════════════════════════════════');
+
       DebugLogger.apiError('/people/favorites/muessise', e);
 
       if (e.response != null && e.response?.data != null) {
-        throw CompaniesException(
+        throw FavoriteToggleException(
             ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        throw CompaniesException('network_error'.tr + ': ${e.message}');
+        throw FavoriteToggleException('network_error'.tr + ': ${e.message}');
       }
     }
   }

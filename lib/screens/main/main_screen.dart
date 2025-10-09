@@ -124,25 +124,37 @@ class _MainScreenState extends State<MainScreen> {
               items: [
                 BottomNavigationBarItem(
                     activeIcon: Image.asset(ImageAssets.homeActive,
-                        height: 24, width: 24),
+                        color: Theme.of(context).colorScheme.onBackground,
+                        height: 24,
+                        width: 24),
                     icon: Image.asset(ImageAssets.homeInactive,
                         height: 24, width: 24),
                     label: 'home'.tr),
                 BottomNavigationBarItem(
                     activeIcon: Image.asset(ImageAssets.mapTrifold,
-                        height: 24, width: 24),
+                        color: Theme.of(context).colorScheme.onBackground,
+                        height: 24,
+                        width: 24),
                     icon: Image.asset(ImageAssets.mapTrifoldInactive,
                         height: 24, width: 24),
                     label: 'map'.tr),
                 BottomNavigationBarItem(
-                    activeIcon:
-                        Image.asset(ImageAssets.wallet, height: 24, width: 24),
+                    activeIcon: Image.asset(
+                      ImageAssets.wallet,
+                      height: 24,
+                      width: 24,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
                     icon: Image.asset(ImageAssets.walletInactive,
                         height: 24, width: 24),
                     label: 'my_cards'.tr),
                 BottomNavigationBarItem(
-                    activeIcon: Image.asset(ImageAssets.settingsActive,
-                        height: 24, width: 24),
+                    activeIcon: Image.asset(
+                      ImageAssets.settingsActive,
+                      height: 24,
+                      width: 24,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
                     icon: Image.asset(ImageAssets.settingsInactive,
                         height: 24, width: 24),
                     label: 'settings'.tr),

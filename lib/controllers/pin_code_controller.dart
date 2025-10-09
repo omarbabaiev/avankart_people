@@ -145,6 +145,7 @@ class PinCodeController extends GetxController {
       // Başarı dialogu göster ve onayda geri dön
       await Get.dialog(
         Dialog(
+          backgroundColor: Theme.of(Get.context!).colorScheme.secondary,
           insetPadding: const EdgeInsets.symmetric(horizontal: 24),
           child: Padding(
             padding: const EdgeInsets.all(20),

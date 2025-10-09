@@ -37,7 +37,7 @@ class NameChangeBottomSheet {
                     child: Column(
                       children: [
                         Text(
-                          'Ad dəyişdir',
+                          'name_change'.tr,
                           style: TextStyle(
                             fontFamily: "Poppins",
                             fontSize: 22,
@@ -62,16 +62,16 @@ class NameChangeBottomSheet {
                           },
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Ad daxil edin';
+                              return 'name_input'.tr;
                             }
                             if (value.trim().length < 2) {
-                              return 'Ad ən azı 2 hərf olmalıdır';
+                              return 'name_min_length'.tr;
                             }
                             return null;
                           },
                           decoration: InputDecoration(
                             fillColor: Colors.transparent,
-                            hintText: 'Adınızı daxil edin',
+                            hintText: 'name_input'.tr,
                             hintStyle: TextStyle(
                               fontFamily: "Poppins",
                               fontSize: 15,
@@ -136,7 +136,7 @@ class NameChangeBottomSheet {
                                             ),
                                           )
                                         : Text(
-                                            'Dəyiş',
+                                            'change'.tr,
                                             style: TextStyle(
                                               fontFamily: "Poppins",
                                               fontSize: 16,
@@ -152,7 +152,7 @@ class NameChangeBottomSheet {
                         TextButton(
                           onPressed: () => Get.back(),
                           child: Text(
-                            'Ləğv et',
+                            'cancel'.tr,
                             style: TextStyle(
                               fontFamily: "Poppins",
                               fontWeight: FontWeight.w600,
@@ -185,7 +185,7 @@ class NameChangeBottomSheet {
           currentContext,
           title: 'otp'.tr,
           subtitle:
-              '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
+              '${controller.profile.value?.email} + email_otp_description'.tr,
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -204,8 +204,7 @@ class NameChangeBottomSheet {
     VerificationBottomSheet.show(
       context,
       title: 'otp'.tr,
-      subtitle:
-          '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
+      subtitle: '${controller.profile.value?.email} + email_otp_description'.tr,
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

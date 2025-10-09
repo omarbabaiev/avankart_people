@@ -8,12 +8,35 @@ import 'package:avankart_people/widgets/company_details_widgets/restaurant_socia
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_working_hours_widget.dart';
 import 'package:avankart_people/models/company_detail_model.dart';
 import 'package:avankart_people/controllers/favorites_controller.dart';
-import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CompanyDetailScreen extends StatelessWidget {
+class CompanyDetailScreen extends StatefulWidget {
   const CompanyDetailScreen({super.key});
+
+  @override
+  State<CompanyDetailScreen> createState() => _CompanyDetailScreenState();
+}
+
+class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
+  late bool _isFavorite;
+  bool _isLoading = false;
+  final FavoritesController favoritesController =
+      Get.put<FavoritesController>(FavoritesController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Get arguments from navigation
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    final companyDetailResponse =
+        arguments?['company_detail'] as CompanyDetailResponse?;
+    final companyDetail = companyDetailResponse?.data.responseData;
+
+    // Initialize favorite status
+    _isFavorite = companyDetail?.isFavorite ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,19 +76,25 @@ class CompanyDetailScreen extends StatelessWidget {
         actions: [
           IconButton.filledTonal(
             style: IconButton.styleFrom(
-              padding: EdgeInsets.all(10),
+              maximumSize: Size(44, 44),
               backgroundColor:
-                  Theme.of(context).colorScheme.onPrimary.withOpacity(.2),
+                  Theme.of(context).colorScheme.onPrimary.withOpacity(.3),
             ),
-            onPressed: () =>
-                _toggleFavorite(companyId, companyDetail?.isFavorite ?? false),
-            icon: Icon(
-              (companyDetail?.isFavorite ?? false)
-                  ? Icons.favorite
-                  : Icons.favorite_border_outlined,
-              color: Colors.white,
-              size: 24,
-            ),
+            onPressed: _isLoading ? null : _toggleFavorite,
+            icon: _isLoading
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.red : Colors.white,
+                    size: 24,
+                  ),
           ),
           SizedBox(width: 15),
         ],
@@ -171,36 +200,6 @@ class CompanyDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _toggleFavorite(
-      String? companyId, bool currentFavoriteStatus) async {
-    if (companyId == null) return;
-
-    try {
-      DebugLogger.apiRequest('FAVORITE_TOGGLE', {
-        'company_id': companyId,
-        'current_status': currentFavoriteStatus,
-        'company_name': 'Company Detail Screen',
-      });
-
-      // FavoritesController'ı kullanarak favori durumunu toggle et
-      if (Get.isRegistered<FavoritesController>()) {
-        final favoritesController = Get.find<FavoritesController>();
-        await favoritesController.toggleFavorite(companyId);
-      }
-
-      DebugLogger.apiResponse('FAVORITE_TOGGLE', {
-        'company_id': companyId,
-        'current_status': currentFavoriteStatus,
-        'action': currentFavoriteStatus ? 'removed' : 'added',
-      });
-
-      // Update the UI by refreshing the screen
-      Get.offAndToNamed(Get.currentRoute, arguments: Get.arguments);
-    } catch (e) {
-      DebugLogger.apiError('FAVORITE_TOGGLE', e);
-    }
-  }
-
   IconData _getServiceIcon(String service) {
     switch (service.toLowerCase()) {
       case 'prescription':
@@ -236,6 +235,42 @@ class CompanyDetailScreen extends StatelessWidget {
         return Icons.shopping_cart;
       default:
         return Icons.business;
+    }
+  }
+
+  /// Toggle favorite status
+  Future<void> _toggleFavorite() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Get company ID from arguments
+      final arguments = Get.arguments as Map<String, dynamic>?;
+      final companyId = arguments?['company_id'] as String?;
+
+      if (companyId == null) {
+        throw Exception('Company ID not found');
+      }
+
+      // Toggle favorite using controller
+      final result = await favoritesController.toggleFavorite(companyId);
+
+      // Update local state
+      setState(() {
+        _isFavorite = result;
+      });
+    } catch (e) {
+      print('[CompanyDetailScreen] Error toggling favorite: $e');
+      // Error handling is already done in the controller
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 }

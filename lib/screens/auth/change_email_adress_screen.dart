@@ -97,6 +97,14 @@ class _ChangeEmailAdressScreenState extends State<ChangeEmailAdressScreen> {
                           ),
                           const SizedBox(height: 10),
                           Obx(() => TextFormField(
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                                 controller: TextEditingController(
                                   text: controller.profile.value?.email ?? '',
                                 ),
@@ -134,14 +142,19 @@ class _ChangeEmailAdressScreenState extends State<ChangeEmailAdressScreen> {
                           ),
                           const SizedBox(height: 10),
                           Obx(() => TextFormField(
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Theme.of(context)
+                                        .unselectedWidgetColor),
                                 controller: controller.newEmailController,
                                 onChanged: validateEmail,
                                 decoration: InputDecoration(
                                   hintText: 'enter_new_email_address'.tr,
                                   hintStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .unselectedWidgetColor
-                                        .withOpacity(.5),
+                                    color:
+                                        Theme.of(context).unselectedWidgetColor,
                                     fontSize: 14,
                                   ),
                                   border: OutlineInputBorder(

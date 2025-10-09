@@ -12,7 +12,10 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   final RxBool isLoading = false.obs;
   final RxBool isTransactionLoading = false.obs; // Transaction loading state
 
-  final RxInt selectedIndex = 0.obs;
+  // Card screen için index (kartlar arasında gezinme)
+  final RxInt selectedCardIndex = 0.obs;
+  // Payment için index (ödeme için kart seçimi)
+  final RxInt selectedPaymentIndex = (-1).obs; // -1 = hiçbir kart seçilmedi
   late PageController pageController;
 
   // Kartlar - API'den yüklenecek
@@ -36,8 +39,9 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
     dragController = DraggableScrollableController();
     dragController.addListener(_onDragUpdate);
 
-    // Hot reload sırasında selectedIndex'i sıfırla
-    selectedIndex.value = 0;
+    // Hot reload sırasında index'leri sıfırla
+    selectedCardIndex.value = 0;
+    selectedPaymentIndex.value = -1;
 
     animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -124,10 +128,22 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
         // API'den gelen kartları güncelle
         cards.value = apiCards;
 
-        // İlk kartın işlemlerini yükle - build tamamlandıktan sonra
+        // selectedCardIndex'i kontrol et ve düzelt
         if (apiCards.isNotEmpty) {
+          // Eğer selectedCardIndex geçersizse (< 0 veya >= cards.length), ilk kartı seç
+          if (selectedCardIndex.value < 0 ||
+              selectedCardIndex.value >= apiCards.length) {
+            selectedCardIndex.value = 0;
+            print(
+                '[CARD CONTROLLER] Fixed invalid selectedCardIndex, set to 0');
+          }
+
+          // Seçili kartın işlemlerini yükle - build tamamlandıktan sonra
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            loadCardTransactions(cardId: apiCards[0]['cardId'] as String?);
+            final cardIndex =
+                selectedCardIndex.value.clamp(0, apiCards.length - 1);
+            loadCardTransactions(
+                cardId: apiCards[cardIndex]['cardId'] as String?);
           });
         }
       }
@@ -137,13 +153,13 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
           e.toString().contains('user_not_found')) {
         cards.value = []; // Kartları temizle
         SnackbarUtils.showErrorSnackbar(
-          'Hiçbir üyeliğiniz bulunamadı',
+          'no_card_found'.tr,
           textColor: Colors.white,
         );
       } else {
         // Diğer hatalar için genel mesaj
         SnackbarUtils.showErrorSnackbar(
-          'Kartlar yüklenirken hata oluştu: ${e.toString()}',
+          'cards_load_error'.tr + ': ${e.toString()}',
           textColor: Colors.white,
         );
       }
@@ -158,12 +174,13 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
       // Eğer cardId verilmezse, seçili kartın ID'sini kullan
       final currentCardId = cardId ??
           (cards.isNotEmpty
-              ? cards[selectedIndex.value]['cardId'] as String?
+              ? cards[selectedCardIndex.value]['cardId'] as String?
               : null);
 
       print('[CARD CONTROLLER] ===== LOAD TRANSACTIONS DEBUG =====');
       print('[CARD CONTROLLER] Requested cardId: $cardId');
-      print('[CARD CONTROLLER] Current selectedIndex: ${selectedIndex.value}');
+      print(
+          '[CARD CONTROLLER] Current selectedCardIndex: ${selectedCardIndex.value}');
       print('[CARD CONTROLLER] Cards length: ${cards.length}');
       print('[CARD CONTROLLER] Final currentCardId: $currentCardId');
       print('[CARD CONTROLLER] ====================================');
@@ -233,7 +250,7 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
         } else {
           // Boş transaction durumu
           hasTransactions.value = false;
-          emptyTransactionMessage.value = 'Bu kart için henüz işlem bulunmuyor';
+          emptyTransactionMessage.value = 'no_transactions_found'.tr;
           transactions.value = []; // Boş liste
           print('[CARD CONTROLLER] No transactions found for this card');
         }
@@ -255,10 +272,7 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
       print('[CARD CONTROLLER] Error loading transactions: $e');
 
       // Toast göster
-      SnackbarUtils.showErrorSnackbar(
-        'İşlemler yüklenirken hata oluştu: ${e.toString()}',
-        textColor: Colors.white,
-      );
+      SnackbarUtils.showErrorSnackbar('transactions_load_error'.tr);
     } finally {
       isTransactionLoading.value = false;
     }
@@ -268,18 +282,20 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   void onCardChanged(int index) {
     print('[CARD CONTROLLER] ===== CARD CHANGED DEBUG =====');
     print('[CARD CONTROLLER] Method called with index: $index');
-    print('[CARD CONTROLLER] Current selectedIndex: ${selectedIndex.value}');
+    print(
+        '[CARD CONTROLLER] Current selectedCardIndex: ${selectedCardIndex.value}');
     print('[CARD CONTROLLER] Cards length: ${cards.length}');
 
     // Index'in geçerli olduğundan emin ol
     if (index >= 0 && index < cards.length) {
-      // selectedIndex'i güncelle (eğer henüz güncellenmemişse)
-      if (selectedIndex.value != index) {
-        selectedIndex.value = index;
-        print('[CARD CONTROLLER] Updated selectedIndex to: $index');
+      // selectedCardIndex'i güncelle (eğer henüz güncellenmemişse)
+      if (selectedCardIndex.value != index) {
+        selectedCardIndex.value = index;
+        print('[CARD CONTROLLER] Updated selectedCardIndex to: $index');
       }
 
-      animationController.forward(from: 0);
+      // Animasyonu kaldırdık - butonlar artık slide ederken kaybolmayacak
+      // animationController.forward(from: 0);
 
       // Yeni kartın işlemlerini yükle
       final newCardId = cards[index]['cardId'] as String?;
@@ -301,7 +317,7 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
 
   // Tarihi formatla
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Bilinmeyen';
+    if (date == null) return 'unknown'.tr;
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -309,9 +325,9 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
     final transactionDate = DateTime(date.year, date.month, date.day);
 
     if (transactionDate == today) {
-      return 'Bu gün';
+      return 'today'.tr;
     } else if (transactionDate == yesterday) {
-      return 'Dünən';
+      return 'yesterday'.tr;
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -337,60 +353,23 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   }
 
   // API'den gelen hex color string'ini Color objesine çevir
-  Color _parseColor(String colorString) {
-    print('[CARD CONTROLLER] ===== COLOR PARSING DEBUG =====');
-    print('[CARD CONTROLLER] Input color string: "$colorString"');
-    print('[CARD CONTROLLER] Color string type: ${colorString.runtimeType}');
+
+  Color _parseColor(String? colorString, {Color defaultColor = Colors.grey}) {
+    if (colorString == null || colorString.isEmpty) {
+      return defaultColor;
+    }
+
+    String hexColor = colorString.toUpperCase().replaceAll("#", "");
+
+    if (hexColor.length == 6) {
+      hexColor = "FF$hexColor"; // şəffaflıq əlavə olunur
+    }
 
     try {
-      // Hex color string'ini temizle (# işareti varsa kaldır)
-      String cleanColor = colorString.replaceAll('#', '');
-      print('[CARD CONTROLLER] Cleaned color: "$cleanColor"');
-      print('[CARD CONTROLLER] Cleaned color length: ${cleanColor.length}');
-
-      Color resultColor;
-
-      // 6 karakter hex color'u parse et
-      if (cleanColor.length == 6) {
-        final hexValue = int.parse('FF$cleanColor', radix: 16);
-        resultColor = Color(hexValue);
-        print(
-            '[CARD CONTROLLER] Parsed as 6-char hex: $hexValue -> $resultColor');
-
-        // Test: Manuel hex değerleri
-        if (cleanColor.toUpperCase() == '42A5FC') {
-          print('[CARD CONTROLLER] TEST: #42A5FC should be light blue');
-          print('[CARD CONTROLLER] Expected: Color(0xFF42A5FC)');
-          print('[CARD CONTROLLER] Actual: $resultColor');
-        } else if (cleanColor.toUpperCase() == '32B5AC') {
-          print('[CARD CONTROLLER] TEST: #32B5AC should be turquoise');
-          print('[CARD CONTROLLER] Expected: Color(0xFF32B5AC)');
-          print('[CARD CONTROLLER] Actual: $resultColor');
-        }
-      }
-      // 8 karakter hex color'u parse et (alpha dahil)
-      else if (cleanColor.length == 8) {
-        final hexValue = int.parse(cleanColor, radix: 16);
-        resultColor = Color(hexValue);
-        print(
-            '[CARD CONTROLLER] Parsed as 8-char hex: $hexValue -> $resultColor');
-      }
-      // Geçersiz format durumunda varsayılan renk
-      else {
-        resultColor = const Color(0xFF42A5FC); // Mavi
-        print(
-            '[CARD CONTROLLER] Invalid length, using default color: $resultColor');
-      }
-
-      print('[CARD CONTROLLER] Final result color: $resultColor');
-      print('[CARD CONTROLLER] ===============================');
-      return resultColor;
-    } catch (e) {
-      print('[CARD CONTROLLER] Error parsing color: $colorString, error: $e');
-      print(
-          '[CARD CONTROLLER] Using default color: ${const Color(0xFF42A5FC)}');
-      print('[CARD CONTROLLER] ===============================');
-      return const Color(0xFF42A5FC); // Varsayılan mavi
+      return Color(int.parse(hexColor, radix: 16));
+    } catch (_) {
+      // Əgər səhv formatda rəng gəlirsə, default rəng qaytar
+      return defaultColor;
     }
   }
 

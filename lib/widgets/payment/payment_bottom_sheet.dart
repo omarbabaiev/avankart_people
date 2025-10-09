@@ -3,8 +3,10 @@ import 'package:avankart_people/controllers/card_controller.dart';
 import 'package:avankart_people/controllers/home_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
+import 'package:avankart_people/widgets/bottom_sheets/request_for_imtiyaz_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
@@ -13,8 +15,8 @@ class PaymentBottomSheet {
   static void show(BuildContext context) {
     final controller = Get.find<CardController>();
 
-    // Payment bottom sheet açıldığında seçimi sıfırla
-    controller.selectedIndex.value = -1;
+    // Payment bottom sheet açıldığında payment seçimini sıfırla
+    controller.selectedPaymentIndex.value = -1;
 
     // Payment bottom sheet açıldığında kartları yükle - sirketId ile birlikte
     _loadCardsWithSirketId(controller);
@@ -42,6 +44,7 @@ class PaymentBottomSheet {
                   "select_card_to_pay".tr,
                   style: TextStyle(
                       fontFamily: 'Poppins',
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 17,
                       fontWeight: FontWeight.w600),
                 ),
@@ -53,23 +56,54 @@ class PaymentBottomSheet {
                 // Kartlar yüklendiyse göster
                 if (controller.cards.isEmpty && !controller.isLoading.value) {
                   return Container(
-                    height: 100,
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.credit_card_off,
-                            size: 32,
+                            size: 48,
                             color: Theme.of(context).unselectedWidgetColor,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'no_card_found'.tr,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'Hiçbir üyeliğiniz bulunamadı',
+                            'no_card_found_description'.tr,
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 14,
+                              fontSize: 13,
                               color: Theme.of(context).unselectedWidgetColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 20),
+                          CupertinoButton(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                            color: AppTheme.primaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                            onPressed: () {
+                              Get.back(); // Payment bottom sheet'i kapat
+                              RequestForImtiyazCardBottomSheet.show(context);
+                            },
+                            child: Text(
+                              'muraciet_for_card'.tr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -94,7 +128,7 @@ class PaymentBottomSheet {
                           final card = controller.cards[index];
                           return Obx(() {
                             final isSelected =
-                                controller.selectedIndex.value == index;
+                                controller.selectedPaymentIndex.value == index;
                             print(
                                 '[PAYMENT BOTTOM SHEET] Card $index isSelected: $isSelected');
                             return InkWell(
@@ -103,7 +137,7 @@ class PaymentBottomSheet {
                                       '[PAYMENT BOTTOM SHEET] Card selected: $index');
                                   print(
                                       '[PAYMENT BOTTOM SHEET] Card title: ${card['title']}');
-                                  controller.selectedIndex.value = index;
+                                  controller.selectedPaymentIndex.value = index;
                                 },
                                 child: PaymentCardTitle(
                                   title: card['title'] as String,
@@ -132,15 +166,17 @@ class PaymentBottomSheet {
               // Next butonu - sadece kart seçildiğinde aktif
               Obx(() {
                 final hasCards = controller.cards.isNotEmpty;
-                final isCardSelected = controller.selectedIndex.value >= 0 &&
-                    controller.selectedIndex.value < controller.cards.length;
+                final isCardSelected =
+                    controller.selectedPaymentIndex.value >= 0 &&
+                        controller.selectedPaymentIndex.value <
+                            controller.cards.length;
                 final canProceed =
                     hasCards && isCardSelected && !controller.isLoading.value;
 
                 print('[PAYMENT BOTTOM SHEET] Button state check:');
                 print('[PAYMENT BOTTOM SHEET] hasCards: $hasCards');
                 print(
-                    '[PAYMENT BOTTOM SHEET] selectedIndex: ${controller.selectedIndex.value}');
+                    '[PAYMENT BOTTOM SHEET] selectedPaymentIndex: ${controller.selectedPaymentIndex.value}');
                 print('[PAYMENT BOTTOM SHEET] isCardSelected: $isCardSelected');
                 print(
                     '[PAYMENT BOTTOM SHEET] isLoading: ${controller.isLoading.value}');
@@ -153,7 +189,7 @@ class PaymentBottomSheet {
                         ? () {
                             // Seçili kartı QR payment controller'a gönder
                             final selectedCard = controller
-                                .cards[controller.selectedIndex.value];
+                                .cards[controller.selectedPaymentIndex.value];
                             print(
                                 '[PAYMENT BOTTOM SHEET] Selected card: ${selectedCard['title']}');
 
@@ -200,6 +236,7 @@ class PaymentBottomSheet {
   // SirketId ile kartları yükle
   static void _loadCardsWithSirketId(CardController controller) {
     try {
+      // Her payment butonuna basıldığında kartları yeniden yükle
       // HomeController'dan sirketId'yi al
       String? sirketId;
       if (Get.isRegistered<HomeController>()) {
@@ -244,7 +281,8 @@ class PaymentCardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 400),
       padding: EdgeInsets.all(2),
       margin: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(

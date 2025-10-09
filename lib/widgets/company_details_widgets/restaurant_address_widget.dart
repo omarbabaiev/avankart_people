@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyAddressWidget extends StatelessWidget {
@@ -26,7 +27,7 @@ class CompanyAddressWidget extends StatelessWidget {
             height: 12,
           ),
           Text(
-            "Ünvan",
+            "address".tr,
             style: TextStyle(
               fontFamily: 'Poppins',
               color: Theme.of(context).hintColor,
@@ -51,7 +52,7 @@ class CompanyAddressWidget extends StatelessWidget {
                 : null,
             padding: EdgeInsets.symmetric(horizontal: 0),
             child: Text(
-              "Xəritədə aç",
+              "open_in_maps".tr,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 14,

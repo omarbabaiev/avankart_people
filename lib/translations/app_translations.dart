@@ -45,17 +45,50 @@ class AppTranslations extends Translations {
           'no_cards_available_message':
               'Hazırda heç bir kart mövcud deyil. Zəhmət olmasa yenidən yoxlayın.',
           'refresh': 'Yenilə',
+
+          // Security Screen
           'security': 'Təhlükəsizlik',
           'email_address': 'E-poçt adresi',
           'password': 'Şifrə',
           'reset_password': 'Şifrəni Sıfırla',
           'freeze_account': 'Hesabı Dondur',
-          'amount_must_be_greater_than_0': 'Məbləğ 0-dan böyük olmalıdır',
-          "faq": "Tez-tez verilən suallar",
           'finger_print': 'Barmaq izi',
           'pin_code': 'PIN kod',
+          'set_pin_code': 'PIN kod ayarla',
           'two_step_verification': '2 addımlı doğrulama',
+          'two_factor_authentication': '2 Faktorlu Təsdiqləmə',
+          'two_factor_authentication_description':
+              'Hesabınızı təhlükəsizlik təbəqəsi əlavə edərək qoruyun',
+          'email_authentication': 'E-poçt ilə təsdiqləmə',
+          'email_authentication_description':
+              'E-poçt ünvanınızı əlavə edərək hesabınızı daha güvənli edin',
+          'authenticator': 'Authenticator tətbiqi',
+          'authenticator_description':
+              'Google Authenticator və ya oxşar tətbiq istifadə edərək hesabınızı qoruyun',
           'delete_account': 'Hesabı sil',
+
+          // Filter Screen
+          'filter': 'Filter',
+          'clear_filters': 'Filterləri təmizlə',
+          'apply_filter': 'Filterlə',
+          'filter_category_hint': 'Filter, kategoriya',
+
+          // Search Company Screen
+          'searching': 'Axtarılır',
+          'search_history': 'Axtarış tarixçəsi',
+          'no_search_history': 'Axtarış tarixçəsi boşdur',
+          'no_results_found': 'Nəticə tapılmadı',
+          'no_company_found_description':
+              'Axtardığınız meyarlara uyğun şirkət tapılmadı',
+          'start_searching': 'Axtarış edin',
+          'search_company_hint': 'Şirkət adı yazaraq axtarış edə bilərsiniz',
+
+          // Company Contact Widget
+          'contact': 'Əlaqə',
+          'no_phone_number': 'Telefon nömrəsi yoxdur',
+
+          'amount_must_be_greater_than_0': 'Məbləğ 0-dan böyük olmalıdır',
+          "faq": "Tez-tez verilən suallar",
           'welcome_emoji': '👋',
           'welcome': 'Xoş gəlmisiniz!',
           'login_subtitle': 'Hesabınıza daxil olun və işlərinizə davam edin.',
@@ -80,6 +113,9 @@ class AppTranslations extends Translations {
           'company_added_to_favorites': 'Müəssisə favorilərə əlavə olundu',
           'company_removed_from_favorites': 'Müəssisə favorilərdən çıxarıldı',
           'favorite_error': 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+          'added_to_favorites': 'Favorilərə əlavə olundu',
+          'removed_from_favorites': 'Favorilərdən çıxarıldı',
+          'unexpected_response': 'Gözlənilməz cavab alındı',
 
           // Register Screen
           'new_account': 'Yeni Hesab',
@@ -183,8 +219,14 @@ class AppTranslations extends Translations {
           'password_changed': 'Şifrə uğurla dəyişdirildi',
 
           // Support Screen
+          'support': 'Dəstək',
           'support_subtitle': 'Biz buradayıq, sizə necə kömək edə bilərik?',
+          'whatsapp': 'WhatsApp',
+          'telegram': 'Telegram',
+          'faq': 'Tez-tez verilən suallar',
+          'sorgu': 'Sorğu',
           'hotline': 'Qaynar xətt',
+          'email': 'E-poçt',
 
           // FAQ Screen
           'faq_screen_title': 'Tez-tez verilən suallar',
@@ -497,7 +539,6 @@ class AppTranslations extends Translations {
           'notification_disabled': 'Bildirişlər deaktivləşdirildi',
           'notification_error': 'Bildiriş tənzimləmələrini yeniləmə xətası',
           'notification_permission_required': 'Bildiriş icazəsi tələb olunur',
-
           // Eksik olan translation key'leri
           'unknown_error': 'Naməlum xəta',
           'auth.email_or_phone_suffix': 'Email və ya telefon nömrəsi tapılmadı',
@@ -533,6 +574,14 @@ class AppTranslations extends Translations {
           'connection_error': 'Bağlantı xətası',
           'today': 'Bu gün',
           'yesterday': 'Dünən',
+          'no_card_found': 'Heç bir üzvlük tapılmadı',
+          'no_card_found_description':
+              'Admin panelindən üzvlüyünüz yoxlanılmışdır',
+          'muraciet_for_card': 'Kart üçün müraciət et',
+          'cards_load_error': 'Kartlar yüklənilərkən xəta baş verdi',
+          'no_transactions_found': 'Bu kart üçün hələ əməliyyat yoxdur',
+          'transactions_load_error':
+              'Əməliyyatlar yüklənilərkən xəta baş verdi',
           'Company_name': 'Restoran adı',
           'phone_verification': 'Telefon doğrulaması',
           'phone_verification_subtitle':
@@ -876,6 +925,11 @@ class AppTranslations extends Translations {
           'enter_pin_code_subtitle': 'PIN kodunuzu daxil edin',
           'notification_settings_error': 'Bildiriş tənzimləmələri xətası',
           'error_occurred': 'Xəta baş verdi',
+          'bolt_continue': 'Bolt ilə davam et',
+          'uber_continue': 'Uber ilə davam et',
+          'waze_continue': 'Waze ilə davam et',
+          'google_maps_continue': 'Google map ilə davam et',
+          'current_location': 'Sizin məkanınız',
         },
         'en': {
           'total_spending': 'Total spending',
@@ -1006,8 +1060,59 @@ class AppTranslations extends Translations {
           'enter_current_password': 'Enter current password',
           'current_password_empty': 'Please enter your current password',
           'password_changed': 'Password changed successfully',
+
+          // Security Screen
+          'security': 'Security',
+          'email_address': 'Email Address',
+          'password': 'Password',
+          'reset_password': 'Reset Password',
+          'freeze_account': 'Freeze Account',
+          'finger_print': 'Fingerprint',
+          'pin_code': 'PIN Code',
+          'set_pin_code': 'Set PIN Code',
+          'two_step_verification': '2-Step Verification',
+          'two_factor_authentication': 'Two-Factor Authentication',
+          'two_factor_authentication_description':
+              'Protect your account by adding an extra layer of security',
+          'email_authentication': 'Email Authentication',
+          'email_authentication_description':
+              'Secure your account by adding your email address',
+          'authenticator': 'Authenticator App',
+          'authenticator_description':
+              'Protect your account using Google Authenticator or similar apps',
+          'delete_account': 'Delete Account',
+
+          // Filter Screen
+          'filter': 'Filter',
+          'clear_filters': 'Clear Filters',
+          'apply_filter': 'Apply',
+          'filter_category_hint': 'Filter, category',
+
+          // Search Company Screen
+          'searching': 'Searching',
+          'search_history': 'Search History',
+          'no_search_history': 'No search history',
+          'no_results_found': 'No Results Found',
+          'no_company_found_description':
+              'No company found matching your search criteria',
+          'start_searching': 'Start Searching',
+          'search_company_hint': 'You can search by typing company name',
+
+          // Company Contact Widget
+          'contact': 'Contact',
+          'no_phone_number': 'No phone number',
+
+          // Support Screen
+          'support': 'Support',
           'support_subtitle': 'We are here, how can we help you?',
+          'whatsapp': 'WhatsApp',
+          'telegram': 'Telegram',
+          'faq': 'Frequently Asked Questions',
+          'sorgu': 'Query',
           'hotline': 'Hotline',
+          'email': 'Email',
+
+          // FAQ Screen
           'faq_screen_title': 'Frequently Asked Questions',
           'faq_question_1': 'How does the payment work?',
           'faq_answer_1':
@@ -1305,6 +1410,13 @@ class AppTranslations extends Translations {
           'connection_error': 'Connection error',
           'today': 'Today',
           'yesterday': 'Yesterday',
+          'no_card_found': 'No membership found',
+          'no_card_found_description':
+              'Your membership has been checked by the admin panel',
+          'muraciet_for_card': 'Request a card',
+          'cards_load_error': 'Error loading cards',
+          'no_transactions_found': 'No transactions found for this card yet',
+          'transactions_load_error': 'Error loading transactions',
           'Company_name': 'Company name',
           'phone_verification': 'Phone verification',
           'phone_verification_subtitle':
@@ -1589,6 +1701,9 @@ class AppTranslations extends Translations {
           'Company_name': 'Company Name',
           'company_not_found': 'Company not found',
           'company_removed_from_favorites': 'Company removed from favorites',
+          'added_to_favorites': 'Added to favorites',
+          'removed_from_favorites': 'Removed from favorites',
+          'unexpected_response': 'Unexpected response received',
           'complaints': 'Complaints',
           'complaints_content': 'Complaints Content',
           'completed': 'Completed',
@@ -1943,6 +2058,16 @@ class AppTranslations extends Translations {
           'your_problem': 'Your Problem',
           'Yuxarıda qeyd olunan istifadəçi ID-sini kopyala':
               'Copy the user ID mentioned above',
+          'bolt_continue': 'Continue with Bolt',
+          'uber_continue': 'Continue with Uber',
+          'waze_continue': 'Continue with Waze',
+          'google_maps_continue': 'Continue with Google Maps',
+          'address': 'Address',
+          'open_in_maps': 'Open in Maps',
+          'get_directions': 'Get directions',
+          'call': 'Call',
+          'working_hours': 'Working hours',
+          'current_location': 'Your location',
         },
         'tr': {
           'total_spending': 'Toplam xərcləmə',
@@ -2073,8 +2198,59 @@ class AppTranslations extends Translations {
           'enter_current_password': 'Mevcut şifreyi girin',
           'current_password_empty': 'Lütfen mevcut şifreyi girin',
           'password_changed': 'Şifre başarıyla değiştirildi',
+
+          // Security Screen
+          'security': 'Güvenlik',
+          'email_address': 'E-posta Adresi',
+          'password': 'Şifre',
+          'reset_password': 'Şifreyi Sıfırla',
+          'freeze_account': 'Hesabı Dondur',
+          'finger_print': 'Parmak İzi',
+          'pin_code': 'PIN Kodu',
+          'set_pin_code': 'PIN Kodu Ayarla',
+          'two_step_verification': '2 Adımlı Doğrulama',
+          'two_factor_authentication': 'İki Faktörlü Kimlik Doğrulama',
+          'two_factor_authentication_description':
+              'Hesabınızı ekstra güvenlik katmanı ekleyerek koruyun',
+          'email_authentication': 'E-posta ile Doğrulama',
+          'email_authentication_description':
+              'E-posta adresinizi ekleyerek hesabınızı daha güvenli hale getirin',
+          'authenticator': 'Authenticator Uygulaması',
+          'authenticator_description':
+              'Google Authenticator veya benzer uygulamalar kullanarak hesabınızı koruyun',
+          'delete_account': 'Hesabı Sil',
+
+          // Filter Screen
+          'filter': 'Filtre',
+          'clear_filters': 'Filtreleri Temizle',
+          'apply_filter': 'Uygula',
+          'filter_category_hint': 'Filtre, kategori',
+
+          // Search Company Screen
+          'searching': 'Aranıyor',
+          'search_history': 'Arama Geçmişi',
+          'no_search_history': 'Arama geçmişi boş',
+          'no_results_found': 'Sonuç Bulunamadı',
+          'no_company_found_description':
+              'Aradığınız kriterlere uygun şirket bulunamadı',
+          'start_searching': 'Arama Yapın',
+          'search_company_hint': 'Şirket adı yazarak arama yapabilirsiniz',
+
+          // Company Contact Widget
+          'contact': 'İletişim',
+          'no_phone_number': 'Telefon numarası yok',
+
+          // Support Screen
+          'support': 'Destek',
           'support_subtitle': 'Buradayız, nasıl yardımcı olabiliriz?',
+          'whatsapp': 'WhatsApp',
+          'telegram': 'Telegram',
+          'faq': 'Sıkça Sorulan Sorular',
+          'sorgu': 'Sorgu',
           'hotline': 'Çağrı Merkezi',
+          'email': 'E-posta',
+
+          // FAQ Screen
           'faq_screen_title': 'Sıkça Sorulan Sorular',
           'faq_question_1': 'Ödeme nasıl çalışır?',
           'faq_answer_1':
@@ -2373,6 +2549,13 @@ class AppTranslations extends Translations {
           'connection_error': 'Bağlantı hatası',
           'today': 'Bugün',
           'yesterday': 'Dün',
+          'no_card_found': 'Hiçbir üyelik bulunamadı',
+          'no_card_found_description':
+              'Admin panelinden üyeliğiniz kontrol edilmiştir',
+          'muraciet_for_card': 'Kart için başvuru yap',
+          'cards_load_error': 'Kartlar yüklenirken hata oluştu',
+          'no_transactions_found': 'Bu kart için henüz işlem bulunmuyor',
+          'transactions_load_error': 'İşlemler yüklenirken hata oluştu',
           'Company_name': 'Restoran adı',
           'phone_verification': 'Telefon doğrulaması',
           'phone_verification_subtitle':
@@ -2661,6 +2844,9 @@ class AppTranslations extends Translations {
           'Company_name': 'Şirket Adı',
           'company_not_found': 'Şirket bulunamadı',
           'company_removed_from_favorites': 'Şirket favorilerden çıkarıldı',
+          'added_to_favorites': 'Favorilere eklendi',
+          'removed_from_favorites': 'Favorilerden çıkarıldı',
+          'unexpected_response': 'Beklenmeyen yanıt alındı',
           'complaints': 'Şikayetler',
           'complaints_content': 'Şikayetler İçeriği',
           'completed': 'Tamamlandı',
@@ -3015,6 +3201,11 @@ class AppTranslations extends Translations {
           'your_problem': 'Probleminiz',
           'Yuxarıda qeyd olunan istifadəçi ID-sini kopyala':
               'Yukarıda belirtilen kullanıcı ID\'sini kopyala',
+          'bolt_continue': 'Bolt ile devam et',
+          'uber_continue': 'Uber ile devam et',
+          'waze_continue': 'Waze ile devam et',
+          'google_maps_continue': 'Google Maps ile devam et',
+          'current_location': 'Konumunuz',
         },
         'ru': {
           'total_spending': 'Общая сумма расходов',
@@ -3149,8 +3340,59 @@ class AppTranslations extends Translations {
           'enter_current_password': 'Введите текущий пароль',
           'current_password_empty': 'Пожалуйста, введите ваш текущий пароль',
           'password_changed': 'Пароль успешно изменен',
+
+          // Security Screen
+          'security': 'Безопасность',
+          'email_address': 'Адрес электронной почты',
+          'password': 'Пароль',
+          'reset_password': 'Сбросить пароль',
+          'freeze_account': 'Заморозить аккаунт',
+          'finger_print': 'Отпечаток пальца',
+          'pin_code': 'PIN код',
+          'set_pin_code': 'Установить PIN код',
+          'two_step_verification': 'Двухэтапная проверка',
+          'two_factor_authentication': 'Двухфакторная аутентификация',
+          'two_factor_authentication_description':
+              'Защитите свою учетную запись, добавив дополнительный уровень безопасности',
+          'email_authentication': 'Аутентификация по email',
+          'email_authentication_description':
+              'Защитите свою учетную запись, добавив адрес электронной почты',
+          'authenticator': 'Приложение Authenticator',
+          'authenticator_description':
+              'Защитите свою учетную запись с помощью Google Authenticator или аналогичных приложений',
+          'delete_account': 'Удалить аккаунт',
+
+          // Filter Screen
+          'filter': 'Фильтр',
+          'clear_filters': 'Очистить фильтры',
+          'apply_filter': 'Применить',
+          'filter_category_hint': 'Фильтр, категория',
+
+          // Search Company Screen
+          'searching': 'Поиск',
+          'search_history': 'История поиска',
+          'no_search_history': 'История поиска пуста',
+          'no_results_found': 'Результатов не найдено',
+          'no_company_found_description':
+              'Компании, соответствующие вашим критериям поиска, не найдены',
+          'start_searching': 'Начните поиск',
+          'search_company_hint': 'Вы можете искать, вводя название компании',
+
+          // Company Contact Widget
+          'contact': 'Контакт',
+          'no_phone_number': 'Нет номера телефона',
+
+          // Support Screen
+          'support': 'Поддержка',
           'support_subtitle': 'Мы здесь, как мы можем вам помочь?',
+          'whatsapp': 'WhatsApp',
+          'telegram': 'Telegram',
+          'faq': 'Часто задаваемые вопросы',
+          'sorgu': 'Запрос',
           'hotline': 'Горячая линия',
+          'email': 'Электронная почта',
+
+          // FAQ Screen
           'faq_screen_title': 'Часто задаваемые вопросы',
           'faq_question_1': 'Как работает оплата?',
           'faq_answer_1':
@@ -3451,6 +3693,13 @@ class AppTranslations extends Translations {
           'connection_error': 'Ошибка подключения',
           'today': 'Сегодня',
           'yesterday': 'Вчера',
+          'no_card_found': 'Членство не найдено',
+          'no_card_found_description':
+              'Ваше членство проверено через админ-панель',
+          'muraciet_for_card': 'Запросить карту',
+          'cards_load_error': 'Ошибка загрузки карт',
+          'no_transactions_found': 'Для этой карты пока нет транзакций',
+          'transactions_load_error': 'Ошибка загрузки транзакций',
           'Company_name': 'Название ресторана',
           'phone_verification': 'Проверка телефона',
           'phone_verification_subtitle':
@@ -3769,6 +4018,9 @@ class AppTranslations extends Translations {
           'Company_name': 'Название компании',
           'company_not_found': 'Компания не найдена',
           'company_removed_from_favorites': 'Компания удалена из избранного',
+          'added_to_favorites': 'Добавлено в избранное',
+          'removed_from_favorites': 'Удалено из избранного',
+          'unexpected_response': 'Получен неожиданный ответ',
           'complaints': 'Жалобы',
           'complaints_content': 'Содержимое жалоб',
           'completed': 'Завершено',
@@ -4128,6 +4380,16 @@ class AppTranslations extends Translations {
           'your_problem': 'Ваша проблема',
           'Yuxarıda qeyd olunan istifadəçi ID-sini kopyala':
               'Скопировать ID пользователя, указанный выше',
+          'bolt_continue': 'Продолжить с Bolt',
+          'uber_continue': 'Продолжить с Uber',
+          'waze_continue': 'Продолжить с Waze',
+          'google_maps_continue': 'Продолжить с Google Maps',
+          'address': 'Адрес',
+          'open_in_maps': 'Открыть в картах',
+          'get_directions': 'Построить маршрут',
+          'call': 'Позвонить',
+          'working_hours': 'Часы работы',
+          'current_location': 'Ваше местоположение',
         },
       };
 }

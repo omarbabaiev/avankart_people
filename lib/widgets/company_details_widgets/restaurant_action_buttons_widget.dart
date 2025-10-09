@@ -160,8 +160,9 @@ class CompanyActionButtonsWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 12),
                     Text(
-                      "Bolt ilə davam et",
+                      "bolt_continue".tr,
                       style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
@@ -192,9 +193,10 @@ class CompanyActionButtonsWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 12),
                     Text(
-                      "Uber ilə davam et",
+                      "uber_continue".tr,
                       style: TextStyle(
                         fontFamily: 'Poppins',
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -224,9 +226,10 @@ class CompanyActionButtonsWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 12),
                     Text(
-                      "Wolt ilə davam et",
+                      "waze_continue".tr,
                       style: TextStyle(
                         fontFamily: 'Poppins',
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -256,9 +259,10 @@ class CompanyActionButtonsWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 12),
                     Text(
-                      "Google map ilə davam et",
+                      "google_maps_continue".tr,
                       style: TextStyle(
                         fontFamily: 'Poppins',
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),

@@ -37,19 +37,19 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               _buildDayCircle(
-                  "monday".tr, _isDayOpen(schedule?.monday), context),
+                  "monday_short".tr, _isDayOpen(schedule?.monday), context),
               _buildDayCircle(
-                  "tuesday".tr, _isDayOpen(schedule?.tuesday), context),
+                  "tuesday_short".tr, _isDayOpen(schedule?.tuesday), context),
+              _buildDayCircle("wednesday_short".tr,
+                  _isDayOpen(schedule?.wednesday), context),
               _buildDayCircle(
-                  "wednesday".tr, _isDayOpen(schedule?.wednesday), context),
+                  "thursday_short".tr, _isDayOpen(schedule?.thursday), context),
               _buildDayCircle(
-                  "thursday".tr, _isDayOpen(schedule?.thursday), context),
+                  "friday_short".tr, _isDayOpen(schedule?.friday), context),
               _buildDayCircle(
-                  "friday".tr, _isDayOpen(schedule?.friday), context),
+                  "saturday_short".tr, _isDayOpen(schedule?.saturday), context),
               _buildDayCircle(
-                  "saturday".tr, _isDayOpen(schedule?.saturday), context),
-              _buildDayCircle(
-                  "sunday".tr, _isDayOpen(schedule?.sunday), context),
+                  "sunday_short".tr, _isDayOpen(schedule?.sunday), context),
             ],
           ),
           SizedBox(height: 8),
@@ -82,8 +82,8 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
           day,
           style: TextStyle(
             color: isOpen
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.grey.shade600,
+                ? Theme.of(context).colorScheme.onBackground
+                : AppTheme.black,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),

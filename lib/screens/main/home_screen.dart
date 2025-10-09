@@ -5,6 +5,7 @@ import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -20,19 +21,33 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Uygulama ön plana geldiğinde home screen'i refresh et
+    if (state == AppLifecycleState.resumed) {
+      print('[HOME SCREEN] 🔄 App resumed, refreshing companies...');
+      final controller = Get.find<HomeController>();
+      controller.refreshCompanies();
+    }
   }
 
   @override
@@ -47,14 +62,14 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              'baku_azerbaijan'.tr,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: Obx(() => Text(
+                  _getLocationText(controller),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )),
           ),
           actions: [
             IconButton(
@@ -179,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       SizedBox(width: 8),
                                       Material(
+                                        color: Colors.transparent,
                                         child: Text(
                                           'search_placeholder'.tr,
                                           style: TextStyle(
@@ -338,36 +354,49 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         if (companies.isEmpty) {
                           // Skeleton card
-                          return Skeletonizer(
-                            enabled: true,
-                            child: CompanyCard(
-                              name: 'Company Name',
-                              location: 'Company Location',
-                              distance: '0.0 km',
-                              imageUrl: 'assets/images/image.png',
-                              isOpen: true,
-                              hasGift: false,
-                              type: 'business',
-                              index: index,
-                              companyId: '0',
+                          return Animate(
+                            effects: [
+                              FadeEffect(duration: 700.ms),
+                            ],
+                            child: Skeletonizer(
+                              enabled: true,
+                              enableSwitchAnimation: true,
+                              child: CompanyCard(
+                                name: 'Company Name',
+                                location: 'Company Location',
+                                distance: '0.0 km',
+                                imageUrl: 'assets/images/image.png',
+                                isOpen: true,
+                                hasGift: false,
+                                type: 'business',
+                                index: index,
+                                companyId: '0',
+                              ),
                             ),
                           );
                         }
 
                         final company = companies[index];
-                        return Skeletonizer(
-                          enabled: isLoading,
-                          child: CompanyCard(
-                            name: company.muessiseName,
-                            location: company.location,
-                            distance: company.displayDistance,
-                            imageUrl: company.profileImagePath ??
-                                'assets/images/image.png',
-                            isOpen: company.isOpen,
-                            hasGift: false, // TODO: Bu bilgiyi API'den al
-                            type: _getCompanyType(
-                                company), // TODO: Bu bilgiyi API'den al
-                            index: index, companyId: company.id,
+                        return Animate(
+                          effects: [
+                            FadeEffect(duration: 700.ms),
+                          ],
+                          child: Skeletonizer(
+                            enabled: isLoading,
+                            child: CompanyCard(
+                              name: company.muessiseName,
+                              location: company.location,
+                              distance: company.displayDistance,
+                              imageUrl: company.profileImagePath ??
+                                  'assets/images/image.png',
+                              isOpen: company.isOpen,
+                              hasGift: false, // TODO: Bu bilgiyi API'den al
+                              type: _getCompanyType(
+                                  company), // TODO: Bu bilgiyi API'den al
+                              index: index,
+                              companyId: company.id,
+                              isFavorite: company.isFavorite,
+                            ),
                           ),
                         );
                       },
@@ -611,18 +640,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           if (companies.isEmpty) {
                             // Skeleton card
-                            return Skeletonizer(
-                              enabled: true,
-                              child: CompanyCard(
-                                name: 'Company Name',
-                                location: 'Company Location',
-                                distance: '0.0 km',
-                                imageUrl: 'assets/images/image.png',
-                                isOpen: true,
-                                hasGift: false,
-                                type: 'business',
-                                index: index,
-                                companyId: '0',
+                            return Animate(
+                              effects: [
+                                FadeEffect(duration: 700.ms),
+                              ],
+                              child: Skeletonizer(
+                                enabled: true,
+                                enableSwitchAnimation: true,
+                                child: CompanyCard(
+                                  name: 'Company Name',
+                                  location: 'Company Location',
+                                  distance: '0.0 km',
+                                  imageUrl: 'assets/images/image.png',
+                                  isOpen: true,
+                                  hasGift: false,
+                                  type: 'business',
+                                  index: index,
+                                  companyId: '0',
+                                ),
                               ),
                             );
                           }
@@ -649,22 +684,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
 
                           final company = companies[index];
-                          return Skeletonizer(
-                            enabled: isLoading,
-                            enableSwitchAnimation: true,
-                            child: CompanyCard(
-                              name: company.muessiseName,
-                              location: company.location,
-                              distance: company.displayDistance,
-                              imageUrl: company.profileImagePath ??
-                                  'assets/images/image.png',
-                              isOpen: company.isOpen,
-                              hasGift: false, // TODO: Bu bilgiyi API'den al
-                              type: _getCompanyType(
-                                  company), // TODO: Bu bilgiyi API'den al
-                              index: index,
-                              companyId: company.id,
-                              isFavorite: company.isFavorite,
+                          return Animate(
+                            effects: [
+                              FadeEffect(duration: 700.ms),
+                            ],
+                            child: Skeletonizer(
+                              enabled: isLoading,
+                              enableSwitchAnimation: true,
+                              child: CompanyCard(
+                                name: company.muessiseName,
+                                location: company.location,
+                                distance: company.displayDistance,
+                                imageUrl: company.profileImagePath ??
+                                    'assets/images/image.png',
+                                isOpen: company.isOpen,
+                                hasGift: false, // TODO: Bu bilgiyi API'den al
+                                type: _getCompanyType(
+                                    company), // TODO: Bu bilgiyi API'den al
+                                index: index,
+                                companyId: company.id,
+                                isFavorite: company.isFavorite,
+                              ),
                             ),
                           );
                         },
@@ -683,50 +723,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildErrorState(BuildContext context, String error) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surface,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'error_loading_companies'.tr,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
+    return Animate(
+      effects: [
+        FadeEffect(duration: 700.ms),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Theme.of(context).colorScheme.surface,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.outline,
+            const SizedBox(height: 16),
+            Text(
+              'error_loading_companies'.tr,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            style: AppTheme.primaryButtonStyle(),
-            onPressed: () {
-              final controller = Get.find<HomeController>();
-              controller.refreshCompanies();
-            },
-            child: Text('retry'.tr),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: AppTheme.primaryButtonStyle(),
+              onPressed: () {
+                final controller = Get.find<HomeController>();
+                controller.refreshCompanies();
+              },
+              child: Text('retry'.tr),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -834,5 +879,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Default
     return 'business';
+  }
+
+  /// Dinamik lokasyon metni döndür
+  String _getLocationText(HomeController controller) {
+    // Eğer companies yüklendiyse ve konum varsa
+    if (controller.companies.isNotEmpty) {
+      // İlk company'nin distance'ına bakarak konum olup olmadığını kontrol et
+      final hasLocation = controller.companies.first.distance > 0;
+      if (hasLocation) {
+        return 'current_location'.tr;
+      }
+    }
+    // Varsayılan olarak Baku göster
+    return 'baku_azerbaijan'.tr;
   }
 }

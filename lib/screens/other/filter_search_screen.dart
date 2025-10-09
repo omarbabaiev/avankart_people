@@ -20,9 +20,9 @@ class FilterSearchScreen extends GetView<FilterController> {
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Text(
-          'Filter',
+          'filter'.tr,
           style: TextStyle(
-    fontFamily: 'Poppins',
+            fontFamily: 'Poppins',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onBackground,
@@ -33,9 +33,9 @@ class FilterSearchScreen extends GetView<FilterController> {
           Obx(() => controller.hasSelectedFilters
               ? CupertinoButton(
                   child: Text(
-                    "Filterləri təmizlə",
+                    'clear_filters'.tr,
                     style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         color: AppTheme.primaryColor,
                         fontSize: 13,
                         fontWeight: FontWeight.w500),
@@ -51,12 +51,12 @@ class FilterSearchScreen extends GetView<FilterController> {
                 padding: WidgetStateProperty.all(EdgeInsets.zero),
               ),
               child: Text(
-                "Filterlə",
+                'apply_filter'.tr,
                 style: TextStyle(
-    fontFamily: 'Poppins',
+                  fontFamily: 'Poppins',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -109,7 +109,7 @@ class FilterSearchScreen extends GetView<FilterController> {
                                 },
                                 decoration: InputDecoration(
                                   hintStyle: TextStyle(
-    fontFamily: 'Poppins',
+                                    fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 13,
                                     color: Theme.of(context)
@@ -118,7 +118,7 @@ class FilterSearchScreen extends GetView<FilterController> {
                                         ?.withOpacity(.8),
                                   ),
                                   fillColor: Colors.transparent,
-                                  hintText: 'Filter, kategoriya',
+                                  hintText: 'filter_category_hint'.tr,
                                   border: InputBorder.none,
                                   focusedBorder: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -126,7 +126,7 @@ class FilterSearchScreen extends GetView<FilterController> {
                                   focusedErrorBorder: InputBorder.none,
                                 ),
                                 style: TextStyle(
-    fontFamily: 'Poppins',
+                                  fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w400,
                                   color: Theme.of(context)
                                       .bottomNavigationBarTheme
@@ -165,7 +165,7 @@ class FilterSearchScreen extends GetView<FilterController> {
                     child: Text(
                       category['header'] as String,
                       style: TextStyle(
-    fontFamily: 'Poppins',
+                        fontFamily: 'Poppins',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).unselectedWidgetColor,
@@ -191,7 +191,7 @@ class FilterSearchScreen extends GetView<FilterController> {
                             Text(
                               item['title'] as String,
                               style: TextStyle(
-    fontFamily: 'Poppins',
+                                fontFamily: 'Poppins',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                                 color:

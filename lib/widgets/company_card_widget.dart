@@ -1,8 +1,8 @@
 import 'package:avankart_people/assets/image_assets.dart';
-import 'package:avankart_people/routes/app_routes.dart';
-import 'package:avankart_people/controllers/home_controller.dart';
 import 'package:avankart_people/controllers/favorites_controller.dart';
+import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/services/companies_service.dart';
+import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,313 +42,320 @@ class CompanyCard extends StatefulWidget {
 
 class _CompanyCardState extends State<CompanyCard> {
   bool _isLoading = false;
+  late bool _isFavorite;
+  final FavoritesController favoritesController =
+      Get.put<FavoritesController>(FavoritesController());
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavorite = widget.isFavorite;
+  }
+
+  @override
+  void didUpdateWidget(CompanyCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Widget yeni isFavorite değeri aldığında state'i güncelle
+    if (oldWidget.isFavorite != widget.isFavorite) {
+      setState(() {
+        _isFavorite = widget.isFavorite;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      // HomeController'dan güncel favori durumunu al
-      bool currentFavoriteStatus = widget.isFavorite;
-      if (Get.isRegistered<HomeController>()) {
-        final homeController = Get.find<HomeController>();
-        final company = homeController.companies.firstWhereOrNull(
-          (company) => company.id == widget.companyId,
-        );
-        if (company != null) {
-          currentFavoriteStatus = company.isFavorite;
-        }
-      }
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _isLoading ? null : () => _navigateToCompanyDetail(),
+        borderRadius: BorderRadius.circular(6),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 150),
+          transform: _isLoading
+              ? (Matrix4.identity()..scale(0.98))
+              : Matrix4.identity(),
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            padding: EdgeInsets.only(
+                left: widget.index % 2 == 0 ? 16 : 6,
+                right: widget.index % 2 == 0 ? 6 : 16,
+                top: 14),
+            decoration:
+                BoxDecoration(color: Theme.of(context).colorScheme.onPrimary),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Company Image
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: _buildCompanyImage(context),
+                    ),
+                    Positioned(
+                      top: 3,
+                      right: 3,
+                      child: IconButton.filledTonal(
+                        onPressed: () async {
+                          // Toggle favorite
+                          final result = await favoritesController
+                              .toggleFavorite(widget.companyId);
 
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isLoading ? null : () => _navigateToCompanyDetail(),
-          borderRadius: BorderRadius.circular(6),
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 150),
-            transform: _isLoading
-                ? (Matrix4.identity()..scale(0.98))
-                : Matrix4.identity(),
-            child: Container(
-              margin: EdgeInsets.only(bottom: 3),
-              padding: EdgeInsets.only(
-                  left: widget.index % 2 == 0 ? 16 : 6,
-                  right: widget.index % 2 == 0 ? 6 : 16,
-                  top: 14),
-              decoration:
-                  BoxDecoration(color: Theme.of(context).colorScheme.onPrimary),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Company Image
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: _buildCompanyImage(context),
+                          // Update local state
+                          setState(() {
+                            _isFavorite = result;
+                          });
+                        },
+                        icon: Icon(
+                          _isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: Colors.white,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppTheme.white.withOpacity(0.2),
+                        ),
                       ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: IconButton.filledTonal(
-                          style: IconButton.styleFrom(
-                            padding: EdgeInsets.all(10),
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .onPrimary
-                                .withOpacity(.2),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(6),
+                            bottomRight: Radius.circular(6),
                           ),
-                          onPressed: () => _toggleFavorite(),
-                          icon: Icon(
-                            currentFavoriteStatus
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: Colors.white,
-                            size: 24,
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(.09),
+                              Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(.07),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
                           ),
                         ),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(6),
-                              bottomRight: Radius.circular(6),
-                            ),
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(.09),
-                                Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(.07),
+                    ),
+                    Positioned(
+                      bottom: 8,
+                      left: 4,
+                      child: Row(
+                        children: [
+                          Image.asset(ImageAssets.distanceIcon,
+                              color: Colors.white, height: 16),
+                          SizedBox(width: 4),
+                          Text(
+                            widget.distance,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  offset: Offset(0.5, 0.8),
+                                  blurRadius: 2,
+                                  color: Colors.black.withOpacity(0.2),
+                                ),
                               ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      Positioned(
-                        bottom: 8,
-                        left: 4,
-                        child: Row(
-                          children: [
-                            Image.asset(ImageAssets.distanceIcon,
-                                color: Colors.white, height: 16),
-                            SizedBox(width: 4),
-                            Text(
-                              widget.distance,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                shadows: [
-                                  Shadow(
-                                    offset: Offset(0.5, 0.8),
-                                    blurRadius: 2,
-                                    color: Colors.black.withOpacity(0.2),
-                                  ),
+                    ),
+                  ],
+                ),
+
+                // Company Info
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.name,
+                            textAlign: TextAlign.left,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          SizedBox(height: 7),
+                          Text(
+                            widget.location,
+                            textAlign: TextAlign.left,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              color: Theme.of(context).unselectedWidgetColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 7),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            child: IgnorePointer(
+                              ignoring: true,
+                              child: ToggleButtons(
+                                onPressed: (int index) {
+                                  // handle state update here
+                                },
+                                fillColor:
+                                    Theme.of(context).colorScheme.secondary,
+                                constraints: BoxConstraints(
+                                  maxHeight: 32,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                children: [
+                                  switch (widget.type) {
+                                    'Company' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.abc,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'petrol' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.local_gas_station,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'cafe' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.coffee,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'hotel' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.hotel,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'market' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.store,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'gym' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.fitness_center,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'pharmacy' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.local_pharmacy,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    'beauty' => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.face,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                    _ => Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(Icons.business,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground),
+                                      ),
+                                  },
+                                  if (widget.hasGift) ...[
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Icon(
+                                        Icons.card_giftcard,
+                                        size: 20,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                                isSelected: [
+                                  true,
+                                  if (widget.hasGift) ...[true],
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(width: 8),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: widget.isOpen
+                                  ? Color(0xFF23A26D).withOpacity(0.12)
+                                  : Color(0xFF000000).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              widget.isOpen ? 'open'.tr : 'closed'.tr,
+                              style: TextStyle(
+                                color: widget.isOpen
+                                    ? Colors.green
+                                    : Theme.of(context).splashColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-
-                  // Company Info
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.name,
-                              textAlign: TextAlign.left,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
-                              ),
-                            ),
-                            SizedBox(height: 7),
-                            Text(
-                              widget.location,
-                              textAlign: TextAlign.left,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 12,
-                                color: Theme.of(context).unselectedWidgetColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 7),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              child: IgnorePointer(
-                                ignoring: true,
-                                child: ToggleButtons(
-                                  onPressed: (int index) {
-                                    // handle state update here
-                                  },
-                                  fillColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  constraints: BoxConstraints(
-                                    maxHeight: 32,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                  children: [
-                                    switch (widget.type) {
-                                      'Company' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.abc,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'petrol' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.local_gas_station,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'cafe' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.coffee,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'hotel' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.hotel,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'market' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.store,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'gym' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.fitness_center,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'pharmacy' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.local_pharmacy,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      'beauty' => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.face,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                      _ => Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.business,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                        ),
-                                    },
-                                    if (widget.hasGift) ...[
-                                      Padding(
-                                        padding: const EdgeInsets.all(6.0),
-                                        child: Icon(
-                                          Icons.card_giftcard,
-                                          size: 20,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onBackground,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                  isSelected: [
-                                    true,
-                                    if (widget.hasGift) ...[true],
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: widget.isOpen
-                                    ? Color(0xFF23A26D).withOpacity(0.12)
-                                    : Color(0xFF000000).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                widget.isOpen ? 'open'.tr : 'closed'.tr,
-                                style: TextStyle(
-                                  color: widget.isOpen
-                                      ? Colors.green
-                                      : Theme.of(context).splashColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget _buildCompanyImage(BuildContext context) {
@@ -389,27 +396,11 @@ class _CompanyCardState extends State<CompanyCard> {
         color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            _getCompanyIcon(),
-            size: 48,
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            widget.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.7),
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+      child: Image.asset(
+        ImageAssets.png_logo,
+        width: 30,
+        height: 30,
+        color: AppTheme.primaryColor.withOpacity(0.3),
       ),
     );
   }
@@ -482,30 +473,6 @@ class _CompanyCardState extends State<CompanyCard> {
           _isLoading = false;
         });
       }
-    }
-  }
-
-  /// Favorite toggle functionality
-  Future<void> _toggleFavorite() async {
-    try {
-      DebugLogger.apiRequest('FAVORITE_TOGGLE', {
-        'company_id': widget.companyId,
-        'company_name': widget.name,
-        'is_favorite': widget.isFavorite,
-      });
-
-      // FavoritesController'ı kullanarak favori durumunu toggle et
-      if (Get.isRegistered<FavoritesController>()) {
-        final favoritesController = Get.find<FavoritesController>();
-        await favoritesController.toggleFavorite(widget.companyId);
-      }
-
-      DebugLogger.apiResponse('FAVORITE_TOGGLE', {
-        'company_id': widget.companyId,
-        'action': widget.isFavorite ? 'removed' : 'added',
-      });
-    } catch (e) {
-      DebugLogger.apiError('FAVORITE_TOGGLE', e);
     }
   }
 }

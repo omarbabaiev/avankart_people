@@ -1,3 +1,5 @@
+import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/utils/app_theme.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
@@ -100,22 +102,67 @@ class LocationService {
   /// Location permission dialog'u göster
   Future<void> _showLocationPermissionDialog() async {
     return Get.dialog(
-      AlertDialog(
-        title: Text('location_permission_required'.tr),
-        content: Text('location_permission_message'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('cancel'.tr),
+      SizedBox(
+        width: Get.width * 0.8,
+        child: AlertDialog(
+          backgroundColor: Theme.of(Get.context!).colorScheme.secondary,
+          title: Column(
+            children: [
+              Container(
+                width: 55,
+                height: 55,
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(Get.context!).colorScheme.onError,
+                  shape: BoxShape.circle,
+                ),
+                child: Image.asset(
+                  ImageAssets.locationIcon,
+                  width: 24,
+                  height: 24,
+                  color: Theme.of(Get.context!).colorScheme.onBackground,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'location_permission_required'.tr,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(Get.context!).colorScheme.onBackground,
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              openAppSettings();
-            },
-            child: Text('settings'.tr),
+          content: Text(
+            'location_permission_message'.tr,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Theme.of(Get.context!).colorScheme.onBackground,
+            ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text('cancel'.tr),
+            ),
+            SizedBox(
+              width: Get.width * 0.27,
+              height: 40,
+              child: ElevatedButton(
+                style: AppTheme.primaryButtonStyle(),
+                onPressed: () {
+                  Get.back();
+                  openAppSettings();
+                },
+                child: Text('settings'.tr),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
