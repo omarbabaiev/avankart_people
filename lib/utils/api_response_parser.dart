@@ -8,19 +8,23 @@ class ApiResponseParser {
       return 'unknown_error'.tr;
     }
 
+    // String'e çevir
+    String message;
+    
     // Eğer Map ise, uygun field'ı çıkar
     if (apiMessage is Map) {
       final messageStr = apiMessage['message'] ?? apiMessage['text'] ?? apiMessage['msg'];
       if (messageStr is String && messageStr.isNotEmpty) {
-        apiMessage = messageStr;
+        message = messageStr;
       } else {
-        print('[API PARSER] Message is Map but no valid string field found');
+        print('[API PARSER] Message is Map but no valid string field found: $apiMessage');
         return 'unknown_error'.tr;
       }
+    } else {
+      // Map değilse direkt String'e çevir
+      message = apiMessage.toString();
     }
-
-    // String'e çevir
-    final String message = apiMessage.toString();
+    
     if (message.isEmpty) {
       return 'unknown_error'.tr;
     }
