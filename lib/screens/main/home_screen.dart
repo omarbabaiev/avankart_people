@@ -727,15 +727,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       effects: [
         FadeEffect(duration: 700.ms),
       ],
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).colorScheme.surface,
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 100),
             Icon(
               Icons.error_outline,
               size: 48,
@@ -777,42 +774,46 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.business_outlined,
-          size: 48,
-          color: Theme.of(context).colorScheme.outline,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'no_companies_available'.tr,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'pull_to_refresh'.tr,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 100),
+          Icon(
+            Icons.business_outlined,
+            size: 48,
             color: Theme.of(context).colorScheme.outline,
           ),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          style: AppTheme.primaryButtonStyle(),
-          onPressed: () {
-            final controller = Get.find<HomeController>();
-            controller.refreshCompanies();
-          },
-          child: Text('refresh'.tr),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Text(
+            'no_companies_available'.tr,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'pull_to_refresh'.tr,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            style: AppTheme.primaryButtonStyle(),
+            onPressed: () {
+              final controller = Get.find<HomeController>();
+              controller.refreshCompanies();
+            },
+            child: Text('refresh'.tr),
+          ),
+        ],
+      ),
     );
   }
 

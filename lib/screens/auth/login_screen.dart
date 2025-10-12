@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 40),
                   Text(
-                    'welcome_emoji'.tr,
+                    '👋',
                     style: TextStyle(
                       fontFamily: "Poppins",
                       fontSize: 40,
