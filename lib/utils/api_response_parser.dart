@@ -544,6 +544,26 @@ class ApiResponseParser {
       return 'unknown_error'.tr;
     }
 
+    // Custom exception'ları kontrol et (CompaniesException, AuthException, vb.)
+    // Bu exception'ların message field'ı var
+    try {
+      // Exception'ın message property'sine erişmeyi dene
+      final errorType = error.runtimeType.toString();
+      if (errorType.contains('Exception')) {
+        // Exception'ın message field'ını al
+        if (error is Exception) {
+          final errorStr = error.toString();
+          // "ExceptionType: message" formatında gelir
+          if (errorStr.contains(':')) {
+            final message = errorStr.split(':').skip(1).join(':').trim();
+            return parseApiMessage(message);
+          }
+        }
+      }
+    } catch (e) {
+      print('[API PARSER] Error extracting exception message: $e');
+    }
+
     // DioException ise response data'sını parse et
     if (error.toString().contains('DioException')) {
       try {
@@ -565,7 +585,8 @@ class ApiResponseParser {
       return 'network_error_retry'.tr;
     }
 
-    // Diğer durumlar için toString() kullan
-    return parseApiMessage(error.toString());
+    // Diğer durumlar için toString() kullan - ama önce String olduğundan emin ol
+    final errorStr = error.toString();
+    return parseApiMessage(errorStr);
   }
 }
