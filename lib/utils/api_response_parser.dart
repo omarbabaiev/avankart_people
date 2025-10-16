@@ -10,21 +10,37 @@ class ApiResponseParser {
 
     // String'e çevir
     String message;
-    
+
     // Eğer Map ise, uygun field'ı çıkar
     if (apiMessage is Map) {
-      final messageStr = apiMessage['message'] ?? apiMessage['text'] ?? apiMessage['msg'];
-      if (messageStr is String && messageStr.isNotEmpty) {
+      final messageStr =
+          apiMessage['message'] ?? apiMessage['text'] ?? apiMessage['msg'];
+
+      // messageStr de Map olabilir (nested Map durumu)
+      if (messageStr is Map) {
+        // Nested Map'ten String değer çıkarmaya çalış
+        final nestedMessage =
+            messageStr['message'] ?? messageStr['text'] ?? messageStr['msg'];
+        if (nestedMessage is String && nestedMessage.isNotEmpty) {
+          message = nestedMessage;
+        } else {
+          // Nested Map'te de String bulunamadıysa, JSON'u string'e çevir
+          print(
+              '[API PARSER] Message is nested Map but no valid string field found: $apiMessage');
+          return 'unknown_error'.tr;
+        }
+      } else if (messageStr is String && messageStr.isNotEmpty) {
         message = messageStr;
       } else {
-        print('[API PARSER] Message is Map but no valid string field found: $apiMessage');
+        print(
+            '[API PARSER] Message is Map but no valid string field found: $apiMessage');
         return 'unknown_error'.tr;
       }
     } else {
       // Map değilse direkt String'e çevir
       message = apiMessage.toString();
     }
-    
+
     if (message.isEmpty) {
       return 'unknown_error'.tr;
     }
@@ -191,9 +207,7 @@ class ApiResponseParser {
       return 'invite_response_failed'.tr;
     }
 
-    if (message
-        .toLowerCase()
-        .contains('notification status update failed')) {
+    if (message.toLowerCase().contains('notification status update failed')) {
       print(
           '[API PARSER] Notification status update failed detected, using notification_status_update_failed');
       return 'notification_status_update_failed'.tr;
@@ -301,9 +315,7 @@ class ApiResponseParser {
       return 'otp.method_unsupported'.tr;
     }
 
-    if (message
-        .toLowerCase()
-        .contains('otp not found, please request again')) {
+    if (message.toLowerCase().contains('otp not found, please request again')) {
       print(
           '[API PARSER] OTP not found request again detected, using otp.not_found_request_again');
       return 'otp.not_found_request_again'.tr;
@@ -491,8 +503,7 @@ class ApiResponseParser {
           return message;
         }
       } catch (e) {
-        print(
-            '[API PARSER] Error parsing message: $message, using original');
+        print('[API PARSER] Error parsing message: $message, using original');
         return message;
       }
     }
@@ -517,14 +528,30 @@ class ApiResponseParser {
         // Eğer message field'ı da Map ise, içinden asıl mesajı çıkar
         if (message is Map) {
           // Nested map'ten message veya text field'ını al
-          final nestedMessage = message['message'] ?? message['text'] ?? message['msg'];
+          final nestedMessage =
+              message['message'] ?? message['text'] ?? message['msg'];
           if (nestedMessage is String) {
             return parseApiMessage(nestedMessage);
           }
-          // Eğer nested message de Map ise, JSON olarak döndür
+          // Eğer nested message de Map ise, daha derin bir seviyeye in
+          if (nestedMessage is Map) {
+            final deepNestedMessage = nestedMessage['message'] ??
+                nestedMessage['text'] ??
+                nestedMessage['msg'];
+            if (deepNestedMessage is String) {
+              return parseApiMessage(deepNestedMessage);
+            }
+          }
+          // Hiçbir String bulunamadıysa, unknown error döndür
+          print(
+              '[API PARSER] Message is deeply nested Map, no string found: $responseData');
           return 'unknown_error'.tr;
         }
-        // String ise direkt parse et
+        // String ise direkt parse et - toString() yerine direkt message kullan
+        if (message is String) {
+          return parseApiMessage(message);
+        }
+        // Diğer tipler için toString() kullan
         return parseApiMessage(message.toString());
       }
     }

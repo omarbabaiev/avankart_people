@@ -137,9 +137,34 @@ class HomeController extends GetxController
     _changePageWithAnimation(0, skipProfileRequest: true);
     _isSpecialPage.value = false;
 
-    // İlk açılışta companies'leri yükle
+    // İlk açılışta önce user data'yı yükle, sonra companies'leri yükle
     if (!_isHotReload) {
-      loadCompanies();
+      _initializeAppData();
+    }
+  }
+
+  /// Uygulama başlangıcında data yükleme
+  Future<void> _initializeAppData() async {
+    try {
+      print('[HOME CONTROLLER] Initializing app data...');
+
+      // Önce user data'yı yükle
+      await _loadUserData();
+
+      // User data başarılıysa companies'leri yükle
+      if (_user.value != null) {
+        print(
+            '[HOME CONTROLLER] User data loaded successfully, loading companies...');
+        await loadCompanies();
+      } else {
+        print('[HOME CONTROLLER] User data failed to load, skipping companies');
+      }
+
+      print('[HOME CONTROLLER] App data initialization completed');
+    } catch (e) {
+      print('[HOME CONTROLLER] Error during app data initialization: $e');
+      // Hata durumunda sadece companies'i yükle
+      await loadCompanies();
     }
   }
 
@@ -336,18 +361,18 @@ class HomeController extends GetxController
 
       final homeResponse = await _authService.home();
 
-      // Eğer null döndüyse (token geçersiz veya logout gerekli), logout yap
+      // Eğer null döndüyse (token geçersiz veya logout gerekli), force logout yap
       if (homeResponse == null) {
         print('[HOME CONTROLLER] Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 
       // Check if logout is required (status 2) - UserModel'den status kontrol et
       if (homeResponse.user != null && homeResponse.user!.status == 2) {
         print(
-            '[HOME CONTROLLER] Status 2 detected in user model, logging out user');
-        await AuthUtils.logout();
+            '[HOME CONTROLLER] Status 2 detected in user model, force logging out user');
+        await AuthUtils.forceLogout();
         return;
       }
 

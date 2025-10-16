@@ -23,7 +23,7 @@ class MembershipListScreen extends GetView<MembershipController> {
     });
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         centerTitle: false,
         toolbarHeight: 68,
@@ -135,18 +135,53 @@ class MembershipListScreen extends GetView<MembershipController> {
                             return Center(
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 64),
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.business_center_outlined,
-                                        size: 64, color: Colors.grey[400]),
+                                    Image.asset(
+                                      Get.isDarkMode
+                                          ? ImageAssets.emptyMemberDark
+                                          : ImageAssets.emptyMemberLight,
+                                      height: 100,
+                                      width: 100,
+                                    ),
                                     SizedBox(height: 16),
                                     Text(
-                                      'membership_not_found'.tr,
+                                      'company_not_found'.tr,
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 16,
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'you_have_not_been_a_member_of_any_company'
+                                          .tr,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Theme.of(context)
+                                            .unselectedWidgetColor,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    CupertinoButton(
+                                      onPressed: () {
+                                        BecomeMemberBottomSheet.show(context);
+                                      },
+                                      child: Text(
+                                        'become_a_member'.tr,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ],

@@ -6,14 +6,14 @@ import 'package:avankart_people/models/schedule_model.dart';
 class CompanyInfoWidget extends StatelessWidget {
   final String name;
   final String description;
-  final String rating;
+  final String? rating;
   final ScheduleModel? schedule;
 
   const CompanyInfoWidget({
     Key? key,
     required this.name,
     required this.description,
-    required this.rating,
+    this.rating,
     this.schedule,
   }) : super(key: key);
 
@@ -53,7 +53,7 @@ class CompanyInfoWidget extends StatelessWidget {
                           color: Color(0xFFFFC107), height: 24),
                       SizedBox(width: 4),
                       Text(
-                        rating,
+                        rating ?? "5",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -71,7 +71,9 @@ class CompanyInfoWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isOpen
                           ? Color(0xFF23A26D).withOpacity(0.12)
-                          : Color(0xFF000000).withOpacity(0.1),
+                          : Theme.of(context)
+                              .unselectedWidgetColor
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -79,7 +81,7 @@ class CompanyInfoWidget extends StatelessWidget {
                       style: TextStyle(
                         color: isOpen
                             ? Colors.green
-                            : Theme.of(context).splashColor,
+                            : Theme.of(context).unselectedWidgetColor,
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),

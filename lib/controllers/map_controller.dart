@@ -1,4 +1,5 @@
 import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -676,6 +677,9 @@ class MapController extends GetxController {
   // Company card request'i işle
   Future<void> _handleCompanyCardRequest(CompanyOnMapModel company) async {
     try {
+      // Şirket kartı seçimi - haptic feedback
+      VibrationUtil.lightVibrate();
+
       print(
           '[MAP CONTROLLER] Company card request başlatılıyor: ${company.id}');
 

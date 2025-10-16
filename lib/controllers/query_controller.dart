@@ -85,6 +85,7 @@ class QueryController extends GetxController {
           currentPage.value++;
         }
       } else {
+        // API'den başarısız response geldiğinde hata mesajı göster
         final errorMsg = response['message'] ?? 'error_occurred'.tr;
         errorMessage.value = errorMsg;
         ToastUtils.showErrorToast(errorMsg);

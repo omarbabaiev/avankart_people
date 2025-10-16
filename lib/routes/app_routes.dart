@@ -21,6 +21,8 @@ import 'package:avankart_people/screens/other/favorites_screen.dart';
 import 'package:avankart_people/screens/other/notifications_screen.dart';
 import 'package:avankart_people/screens/other/profil_screen.dart';
 import 'package:avankart_people/screens/other/company_detail_screen.dart';
+import 'package:avankart_people/screens/other/card_info_screen.dart';
+import 'package:avankart_people/screens/other/card_balance_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
 import 'package:avankart_people/screens/security/pin_code_screen.dart';
 import 'package:avankart_people/screens/security/enter_pin_code_screen.dart';
@@ -84,6 +86,8 @@ class AppRoutes {
   static const String membershipList = '/membership-list';
   static const String filterSearch = '/filter-search';
   static const String queryDetail = '/query-detail';
+  static const String cardInfo = '/card-info';
+  static const String cardBalance = '/card-balance';
   // Tüm sayfaların rota eşleştirmelerini içeren liste
 
   static final List<GetPage> routes = [
@@ -130,7 +134,7 @@ class AppRoutes {
     GetPage(
       name: qrPayment,
       page: () => const QrPaymentScreen(),
-      transition: Transition.downToUp,
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: profil,
@@ -265,6 +269,26 @@ class AppRoutes {
       name: main,
       page: () => const MainScreen(),
       middlewares: [AuthMiddleware()],
+      transition: Transition.cupertino,
+    ),
+    GetPage(
+      name: cardInfo,
+      page: () => CardInfoScreen(
+        cardColor: Get.arguments['cardColor'] ?? Colors.blue,
+        cardTitle: Get.arguments['cardTitle'] ?? 'card'.tr,
+        cardIcon: Get.arguments['cardIcon'] ?? 'C',
+        cardDescription: Get.arguments['cardDescription'],
+      ),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
+      name: cardBalance,
+      page: () => CardBalanceScreen(
+        cardColor: Get.arguments['cardColor'] ?? Colors.blue,
+        cardTitle: Get.arguments['cardTitle'] ?? 'card'.tr,
+        cardIcon: Get.arguments['cardIcon'] ?? 'C',
+        cardDescription: Get.arguments['cardDescription'],
+      ),
       transition: Transition.cupertino,
     ),
   ];

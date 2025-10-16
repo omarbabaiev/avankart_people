@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../utils/api_response_parser.dart';
 import '../utils/debug_logger.dart';
 import '../utils/secure_storage_config.dart';
+import '../utils/auth_utils.dart';
 import '../models/companies_response.dart';
 import '../models/companies_on_map_response.dart';
 import '../models/company_detail_model.dart';
@@ -31,6 +32,23 @@ class CompaniesService {
         return handler.next(options);
       },
     ));
+  }
+
+  /// Unauthorized hata kontrolü
+  bool _isUnauthorizedError(DioException e) {
+    return e.response?.statusCode == 401 ||
+        (e.response?.data != null &&
+            e.response?.data['message']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains('unauthorized') ==
+                true) ||
+        (e.response?.data != null &&
+            e.response?.data['message']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains('token') ==
+                true);
   }
 
   /// Get companies with filters and pagination
@@ -82,6 +100,14 @@ class CompaniesService {
       }
     } on DioException catch (e) {
       DebugLogger.apiError('/people/muessise', e);
+
+      // Unauthorized hata kontrolü
+      if (_isUnauthorizedError(e)) {
+        print(
+            '[COMPANIES SERVICE] Unauthorized error detected, forcing logout');
+        await AuthUtils.forceLogout();
+        throw CompaniesException('auth.session_expired'.tr);
+      }
 
       if (e.response != null && e.response?.data != null) {
         throw CompaniesException(
@@ -184,6 +210,14 @@ class CompaniesService {
       }
     } on DioException catch (e) {
       DebugLogger.apiError('/people/muessise', e);
+
+      // Unauthorized hata kontrolü
+      if (_isUnauthorizedError(e)) {
+        print(
+            '[COMPANIES SERVICE] Unauthorized error detected in search, forcing logout');
+        await AuthUtils.forceLogout();
+        throw CompaniesException('auth.session_expired'.tr);
+      }
 
       if (e.response != null && e.response?.data != null) {
         throw CompaniesException(

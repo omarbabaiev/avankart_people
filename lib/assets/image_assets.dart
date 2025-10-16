@@ -1,4 +1,7 @@
 class ImageAssets {
+  static const temir = "assets/images/rafiki.png";
+  static const temirdark = "assets/images/rafikidark.png";
+  static const qrPayment = "assets/lotties/Scanner.json";
   static const notFound = "assets/images/404notfound.png";
   static const frame1 = "assets/images/frame1.png";
   static const frame2 = "assets/images/frame2.png";
@@ -15,6 +18,9 @@ class ImageAssets {
   static const manat = "assets/icons/manat.png";
   static const caretRight = "assets/icons/CaretRight.png";
   static const distanceIcon = "assets/icons/distance.png";
+  static const arrowLeftRight = "assets/icons/ArrowsLeftRight.png";
+  static const background =
+      "assets/images/cards_backgrounds/background_food.png";
   static const avankartPartnerLogo = "assets/images/playstore.png";
   static const chatIcon = "assets/icons/Chats.png";
   static const sendIcon = "assets/icons/TelegramLogo.png";
@@ -25,6 +31,8 @@ class ImageAssets {
   static const locationIcon = "assets/icons/Crosshair.png";
   static const searchfavoriteicon = "assets/icons/Group.png";
   static const walletEmpty = "assets/icons/Wallet 05.png";
+  static const queryEmpty = "assets/images/sorgu_empty.png";
+  static const instagram = "assets/icons/instagram.png";
 
   static const linkedinIcon = "assets/icons/linkedin.png";
   static const linkSimpleIcon = "assets/icons/LinkSimple.png";

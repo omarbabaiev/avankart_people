@@ -29,10 +29,13 @@ class SplashController extends GetxController {
   /// Uygulama ilk açılışında SecureStorage'ı temizle
   Future<void> _clearSecureStorageOnFirstLaunch() async {
     final isFirstLaunch = _getStorage.read('isFirstLaunch') ?? false;
-    if (!isFirstLaunch) {
+    if (isFirstLaunch == false) {
       print('[SPLASH] First launch detected, clearing SecureStorage...');
       await _storage.deleteAll();
       await _getStorage.write('isFirstLaunch', true);
+      print('[SPLASH] isFirstLaunch set to true');
+    } else {
+      print('[SPLASH] Not first launch, skipping SecureStorage clear');
     }
   }
 
@@ -127,10 +130,9 @@ class SplashController extends GetxController {
           GetStorage().remove('rememberMe');
         } else {
           print(
-              '[SPLASH] No token found and remember me is false, performing logout');
-          // Remember me false ise logout işlemi yap
-          await AuthUtils.logout();
-          return; // logout zaten login'e yönlendiriyor
+              '[SPLASH] No token found and remember me is false, clearing data and navigating to login');
+          // Remember me false ise sadece storage'ı temizle, logout API çağırma
+          await AuthUtils.clearDataWhenRememberMeFalse();
         }
         _clearPasswordField();
         Get.offAllNamed(AppRoutes.login);
@@ -232,16 +234,16 @@ class SplashController extends GetxController {
 
       if (homeResponse?.success != true) {
         print('[SPLASH] Home failed during splash operations');
-        // Home başarısız olursa logout yap
-        await AuthUtils.logout();
+        // Home başarısız olursa force logout yap
+        await AuthUtils.forceLogout();
         return;
       }
 
       print('[SPLASH] Splash operations completed successfully');
     } catch (e) {
       print('[SPLASH] Error during splash operations: $e');
-      // Hata durumunda logout yap
-      await AuthUtils.logout();
+      // Hata durumunda force logout yap
+      await AuthUtils.forceLogout();
     }
   }
 

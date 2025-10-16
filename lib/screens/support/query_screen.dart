@@ -10,6 +10,7 @@ import 'package:avankart_people/widgets/pagination_widgets/platform_reload_widge
 import 'package:avankart_people/widgets/settings_widgets/settings_radio_item.dart';
 import 'package:avankart_people/widgets/support_widgets/query_card.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -78,6 +79,8 @@ class QueryScreen extends GetView<QueryController> {
 
           return RefreshIndicator.adaptive(
             onRefresh: controller.refresh,
+            color: Theme.of(context).colorScheme.primary,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             child: Skeletonizer(
               enableSwitchAnimation: true,
               enabled: isLoading,
@@ -108,30 +111,46 @@ class QueryScreen extends GetView<QueryController> {
 
                   if (isEmpty) {
                     return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 64),
-                        child: Column(
-                          children: [
-                            Icon(Icons.inbox_outlined,
-                                size: 64, color: Colors.grey[400]),
-                            SizedBox(height: 16),
-                            Text(
-                              'no_queries_found'.tr,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 200),
+                          Image.asset(ImageAssets.queryEmpty, height: 80),
+                          SizedBox(height: 8),
+                          Text(
+                            'no_query_found'.tr,
+                            style: TextStyle(
+                                fontFamily: 'Inter',
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'no_query_found_description'.tr,
+                            style: TextStyle(
+                                fontFamily: 'Inter',
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          SizedBox(height: 16),
+                          CupertinoButton(
+                            onPressed: () {
+                              _createQuery(context);
+                            },
+                            child: Text(
+                              'create_new_query'.tr,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
-                                fontSize: 16,
-                                color: Colors.grey[600],
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Yeni sorgu ekleme
-                              },
-                              child: Text('create_new_query'.tr),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -240,7 +259,7 @@ class QueryScreen extends GetView<QueryController> {
           }
         }
       } catch (e) {
-        ToastUtils.showErrorToast('Reason\'ları yüklerken hata oluştu: $e');
+        ToastUtils.showErrorToast('error_loading_reasons'.tr + ' $e');
       } finally {
         isLoadingReasons.value = false;
       }
@@ -620,7 +639,7 @@ class QueryScreen extends GetView<QueryController> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),

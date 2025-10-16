@@ -4,6 +4,7 @@ import '../models/card_models.dart';
 import '../utils/debug_logger.dart';
 import '../utils/auth_utils.dart';
 import '../utils/api_response_parser.dart';
+import '../utils/vibration_util.dart';
 
 class CardManageController extends GetxController {
   final CardsService _cardsService = CardsService();
@@ -76,7 +77,7 @@ class CardManageController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 
@@ -139,7 +140,7 @@ class CardManageController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 
@@ -217,7 +218,7 @@ class CardManageController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return null;
       }
 
@@ -263,7 +264,7 @@ class CardManageController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return null;
       }
 
@@ -292,6 +293,9 @@ class CardManageController extends GetxController {
 
   /// Toggle card selection
   void toggleCardSelection(String cardId) {
+    // Kart seçimi toggle - haptic feedback
+    VibrationUtil.selectionVibrate();
+
     if (_selectedCards.containsKey(cardId)) {
       _selectedCards[cardId] = !(_selectedCards[cardId] ?? false);
       DebugLogger.debug(LogCategory.controller,
@@ -301,6 +305,9 @@ class CardManageController extends GetxController {
 
   /// Select all cards
   void selectAllCards() {
+    // Tüm kartları seç - haptic feedback
+    VibrationUtil.mediumVibrate();
+
     for (var cardId in _selectedCards.keys) {
       _selectedCards[cardId] = true;
     }
@@ -309,6 +316,9 @@ class CardManageController extends GetxController {
 
   /// Deselect all cards
   void deselectAllCards() {
+    // Tüm kartları seçimi kaldır - haptic feedback
+    VibrationUtil.lightVibrate();
+
     for (var cardId in _selectedCards.keys) {
       _selectedCards[cardId] = false;
     }
@@ -336,6 +346,9 @@ class CardManageController extends GetxController {
     List<String>? reasonIds,
   }) async {
     try {
+      // Kart durumu değiştirme isteği - haptic feedback
+      VibrationUtil.lightVibrate();
+
       _errorMessage.value = '';
 
       DebugLogger.debug(LogCategory.controller,

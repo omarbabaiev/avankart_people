@@ -2,6 +2,7 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:avankart_people/models/social_model.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:avankart_people/utils/url_utils.dart';
 
 class CompanySocialMediaWidget extends StatelessWidget {
   final SocialModel? social;
@@ -48,7 +49,7 @@ class CompanySocialMediaWidget extends StatelessWidget {
     if (social?.instagram != null && social!.instagram!.isNotEmpty) {
       icons.add(_buildSocialMediaIcon(
           context,
-          ImageAssets.linkSimpleIcon, // Instagram icon yoksa generic icon
+          ImageAssets.instagram, // Instagram özel ikonu
           social!.instagram!,
           'Instagram'));
     }
@@ -56,15 +57,22 @@ class CompanySocialMediaWidget extends StatelessWidget {
     if (social?.telegram != null && social!.telegram!.isNotEmpty) {
       icons.add(_buildSocialMediaIcon(
           context,
-          ImageAssets.linkSimpleIcon, // Telegram icon yoksa generic icon
+          ImageAssets.telegram, // Telegram özel ikonu
           social!.telegram!,
           'Telegram'));
     }
 
     if (social?.whatsapp != null && social!.whatsapp!.isNotEmpty) {
       icons.add(_buildSocialMediaIcon(
-          context, ImageAssets.whatsappIcon, social!.whatsapp!, 'WhatsApp'));
+          context, ImageAssets.whatsappIcon, social!.whatsapp!, 'WhatsApp',
+          isWhatsApp: true));
     }
+
+    // LinkedIn için gelecekteki destek (şu an social model'de yok)
+    // if (social?.linkedin != null && social!.linkedin!.isNotEmpty) {
+    //   icons.add(_buildSocialMediaIcon(
+    //       context, ImageAssets.linkedinIcon, social!.linkedin!, 'LinkedIn'));
+    // }
 
     // Eğer hiç sosyal medya yoksa boş widget döndür
     if (icons.isEmpty) {
@@ -86,9 +94,10 @@ class CompanySocialMediaWidget extends StatelessWidget {
   }
 
   Widget _buildSocialMediaIcon(
-      BuildContext context, String imagePath, String url, String platform) {
+      BuildContext context, String imagePath, String url, String platform,
+      {bool isWhatsApp = false}) {
     return GestureDetector(
-      onTap: () => _launchUrl(url),
+      onTap: () => isWhatsApp ? _openWhatsApp(url) : _launchUrl(url),
       child: Container(
         height: 44,
         width: 44,
@@ -104,12 +113,38 @@ class CompanySocialMediaWidget extends StatelessWidget {
   }
 
   Future<void> _launchUrl(String url) async {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://$url';
+    try {
+      await UrlUtils.launchWeb(url);
+    } catch (e) {
+      print('[RESTAURANT SOCIAL MEDIA] Error launching URL: $e');
     }
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+  }
+
+  Future<void> _openWhatsApp(String phoneNumber) async {
+    try {
+      // WhatsApp numarası kontrolü
+      if (phoneNumber.isEmpty) {
+        print('[WHATSAPP SOCIAL] No WhatsApp number available');
+        return;
+      }
+
+      // Phone number'dan + ve boşlukları temizle
+      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[+\s-]'), '');
+
+      // WhatsApp URL'si oluştur
+      String whatsappUrl = 'https://wa.me/$cleanNumber';
+      final Uri uri = Uri.parse(whatsappUrl);
+
+      print('[WHATSAPP SOCIAL] Opening WhatsApp for: $cleanNumber');
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP SOCIAL] WhatsApp launched successfully');
+      } else {
+        print('[WHATSAPP SOCIAL] Cannot launch WhatsApp for: $cleanNumber');
+      }
+    } catch (e) {
+      print('[WHATSAPP SOCIAL] Error opening WhatsApp: $e');
     }
   }
 }

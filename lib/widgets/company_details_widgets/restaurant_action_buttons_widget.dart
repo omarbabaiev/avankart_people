@@ -1,11 +1,20 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
+import 'package:avankart_people/models/phone_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CompanyActionButtonsWidget extends StatelessWidget {
-  const CompanyActionButtonsWidget({Key? key}) : super(key: key);
+  final dynamic social; // WhatsApp bilgisi için
+  final List<PhoneModel>? phones; // Telefon numaraları için
+
+  const CompanyActionButtonsWidget({
+    Key? key,
+    this.social,
+    this.phones,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +63,12 @@ class CompanyActionButtonsWidget extends StatelessWidget {
           Expanded(
             flex: 4,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _hasPhoneNumber() ? () => _makePhoneCall() : null,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 elevation: 0,
-                backgroundColor: Color(0xFF5BBE2D),
+                backgroundColor:
+                    _hasPhoneNumber() ? Color(0xFF5BBE2D) : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -90,7 +100,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
           Expanded(
             flex: 4,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () => _openWhatsApp(),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 elevation: 0,
@@ -280,5 +290,93 @@ class CompanyActionButtonsWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  bool _hasPhoneNumber() {
+    return phones != null && phones!.isNotEmpty;
+  }
+
+  Future<void> _makePhoneCall() async {
+    try {
+      // Telefon numarası kontrolü
+      if (!_hasPhoneNumber()) {
+        print('[PHONE CALL] No phone number available');
+        return;
+      }
+
+      // İlk telefon numarasını al
+      var firstPhone = phones!.first;
+      String prefix = firstPhone.prefix ?? '';
+      String number = firstPhone.number ?? '';
+      String fullNumber = prefix + number;
+
+      // Telefon numarasını temizle - sadece rakamlar ve + işareti kalsın
+      String cleanNumber = fullNumber.replaceAll(RegExp(r'[^\d+]'), '');
+
+      // Geçerli telefon numarası kontrolü
+      if (cleanNumber.isEmpty || cleanNumber.length < 7) {
+        print('[PHONE CALL] Invalid phone number: $cleanNumber');
+        return;
+      }
+
+      print('[PHONE CALL] Original: $fullNumber, Clean: $cleanNumber');
+
+      // iOS için tel scheme kullan
+      final Uri phoneUri = Uri(scheme: 'tel', path: cleanNumber);
+
+      print('[PHONE CALL] Attempting to call: $cleanNumber');
+
+      // canLaunchUrl kontrolü
+      if (await canLaunchUrl(phoneUri)) {
+        print('[PHONE CALL] Can launch URL, launching...');
+        await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+        print('[PHONE CALL] URL launched successfully');
+      } else {
+        print('[PHONE CALL] Cannot launch URL for: $cleanNumber');
+        // Alternatif olarak telprompt scheme'ini dene (iOS'ta daha iyi çalışabilir)
+        final Uri telPromptUri = Uri(scheme: 'telprompt', path: cleanNumber);
+        if (await canLaunchUrl(telPromptUri)) {
+          print('[PHONE CALL] Using telprompt scheme...');
+          await launchUrl(telPromptUri, mode: LaunchMode.externalApplication);
+        } else {
+          print(
+              '[PHONE CALL] Both tel and telprompt schemes failed for: $cleanNumber');
+        }
+      }
+    } catch (e) {
+      print('[PHONE CALL] Error making phone call: $e');
+    }
+  }
+
+  Future<void> _openWhatsApp() async {
+    try {
+      // WhatsApp numarası kontrolü
+      if (social == null ||
+          social.whatsapp == null ||
+          social.whatsapp.isEmpty) {
+        print('[WHATSAPP] No WhatsApp number available');
+        return;
+      }
+
+      String phoneNumber = social.whatsapp;
+
+      // Phone number'dan + ve boşlukları temizle
+      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[+\s-]'), '');
+
+      // WhatsApp URL'si oluştur
+      String whatsappUrl = 'https://wa.me/$cleanNumber';
+      final Uri uri = Uri.parse(whatsappUrl);
+
+      print('[WHATSAPP] Opening WhatsApp for: $cleanNumber');
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP] WhatsApp launched successfully');
+      } else {
+        print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
+      }
+    } catch (e) {
+      print('[WHATSAPP] Error opening WhatsApp: $e');
+    }
   }
 }

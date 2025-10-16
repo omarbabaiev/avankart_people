@@ -2,23 +2,49 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
+import '../controllers/security_controller.dart';
 import 'secure_storage_config.dart';
+import 'snackbar_utils.dart';
 
 class AuthUtils {
-  /// Logout the user and clear all data
+  /// Logout the user and clear all data (manual logout with API call)
   static Future<void> logout() async {
     try {
       final authService = AuthService();
       final firebaseService = FirebaseService();
 
       // Call logout API
-      await authService.logout();
+      final response = await authService.logout();
+
+      // Response kontrolü - "Logged out" mesajı var mı?
+      if (response == null || response['message'] != 'Logged out') {
+        print('[AUTH UTILS] Logout failed - invalid response: $response');
+        // Hata mesajını göster
+        final errorMessage = response?['message'] ?? 'auth.logout_error'.tr;
+        _showLogoutError(errorMessage);
+        return; // İşlemleri durdur
+      }
+
+      print('[AUTH UTILS] Logout successful, clearing all data...');
 
       // Clear all stored data
       await _clearAllStorageData();
 
       // Clear Firebase token
       await firebaseService.clearToken();
+
+      // Reset SecurityController observable values and clear PIN/biometric settings
+      if (Get.isRegistered<SecurityController>()) {
+        final securityController = Get.find<SecurityController>();
+        securityController.isPinEnabled.value = false;
+        securityController.isBiometricEnabled.value = false;
+        securityController.resetAuthentication();
+
+        // PIN kod ve biometric ayarlarını SecureStorage'dan temizle
+        await _clearSecuritySettings();
+
+        print('[AUTH UTILS] SecurityController settings reset and cleared');
+      }
 
       // Clear all controllers
       Get.deleteAll();
@@ -27,16 +53,62 @@ class AuthUtils {
       Get.offAllNamed('/login');
     } catch (e) {
       print('[AUTH UTILS] Logout error: $e');
-      // Even if logout API fails, clear local data and redirect
-      print('[AUTH UTILS] Logout API failed, clearing all storage...');
+      // API hatası - kullanıcıya göster
+      _showLogoutError('auth.logout_error'.tr);
+    }
+  }
+
+  /// Force logout without API call (for invalid tokens, status 2, etc.)
+  static Future<void> forceLogout() async {
+    try {
+      print(
+          '[AUTH UTILS] Force logout - clearing all data without API call...');
 
       // Clear all stored data
       await _clearAllStorageData();
 
+      // Clear Firebase token
       final firebaseService = FirebaseService();
       await firebaseService.clearToken();
+
+      // Reset SecurityController observable values and clear PIN/biometric settings
+      if (Get.isRegistered<SecurityController>()) {
+        final securityController = Get.find<SecurityController>();
+        securityController.isPinEnabled.value = false;
+        securityController.isBiometricEnabled.value = false;
+        securityController.resetAuthentication();
+
+        // PIN kod ve biometric ayarlarını SecureStorage'dan temizle
+        await _clearSecuritySettings();
+
+        print('[AUTH UTILS] SecurityController settings reset and cleared');
+      }
+
+      // Clear all controllers
       Get.deleteAll();
+
+      // Navigate to login screen
       Get.offAllNamed('/login');
+    } catch (e) {
+      print('[AUTH UTILS] Force logout error: $e');
+      // Hata olsa bile login'e yönlendir
+      Get.offAllNamed('/login');
+    }
+  }
+
+  /// Clear security settings from SecureStorage
+  static Future<void> _clearSecuritySettings() async {
+    try {
+      final storage = SecureStorageConfig.storage;
+
+      // PIN kod ve biometric ayarlarını temizle
+      await storage.delete(key: SecureStorageConfig.pinCodeKey);
+      await storage.delete(key: SecureStorageConfig.biometricEnabledKey);
+
+      print('[AUTH UTILS] Security settings cleared from SecureStorage');
+    } catch (e) {
+      print('[AUTH UTILS] Error clearing security settings: $e');
+      // Hata olsa bile devam et
     }
   }
 
@@ -54,6 +126,10 @@ class AuthUtils {
       print('[AUTH UTILS] Clearing GetStorage...');
       await GetStorage().erase();
       print('[AUTH UTILS] GetStorage cleared');
+
+      // isFirstLaunch'u tekrar true yap (artık ilk açılış değil anlamında)
+      print('[AUTH UTILS] Setting isFirstLaunch to true after logout');
+      await GetStorage().write('isFirstLaunch', true);
 
       print('[AUTH UTILS] All storage data cleared successfully');
     } catch (e) {
@@ -91,5 +167,10 @@ class AuthUtils {
     }
 
     return false;
+  }
+
+  /// Show logout error snackbar
+  static void _showLogoutError(String message) {
+    SnackbarUtils.showErrorSnackbar(message);
   }
 }

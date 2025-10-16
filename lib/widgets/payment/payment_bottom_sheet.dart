@@ -29,7 +29,7 @@ class PaymentBottomSheet {
           padding: EdgeInsets.symmetric(horizontal: 16),
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
           child: Column(
@@ -38,17 +38,23 @@ class PaymentBottomSheet {
               const SizedBox(height: 10),
               context.buildBottomSheetHandle(),
               const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "select_card_to_pay".tr,
-                  style: TextStyle(
-                      fontFamily: 'Poppins',
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
+              Obx(() {
+                if (!controller.cards.isEmpty && !controller.isLoading.value) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "select_card_to_pay".tr,
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  );
+                } else {
+                  return SizedBox(height: 0);
+                }
+              }),
               SizedBox(height: 20),
               Obx(() {
                 // Loading state için skeleton göster
@@ -61,10 +67,10 @@ class PaymentBottomSheet {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.credit_card_off,
-                            size: 48,
-                            color: Theme.of(context).unselectedWidgetColor,
+                          Image.asset(
+                            ImageAssets.walletEmpty,
+                            height: 80,
+                            color: Theme.of(context).colorScheme.onBackground,
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -87,11 +93,8 @@ class PaymentBottomSheet {
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 20),
-                          CupertinoButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 12),
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(12),
+                          ElevatedButton(
+                            style: AppTheme.primaryButtonStyle(),
                             onPressed: () {
                               Get.back(); // Payment bottom sheet'i kapat
                               RequestForImtiyazCardBottomSheet.show(context);
@@ -182,49 +185,62 @@ class PaymentBottomSheet {
                     '[PAYMENT BOTTOM SHEET] isLoading: ${controller.isLoading.value}');
                 print('[PAYMENT BOTTOM SHEET] canProceed: $canProceed');
 
-                return SizedBox(
-                  height: 44,
-                  child: ElevatedButton(
-                    onPressed: canProceed
-                        ? () {
-                            // Seçili kartı QR payment controller'a gönder
-                            final selectedCard = controller
-                                .cards[controller.selectedPaymentIndex.value];
-                            print(
-                                '[PAYMENT BOTTOM SHEET] Selected card: ${selectedCard['title']}');
+                return Obx(() {
+                  if (!controller.cards.isEmpty &&
+                      !controller.isLoading.value) {
+                    return SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: canProceed
+                            ? () {
+                                // Seçili kartı QR payment controller'a gönder
+                                final selectedCard = controller.cards[
+                                    controller.selectedPaymentIndex.value];
+                                print(
+                                    '[PAYMENT BOTTOM SHEET] Selected card: ${selectedCard['title']}');
 
-                            // QR payment screen'e git
-                            Get.toNamed(AppRoutes.qrPayment);
-                          }
-                        : null,
-                    style: AppTheme.primaryButtonStyle(
-                      backgroundColor: canProceed
-                          ? AppTheme.primaryColor
-                          : Colors.grey.withOpacity(0.3),
-                    ),
-                    child: Text(
-                      'next'.tr,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: canProceed ? Colors.white : Colors.grey,
+                                // QR payment screen'e git
+                                Get.toNamed(AppRoutes.qrPayment);
+                              }
+                            : null,
+                        style: AppTheme.primaryButtonStyle(
+                          backgroundColor: canProceed
+                              ? AppTheme.primaryColor
+                              : Colors.grey.withOpacity(0.3),
+                        ),
+                        child: Text(
+                          'next'.tr,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: canProceed ? Colors.white : Colors.grey,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
+                    );
+                  } else {
+                    return SizedBox(height: 44);
+                  }
+                });
               }),
               SizedBox(height: 16),
-              TextButton(
-                onPressed: () => Get.back(),
-                child: Text(
-                  'cancel'.tr,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).unselectedWidgetColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              Obx(() {
+                if (!controller.cards.isEmpty && !controller.isLoading.value) {
+                  return TextButton(
+                    onPressed: () => Get.back(),
+                    child: Text(
+                      'cancel'.tr,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Theme.of(context).unselectedWidgetColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                } else {
+                  return SizedBox(height: 0);
+                }
+              }),
               SizedBox(height: 30),
             ],
           ),

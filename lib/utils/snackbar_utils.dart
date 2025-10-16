@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_theme.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 
 /// Basit ve tutarlı snackbar gösterimi için yardımcı sınıf.
 /// Sabit boyutlu (343x50) ve borderRadius 12 olan snackbar tasarımı.
@@ -31,6 +32,9 @@ class SnackbarUtils {
     Duration? duration,
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
+    // Başarı snackbar'ı - haptic feedback
+    VibrationUtil.selectionVibrate();
+
     final screenWidth = Get.width;
     final snackbarWidth = 343.0; // Sabit 343px genişlik
 
@@ -76,6 +80,9 @@ class SnackbarUtils {
     Duration? duration,
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
+    // Hata snackbar'ı - haptic feedback
+    VibrationUtil.heavyVibrate();
+
     final screenWidth = Get.width;
     final snackbarWidth = 343.0; // Sabit 343px genişlik
 

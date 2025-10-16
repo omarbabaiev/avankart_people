@@ -97,11 +97,14 @@ class NotificationsScreen extends GetView<NotificationsController> {
                           const ClampingScrollPhysics(), // Tab'lar arası geçiş için
                       children: [
                         // Hamısı tab
-                        _buildNotificationList(controller.allNotifications),
+                        _buildNotificationList(
+                            controller.allNotifications, context),
                         // Oxunmuş tab
-                        _buildNotificationList(controller.readNotifications),
+                        _buildNotificationList(
+                            controller.readNotifications, context),
                         // Oxunmamış tab
-                        _buildNotificationList(controller.unreadNotifications),
+                        _buildNotificationList(
+                            controller.unreadNotifications, context),
                       ],
                     ),
             ),
@@ -111,12 +114,13 @@ class NotificationsScreen extends GetView<NotificationsController> {
     );
   }
 
-  Widget _buildNotificationList(RxList<Map<String, dynamic>> notifications) {
+  Widget _buildNotificationList(
+      RxList<Map<String, dynamic>> notifications, BuildContext context) {
     // Platform-özel refresh indicator
     if (Platform.isIOS) {
       return _buildIOSNotificationList(notifications);
     } else {
-      return _buildAndroidNotificationList(notifications);
+      return _buildAndroidNotificationList(notifications, context);
     }
   }
 
@@ -176,9 +180,11 @@ class NotificationsScreen extends GetView<NotificationsController> {
 
   // Android için RefreshIndicator kullanarak ListView
   Widget _buildAndroidNotificationList(
-      RxList<Map<String, dynamic>> notifications) {
-    return RefreshIndicator(
+      RxList<Map<String, dynamic>> notifications, BuildContext context) {
+    return RefreshIndicator.adaptive(
       onRefresh: controller.refreshNotifications,
+      color: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: Skeletonizer(
         enabled: controller.isLoading.value,
         enableSwitchAnimation: true,

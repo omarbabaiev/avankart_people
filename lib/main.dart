@@ -52,7 +52,8 @@ void main() async {
   Get.put(ThemeController(), permanent: true);
   Get.put(LanguageController(), permanent: true);
   Get.put(NotificationsController(), permanent: true);
-  Get.put(SecurityController(), permanent: true);
+  // SecurityController'ı permanent yapma, logout sırasında yeniden oluşturulsun
+  Get.put(SecurityController());
 
   // // API konfigürasyon bilgilerini yazdır
   // ApiConfig.printDebugInfo();

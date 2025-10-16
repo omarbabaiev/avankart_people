@@ -105,6 +105,7 @@ class LocationService {
       SizedBox(
         width: Get.width * 0.8,
         child: AlertDialog(
+          contentPadding: EdgeInsets.all(10),
           backgroundColor: Theme.of(Get.context!).colorScheme.secondary,
           title: Column(
             children: [
@@ -137,6 +138,7 @@ class LocationService {
           ),
           content: Text(
             'location_permission_message'.tr,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
@@ -150,8 +152,8 @@ class LocationService {
               child: Text('cancel'.tr),
             ),
             SizedBox(
-              width: Get.width * 0.27,
               height: 40,
+              width: Get.width * 0.4,
               child: ElevatedButton(
                 style: AppTheme.primaryButtonStyle(),
                 onPressed: () {

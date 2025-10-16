@@ -1,6 +1,8 @@
+import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/qr_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrPaymentScreen extends StatefulWidget {
@@ -66,7 +68,6 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     final controller = Get.find<QrPaymentController>();
 
     return Scaffold(
@@ -74,7 +75,37 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
       body: Center(
         child: SafeArea(
           child: Stack(
+            alignment: Alignment.center,
             children: [
+              MobileScanner(
+                controller: scannerController!,
+                onDetect: (capture) {
+                  if (isScanning && capture.barcodes.isNotEmpty) {
+                    final barcode = capture.barcodes.first;
+                    if (barcode.rawValue != null) {
+                      print(
+                          '[QR PAYMENT SCREEN] QR Code scanned: ${barcode.rawValue}');
+
+                      setState(() {
+                        isScanning = false;
+                      });
+
+                      // QR kod tespit edildi, controller'a gönder
+                      final qrPaymentController =
+                          Get.find<QrPaymentController>();
+                      qrPaymentController
+                          .checkQrCode(barcode.rawValue!.toUpperCase());
+                    }
+                  }
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 70, right: 50, left: 50),
+                child: Lottie.asset(
+                  ImageAssets.qrPayment,
+                  width: 215,
+                ),
+              ),
               // İçerik
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,7 +113,7 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 56),
+                    const SizedBox(height: 70),
 
                     // Kart adı
                     Obx(() => Text(
@@ -99,7 +130,7 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
 
                     // Bakiye
                     Obx(() => Text(
-                          '${controller.balance.value}',
+                          '${controller.balance.value.toStringAsFixed(2)} ₼',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 22,
@@ -109,43 +140,6 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                         )),
 
                     const SizedBox(height: 100),
-
-                    // QR kod tarayıcı çerçevesi
-                    SizedBox(
-                      height: size.width * 0.7,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // QR kod scanner
-                          MobileScanner(
-                            controller: scannerController!,
-                            onDetect: (capture) {
-                              if (isScanning && capture.barcodes.isNotEmpty) {
-                                final barcode = capture.barcodes.first;
-                                if (barcode.rawValue != null) {
-                                  print(
-                                      '[QR PAYMENT SCREEN] QR Code scanned: ${barcode.rawValue}');
-
-                                  setState(() {
-                                    isScanning = false;
-                                  });
-
-                                  // QR kod tespit edildi, controller'a gönder
-                                  final qrPaymentController =
-                                      Get.find<QrPaymentController>();
-                                  qrPaymentController.checkQrCode(
-                                      barcode.rawValue!.toUpperCase());
-                                }
-                              }
-                            },
-                          ),
-
-                          // Loading indicator
-
-                          // Çerçeve kenarları - Sol üst
-                        ],
-                      ),
-                    ),
 
                     const Spacer(),
 
@@ -161,47 +155,6 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                     ),
 
                     const SizedBox(height: 16),
-
-                    // QR Scanner butonu
-                    // Obx(() => ElevatedButton(
-                    //       onPressed: controller.isLoading.value
-                    //           ? null
-                    //           : () {
-                    //               controller.restartScanning();
-                    //               _restartScanning();
-                    //             },
-                    //       style: ElevatedButton.styleFrom(
-                    //         backgroundColor: AppTheme.primaryColor,
-                    //         minimumSize: const Size(180, 44),
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(22),
-                    //         ),
-                    //       ),
-                    //       child: Row(
-                    //         mainAxisSize: MainAxisSize.min,
-                    //         children: [
-                    //           const Icon(
-                    //             Icons.qr_code_scanner,
-                    //             color: Colors.white,
-                    //             size: 18,
-                    //           ),
-                    //           const SizedBox(width: 8),
-                    //           Text(
-                    //             controller.isLoading.value
-                    //                 ? 'processing'.tr
-                    //                 : 'scan_qr_code'.tr,
-                    //             style: const TextStyle(
-                    //               fontFamily: 'Poppins',
-                    //               fontSize: 13,
-                    //               color: Colors.white,
-                    //               fontWeight: FontWeight.w600,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     )),
-
-                    const SizedBox(height: 12),
 
                     // Manuel giriş butonu
                     ElevatedButton(
@@ -236,6 +189,7 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                               shape: BoxShape.circle,
                               color: const Color(0xFFFFC107),
                               border: Border.all(
+                                strokeAlign: BorderSide.strokeAlignOutside,
                                 color: const Color(0xFFFFD54F),
                                 width: 3,
                               ),
@@ -257,12 +211,12 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
               // Kapat butonu - sağ üst köşe
               Positioned(
                 top: 10,
-                right: 10,
+                right: 15,
                 child: GestureDetector(
                   onTap: controller.onClose,
                   child: Container(
-                    width: 40,
-                    height: 40,
+                    width: 45,
+                    height: 45,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,

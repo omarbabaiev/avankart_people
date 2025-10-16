@@ -60,6 +60,26 @@ class CompanyInListModel {
   });
 
   factory CompanyInListModel.fromJson(Map<String, dynamic> json) {
+    // Cards field'ı bazen string array, bazen object array olarak gelebilir
+    List<String> cardsList = [];
+    if (json['cards'] != null) {
+      final cardsData = json['cards'];
+      if (cardsData is List) {
+        for (var card in cardsData) {
+          if (card is String) {
+            // Eğer string ise direkt ekle
+            cardsList.add(card);
+          } else if (card is Map) {
+            // Eğer Map ise _id field'ını çıkar
+            final cardId = card['_id'];
+            if (cardId != null && cardId is String) {
+              cardsList.add(cardId);
+            }
+          }
+        }
+      }
+    }
+
     return CompanyInListModel(
       id: json['_id'] ?? '',
       muessiseName: json['muessise_name'] ?? '',
@@ -67,7 +87,7 @@ class CompanyInListModel {
       locationPoint: json['location_point'] != null
           ? LocationPoint.fromJson(json['location_point'])
           : null,
-      cards: json['cards'] != null ? List<String>.from(json['cards']) : [],
+      cards: cardsList,
       profileImagePath: json['profile_image_path'],
       xariciCoverImagePath: json['xarici_cover_image_path'],
       schedule: json['schedule'] != null

@@ -1,6 +1,7 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
+import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:avankart_people/widgets/bottom_sheets/delete_account_bottom_sheet.dart';
 import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/controllers/security_controller.dart';
@@ -17,7 +18,7 @@ class SecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -116,7 +117,33 @@ class SecurityScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4),
-                    // Platform özel biyometrik güvenlik
+                    // PIN kod seçeneği - önce PIN kod aktif edilmeli
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                      child: _buildSecureTile(
+                        onTap: () async {
+                          await securityController.togglePinCode();
+                          // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
+                          await securityController.refreshSettings();
+                        },
+                        iconLeading: ImageAssets.password,
+                        title: "pin_code".tr,
+                        context: context,
+                        isSwitch: true,
+                        switchValue: securityController.isPinEnabled.value,
+                        onSwitchChanged: (value) async {
+                          await securityController.togglePinCode();
+                          // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
+                          await securityController.refreshSettings();
+                        },
+                      ),
+                    ),
+                    // Platform özel biyometrik güvenlik - PIN kod aktif olduktan sonra
                     if (Platform.isIOS &&
                         securityController.isBiometricAvailable.value)
                       Container(
@@ -134,6 +161,11 @@ class SecurityScreen extends StatelessWidget {
                           switchValue:
                               securityController.isBiometricEnabled.value,
                           onSwitchChanged: (value) async {
+                            if (!securityController.isPinEnabled.value) {
+                              SnackbarUtils.showErrorSnackbar(
+                                  'pin_code_warning'.tr);
+                              return;
+                            }
                             // PIN doğrulama ekranına yönlendir
                             final result = await Get.toNamed(
                               AppRoutes.enterPinCode,
@@ -168,6 +200,11 @@ class SecurityScreen extends StatelessWidget {
                           switchValue:
                               securityController.isBiometricEnabled.value,
                           onSwitchChanged: (value) async {
+                            if (!securityController.isPinEnabled.value) {
+                              SnackbarUtils.showErrorSnackbar(
+                                  'pin_code_warning'.tr);
+                              return;
+                            }
                             final result = await Get.toNamed(
                               AppRoutes.enterPinCode,
                               arguments: {
@@ -183,31 +220,6 @@ class SecurityScreen extends StatelessWidget {
                           enabled: securityController.isPinEnabled.value,
                         ),
                       ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      child: _buildSecureTile(
-                        onTap: () async {
-                          await securityController.togglePinCode();
-                          // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
-                          await securityController.refreshSettings();
-                        },
-                        iconLeading: ImageAssets.password,
-                        title: "pin_code".tr,
-                        context: context,
-                        isSwitch: true,
-                        switchValue: securityController.isPinEnabled.value,
-                        onSwitchChanged: (value) async {
-                          await securityController.togglePinCode();
-                          // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
-                          await securityController.refreshSettings();
-                        },
-                      ),
-                    ),
                     Container(
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 4),

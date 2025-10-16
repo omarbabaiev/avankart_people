@@ -63,6 +63,7 @@ class MapScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Material(
+                          color: Colors.transparent,
                           child: Text(
                             'search_placeholder'.tr,
                             style: TextStyle(

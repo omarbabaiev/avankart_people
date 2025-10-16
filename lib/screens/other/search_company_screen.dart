@@ -34,7 +34,12 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
         }
       }
 
-      FocusScope.of(context).requestFocus(_searchFocusNode);
+      // Focus'u biraz geciktir ki keyboard düzgün açılsın
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          _searchFocusNode.requestFocus();
+        }
+      });
     });
   }
 
@@ -100,7 +105,8 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                                     child: TextField(
                                       controller: _searchController,
                                       focusNode: _searchFocusNode,
-                                      autofocus: true,
+                                      autofocus:
+                                          false, // Manual focus kullanıyoruz
                                       textInputAction: TextInputAction.search,
                                       onChanged: (value) {
                                         searchController
@@ -170,13 +176,13 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
           ),
         ),
         body: Container(
-          color: Theme.of(context).colorScheme.secondary,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
               Container(
                 height: 4,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
               Expanded(
                 child: Obx(() {
@@ -247,6 +253,7 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
       color: Theme.of(context).colorScheme.onPrimary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'search_history'.tr,
@@ -294,8 +301,13 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
                       ),
                       onTap: () {
                         _searchController.text = query;
-                        _searchFocusNode.requestFocus();
                         searchController.updateSearchQuery(query);
+                        // Focus'u geciktir
+                        Future.delayed(Duration(milliseconds: 100), () {
+                          if (mounted) {
+                            _searchFocusNode.requestFocus();
+                          }
+                        });
                         // History'deki search'e basınca arama yap
                         searchController.searchCompanies(query);
                       },
@@ -322,9 +334,10 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 64,
+            Image.asset(
+              ImageAssets.searchfavoriteicon,
+              height: 64,
+              width: 64,
               color: Theme.of(context).unselectedWidgetColor,
             ),
             SizedBox(height: 16),
@@ -358,9 +371,10 @@ class _SearchCompanyScreenState extends State<SearchCompanyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search,
-              size: 64,
+            Image.asset(
+              ImageAssets.searchfavoriteicon,
+              height: 64,
+              width: 64,
               color: Theme.of(context).unselectedWidgetColor,
             ),
             SizedBox(height: 16),

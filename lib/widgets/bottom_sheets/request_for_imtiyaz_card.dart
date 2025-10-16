@@ -71,11 +71,7 @@ class RequestForImtiyazCardBottomSheet {
                         AppRoutes.selectCard,
                       );
                     },
-                    style: AppTheme.primaryButtonStyle().copyWith(
-                      backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.error,
-                      ),
-                    ),
+                    style: AppTheme.primaryButtonStyle(),
                     child: Text(
                       'request_for_imtiyaz_card'.tr,
                       style: TextStyle(

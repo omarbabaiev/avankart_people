@@ -28,7 +28,7 @@ class CompanyHeaderWidget extends StatelessWidget {
             ),
             imageErrorBuilder: (context, error, stackTrace) =>
                 Image.asset(ImageAssets.notFound),
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
           ),
           height: 250,
           width: double.infinity,

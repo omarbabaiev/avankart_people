@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/utils/bottom_sheet_extension.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:avankart_people/utils/app_theme.dart';
@@ -26,9 +30,9 @@ class _PaymentConfirmationBottomSheetState
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -36,55 +40,47 @@ class _PaymentConfirmationBottomSheetState
           mainAxisSize: MainAxisSize.min,
           children: [
             // Handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
+            context.buildBottomSheetHandle(),
+            const SizedBox(height: 10),
 
             // Transaction Icon
             Container(
-              width: 60,
-              height: 60,
+              width: 55,
+              height: 55,
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.onError,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.swap_horiz,
-                size: 30,
-                color: Colors.grey[600],
+              child: Image.asset(
+                ImageAssets.arrowLeftRight,
+                height: 5,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Title
+            SizedBox(height: 16),
             Text(
               'confirm_payment'.tr,
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.black,
-                fontFamily: 'Poppins',
+                fontFamily: "Poppins",
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
-            const SizedBox(height: 8),
-
-            // Description
-            Text(
-              'confirm_payment_description'.tr,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                fontFamily: 'Poppins',
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'confirm_payment_description'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Theme.of(context).unselectedWidgetColor,
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 30),
 
             // Payment Details
             Container(
@@ -135,23 +131,9 @@ class _PaymentConfirmationBottomSheetState
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _isLoading.value ? null : _onConfirmPressed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: AppTheme.primaryButtonStyle(),
                     child: _isLoading.value
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
+                        ? _buildPlatformLoadingIndicator()
                         : Text(
                             'confirm'.tr,
                             style: TextStyle(
@@ -190,7 +172,7 @@ class _PaymentConfirmationBottomSheetState
   Widget _buildDetailRow(String label, String value,
       {bool isAmount = false, bool isStatus = false, String? status}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -198,7 +180,7 @@ class _PaymentConfirmationBottomSheetState
             label,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: Theme.of(context).unselectedWidgetColor,
               fontFamily: 'Poppins',
             ),
           ),
@@ -206,7 +188,7 @@ class _PaymentConfirmationBottomSheetState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.orange[100],
+                color: Colors.orange.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -224,14 +206,36 @@ class _PaymentConfirmationBottomSheetState
               value,
               style: TextStyle(
                 fontSize: isAmount ? 16 : 14,
-                fontWeight: isAmount ? FontWeight.bold : FontWeight.normal,
-                color: isAmount ? AppTheme.black : Colors.grey[700],
+                fontWeight: isAmount ? FontWeight.w500 : FontWeight.w500,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontFamily: 'Poppins',
               ),
             ),
         ],
       ),
     );
+  }
+
+  Widget _buildPlatformLoadingIndicator() {
+    if (Platform.isIOS) {
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: CupertinoActivityIndicator(
+          radius: 10,
+          color: Colors.white,
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      );
+    }
   }
 
   void _onConfirmPressed() {

@@ -191,10 +191,11 @@ class BecomeMemberBottomSheet {
         // Step Content
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
+                textAlign: TextAlign.start,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,

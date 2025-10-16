@@ -31,6 +31,7 @@ class ProfilScreen extends StatelessWidget {
     final profileController = Get.find<ProfileController>();
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -64,7 +65,7 @@ class ProfilScreen extends StatelessWidget {
             children: [
               Container(
                 height: 4,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
               _buildProfileTile(
                 context,

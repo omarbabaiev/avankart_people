@@ -4,6 +4,7 @@ import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/services/companies_service.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -91,13 +92,16 @@ class _CompanyCardState extends State<CompanyCard> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
-                      child: _buildCompanyImage(context),
+                      child: _buildCompanyImage(context, widget.imageUrl),
                     ),
                     Positioned(
                       top: 3,
                       right: 3,
                       child: IconButton.filledTonal(
                         onPressed: () async {
+                          // Favori toggle - haptic feedback
+                          VibrationUtil.selectionVibrate();
+
                           // Toggle favorite
                           final result = await favoritesController
                               .toggleFavorite(widget.companyId);
@@ -358,34 +362,22 @@ class _CompanyCardState extends State<CompanyCard> {
     );
   }
 
-  Widget _buildCompanyImage(BuildContext context) {
+  Widget _buildCompanyImage(BuildContext context, String imageUrl) {
     // Eğer imageUrl network URL ise CachedNetworkImage kullan
-    if (widget.imageUrl.startsWith('http') ||
-        widget.imageUrl.startsWith('https')) {
-      return CachedNetworkImage(
-        imageUrl: widget.imageUrl,
-        height: 160,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => _buildImagePlaceholder(context),
-        errorWidget: (context, url, error) => _buildImagePlaceholder(context),
-      );
-    }
 
-    // Eğer local asset ise Image.asset kullan
-    if (widget.imageUrl.startsWith('assets/')) {
-      return Image.asset(
-        widget.imageUrl,
-        height: 160,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            _buildImagePlaceholder(context),
-      );
-    }
+    return FadeInImage(
+      image: CachedNetworkImageProvider(
+        "https://merchant.avankart.com/$imageUrl",
+      ),
+      height: 160,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: AssetImage(ImageAssets.png_logo),
+      imageErrorBuilder: (context, error, stackTrace) =>
+          _buildImagePlaceholder(context),
+    );
 
     // Default placeholder
-    return _buildImagePlaceholder(context);
   }
 
   Widget _buildImagePlaceholder(BuildContext context) {

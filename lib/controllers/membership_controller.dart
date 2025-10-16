@@ -76,7 +76,7 @@ class MembershipController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 
@@ -129,7 +129,7 @@ class MembershipController extends GetxController {
       if (response == null) {
         DebugLogger.debug(
             LogCategory.controller, 'Token invalid or logout required');
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 

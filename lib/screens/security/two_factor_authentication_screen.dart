@@ -9,7 +9,7 @@ class TwoFactorAuthenticationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,

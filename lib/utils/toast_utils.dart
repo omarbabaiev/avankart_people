@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 
 class ToastUtils {
   static void showToast(
@@ -22,6 +23,9 @@ class ToastUtils {
   }
 
   static void showSuccessToast(String message) {
+    // Başarı toast'ı - haptic feedback
+    VibrationUtil.selectionVibrate();
+
     showToast(
       message,
       backgroundColor: Theme.of(Get.context!).colorScheme.onBackground,
@@ -30,6 +34,9 @@ class ToastUtils {
   }
 
   static void showErrorToast(String message) {
+    // Hata toast'ı - haptic feedback
+    VibrationUtil.heavyVibrate();
+
     showToast(
       message,
       backgroundColor: Colors.red,
@@ -38,6 +45,8 @@ class ToastUtils {
   }
 
   static void showCopyToast() {
+    // Kopyalama toast'ı - haptic feedback
+    VibrationUtil.lightVibrate();
     showSuccessToast('copied'.tr);
   }
 }

@@ -1,7 +1,6 @@
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
-import 'package:avankart_people/utils/debug_logger.dart';
 import 'dart:io' show Platform;
 
 class UrlUtils {
@@ -120,33 +119,88 @@ class UrlUtils {
   }
 
   static Future<void> launchWeb(String url) async {
+    if (url.isEmpty) {
+      DebugLogger.warning(LogCategory.url, 'Empty URL provided');
+      return;
+    }
+
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://$url';
     }
 
+    // URL validation
+    try {
+      final Uri webUri = Uri.parse(url);
+      DebugLogger.debug(LogCategory.url, 'Web URI: $webUri');
+
+      // Geçersiz URL kontrolü
+      if (webUri.scheme.isEmpty || webUri.host.isEmpty) {
+        DebugLogger.warning(LogCategory.url, 'Invalid URL format: $url');
+        return;
+      }
+    } catch (e) {
+      DebugLogger.warning(
+          LogCategory.url, 'Failed to parse URL: $url, error: $e');
+      return;
+    }
+
     final Uri webUri = Uri.parse(url);
-    DebugLogger.debug(LogCategory.url, 'Web URI: $webUri');
 
     try {
-      if (await canLaunchUrl(webUri)) {
-        final bool result = await launchUrl(
-          webUri,
-          mode: LaunchMode.externalApplication,
-        );
-        DebugLogger.debug(LogCategory.url, 'Web launch result: $result');
-      } else {
-        DebugLogger.warning(LogCategory.url, 'Could not launch web URL: $url');
+      if (Platform.isIOS) {
+        // iOS'ta önce externalApplication dene (daha güvenilir)
+        if (await canLaunchUrl(webUri)) {
+          try {
+            final bool result = await launchUrl(
+              webUri,
+              mode: LaunchMode.externalApplication, // Safari'de açılması için
+            );
+            DebugLogger.debug(
+                LogCategory.url, 'iOS Web launch result: $result');
 
-        // Alternatif olarak, iOS Safari'yi açmayı dene
-        if (Platform.isIOS) {
-          final Uri safariUri = Uri.parse('https://safari-web://$url');
-          if (await canLaunchUrl(safariUri)) {
-            await launchUrl(safariUri);
+            if (!result) {
+              // Eğer externalApplication çalışmazsa platformDefault dene
+              DebugLogger.debug(LogCategory.url,
+                  'ExternalApplication failed, trying platformDefault');
+              final bool fallbackResult = await launchUrl(
+                webUri,
+                mode: LaunchMode.platformDefault,
+              );
+              DebugLogger.debug(LogCategory.url,
+                  'iOS Web fallback launch result: $fallbackResult');
+            }
+          } catch (e) {
+            DebugLogger.warning(LogCategory.url, 'iOS launch error: $e');
+            // Son çare olarak platformDefault dene
+            try {
+              await launchUrl(webUri, mode: LaunchMode.platformDefault);
+            } catch (e2) {
+              DebugLogger.warning(
+                  LogCategory.url, 'iOS fallback launch error: $e2');
+              rethrow; // Son hata
+            }
           }
+        } else {
+          DebugLogger.warning(
+              LogCategory.url, 'iOS could not launch web URL: $url');
+        }
+      } else {
+        // Android ve diğer platformlar için external application
+        if (await canLaunchUrl(webUri)) {
+          final bool result = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+          DebugLogger.debug(
+              LogCategory.url, 'Android Web launch result: $result');
+        } else {
+          DebugLogger.warning(
+              LogCategory.url, 'Android could not launch web URL: $url');
         }
       }
     } catch (e) {
       DebugLogger.urlLaunch(url, 'web', error: e);
+      rethrow; // Hata yukarıya fırlatılsın
     }
   }
 

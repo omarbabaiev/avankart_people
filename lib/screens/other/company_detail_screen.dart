@@ -1,3 +1,4 @@
+import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_action_buttons_widget.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_address_widget.dart';
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_category_widget.dart';
@@ -8,6 +9,7 @@ import 'package:avankart_people/widgets/company_details_widgets/restaurant_socia
 import 'package:avankart_people/widgets/company_details_widgets/restaurant_working_hours_widget.dart';
 import 'package:avankart_people/models/company_detail_model.dart';
 import 'package:avankart_people/controllers/favorites_controller.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -92,7 +94,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
                   )
                 : Icon(
                     _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Colors.red : Colors.white,
+                    color: Colors.white,
                     size: 24,
                   ),
           ),
@@ -105,23 +107,24 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
           children: [
             CompanyHeaderWidget(
               profileImageUrl:
-                  companyDetail?.profileImageUrl ?? "assets/images/image.png",
-              imageUrl:
-                  companyDetail?.coverImageUrl ?? "assets/images/image.png",
+                  companyDetail?.profileImageUrl ?? ImageAssets.png_logo,
+              imageUrl: companyDetail?.coverImageUrl ?? ImageAssets.png_logo,
               distance: companyDetail?.displayDistance ?? "0.0 km",
             ),
             CompanyInfoWidget(
               name: companyDetail?.muessiseName ?? "",
               description:
                   companyDetail?.description ?? "no_description_available".tr,
-              rating: "4.8", // TODO: Get rating from API
               schedule: companyDetail?.schedule,
             ),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            CompanyActionButtonsWidget(),
+            CompanyActionButtonsWidget(
+              social: companyDetail?.social,
+              phones: companyDetail?.phone,
+            ),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
@@ -151,19 +154,8 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
                       .toList() ??
                   [
                     CategoryItem(
-                      name: "Yemək",
-                      icon: Icons.medical_services_outlined,
-                    ),
-                    CategoryItem(
-                      name: "Nahar",
-                    ),
-                    CategoryItem(
-                      name: "Şirniyyat",
-                      icon: Icons.cake,
-                    ),
-                    CategoryItem(
-                      name: "İçki",
-                      icon: Icons.local_drink,
+                      name: "unknown".tr,
+                      icon: Icons.category,
                     ),
                   ],
             ),
@@ -179,21 +171,29 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
                 ),
               ],
             ),
-            Container(
-              height: 4,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-            CompanySocialMediaWidget(
-              social: companyDetail?.social,
-            ),
-            Container(
-              height: 4,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-            CompanyContactWidget(
-              phones: companyDetail?.phone,
-              websites: companyDetail?.website,
-            ),
+            // Social Media sadece varsa göster
+            if (_hasSocialMedia(companyDetail?.social)) ...[
+              Container(
+                height: 4,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              CompanySocialMediaWidget(
+                social: companyDetail?.social,
+              ),
+            ],
+            // Contact sadece varsa göster
+            if (_hasContactInfo(
+                companyDetail?.phone, companyDetail?.website)) ...[
+              Container(
+                height: 4,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              CompanyContactWidget(
+                phones: companyDetail?.phone,
+                websites: companyDetail?.website,
+                social: companyDetail?.social,
+              ),
+            ],
           ],
         ),
       ),
@@ -238,9 +238,26 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     }
   }
 
+  /// Check if social media info exists
+  bool _hasSocialMedia(social) {
+    if (social == null) return false;
+    return (social.facebook != null && social.facebook!.isNotEmpty) ||
+        (social.instagram != null && social.instagram!.isNotEmpty) ||
+        (social.telegram != null && social.telegram!.isNotEmpty) ||
+        (social.whatsapp != null && social.whatsapp!.isNotEmpty);
+  }
+
+  /// Check if contact info exists - sadece telefon numarası kontrol et
+  bool _hasContactInfo(phones, websites) {
+    return phones != null && phones.isNotEmpty;
+  }
+
   /// Toggle favorite status
   Future<void> _toggleFavorite() async {
     if (_isLoading) return;
+
+    // Favori toggle - haptic feedback
+    VibrationUtil.selectionVibrate();
 
     setState(() {
       _isLoading = true;

@@ -34,7 +34,7 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildDayCircle(
                   "monday_short".tr, _isDayOpen(schedule?.monday), context),
@@ -81,9 +81,7 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
         child: Text(
           day,
           style: TextStyle(
-            color: isOpen
-                ? Theme.of(context).colorScheme.onBackground
-                : AppTheme.black,
+            color: isOpen ? AppTheme.white : AppTheme.black,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),

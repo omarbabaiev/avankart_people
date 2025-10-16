@@ -3,6 +3,7 @@ import 'package:avankart_people/utils/auth_utils.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -29,6 +30,9 @@ class LoginController extends GetxController {
   String token = '';
 
   void login() async {
+    // Login butonuna tıklandığında haptic feedback
+    VibrationUtil.lightVibrate();
+
     isLoading.value = true;
     try {
       final LoginResponse response = await _authService.login(
@@ -67,6 +71,9 @@ class LoginController extends GetxController {
         await _saveTokenAndProceed(response.token);
       }
     } catch (e) {
+      // Login hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       DebugLogger.controllerError('LoginController', 'login', e);
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
@@ -117,20 +124,30 @@ class LoginController extends GetxController {
           homeResponse.user != null &&
           homeResponse.user!.status == 2) {
         print(
-            '[LOGIN CONTROLLER] Status 2 detected in user model, logging out user');
-        await AuthUtils.logout();
+            '[LOGIN CONTROLLER] Status 2 detected in user model, force logging out user');
+        await AuthUtils.forceLogout();
         return;
       }
 
       if (homeResponse?.success == true) {
+        // Başarılı giriş - haptic feedback
+        VibrationUtil.mediumVibrate();
+
         // Başarılı giriş - password'u temizle
         passwordController.clear();
 
-        // Home controller'ı initialize et ve verileri yükle
-        if (!Get.isRegistered<HomeController>()) {
-          Get.put(HomeController(), permanent: true);
+        // Home controller'ı tamamen temizle ve yeniden oluştur
+        if (Get.isRegistered<HomeController>()) {
+          Get.delete<HomeController>();
+          print('[LOGIN] Deleted existing HomeController');
         }
-        final homeController = Get.find<HomeController>();
+
+        // Yeni HomeController oluştur ve selectedIndex'i 0'a set et
+        final homeController = Get.put(HomeController(), permanent: true);
+        print(
+            '[LOGIN] Created new HomeController with selectedIndex: ${homeController.selectedIndex}');
+
+        // Verileri yükle
         await homeController.refreshUserData();
 
         // Home'a yönlendir
@@ -155,6 +172,9 @@ class LoginController extends GetxController {
 
   /// Yeni şifre belirleme
   Future<void> submitNewPassword() async {
+    // Şifre güncelleme butonuna tıklandığında haptic feedback
+    VibrationUtil.lightVibrate();
+
     isLoading.value = true;
     try {
       // Yeni şifre belirleme API çağrısı
@@ -183,6 +203,9 @@ class LoginController extends GetxController {
         GetStorage().remove('rememberMe');
         print('[NEW PASSWORD] Tokens cleared for fresh login');
 
+        // Başarılı şifre güncelleme - haptic feedback
+        VibrationUtil.mediumVibrate();
+
         // Success mesajını göster ve ardından navigate et
         SnackbarUtils.showSuccessSnackbar('password_updated_successfully'.tr);
 
@@ -199,6 +222,9 @@ class LoginController extends GetxController {
         SnackbarUtils.showErrorSnackbar(errorMessage);
       }
     } catch (e) {
+      // Şifre güncelleme hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     } finally {

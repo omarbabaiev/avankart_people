@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:avankart_people/services/qr_service.dart';
 import 'package:avankart_people/controllers/card_controller.dart';
 import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:avankart_people/widgets/bottom_sheets/manual_qr_input_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/payment_confirmation_bottom_sheet.dart';
 import 'package:avankart_people/models/qr_check_response_model.dart';
@@ -11,7 +12,7 @@ class QrPaymentController extends GetxController {
   final QrService _qrService = QrService();
 
   // State variables
-  final RxDouble balance = 148.50.obs;
+  final RxDouble balance = 0.0.obs;
   final RxString cardName = 'food_card'.tr.obs;
   final RxBool isFlashOn = false.obs;
   final RxBool isLoading = false.obs;
@@ -26,6 +27,9 @@ class QrPaymentController extends GetxController {
     super.onInit();
     // Seçili kartın ID'sini al
     _getSelectedCardId();
+
+    // Card controller'dan balance güncellemelerini dinle
+    _listenToCardUpdates();
   }
 
   // Seçili kartın ID'sini al
@@ -62,8 +66,55 @@ class QrPaymentController extends GetxController {
     }
   }
 
+  // Card controller'dan balance güncellemelerini dinle
+  void _listenToCardUpdates() {
+    try {
+      if (Get.isRegistered<CardController>()) {
+        final cardController = Get.find<CardController>();
+
+        // Cards listesini dinle
+        ever(cardController.cards, (List<Map<String, dynamic>> cards) {
+          _updateBalanceFromCards(cards);
+        });
+
+        // Selected payment index'i dinle
+        ever(cardController.selectedPaymentIndex, (int index) {
+          _updateBalanceFromCards(cardController.cards);
+        });
+      }
+    } catch (e) {
+      print('[QR PAYMENT CONTROLLER] Error listening to card updates: $e');
+    }
+  }
+
+  // Cards listesinden balance'ı güncelle
+  void _updateBalanceFromCards(List<Map<String, dynamic>> cards) {
+    try {
+      if (Get.isRegistered<CardController>()) {
+        final cardController = Get.find<CardController>();
+        final selectedIndex = cardController.selectedPaymentIndex.value;
+
+        if (cards.isNotEmpty &&
+            selectedIndex >= 0 &&
+            selectedIndex < cards.length) {
+          final selectedCard = cards[selectedIndex];
+          currentCardId.value = selectedCard['cardId'] ?? '';
+          cardName.value = selectedCard['title'] ?? 'card'.tr;
+          balance.value = (selectedCard['balance'] ?? 0.0).toDouble();
+
+          print('[QR PAYMENT CONTROLLER] Balance updated: ${balance.value}');
+        }
+      }
+    } catch (e) {
+      print('[QR PAYMENT CONTROLLER] Error updating balance from cards: $e');
+    }
+  }
+
   // QR kodu açıp kapamak için
   void toggleFlash() {
+    // Flash toggle - haptic feedback
+    VibrationUtil.lightVibrate();
+
     isFlashOn.value = !isFlashOn.value;
     print('[QR PAYMENT CONTROLLER] Flash toggled: ${isFlashOn.value}');
   }
@@ -77,6 +128,9 @@ class QrPaymentController extends GetxController {
 
   // Manuel QR kod girişi bottom sheet'ini aç
   void showManualQrInput() {
+    // Manuel QR girişi açma - haptic feedback
+    VibrationUtil.lightVibrate();
+
     print('[QR PAYMENT CONTROLLER] ===== SHOW MANUAL QR INPUT =====');
     print('[QR PAYMENT CONTROLLER] Opening manual QR input bottom sheet...');
 
@@ -123,12 +177,18 @@ class QrPaymentController extends GetxController {
       PaymentConfirmationBottomSheet(
         paymentData: paymentData,
         onConfirm: () {
+          // Ödeme onayı - haptic feedback
+          VibrationUtil.mediumVibrate();
+
           print(
               '[QR PAYMENT CONTROLLER] Payment confirmed, calling checkQrStatus...');
           // Ödeme onaylandı, checkQrStatus API'sini çağır
           _checkQrStatus(qrData.qrCodeId);
         },
         onCancel: () {
+          // Ödeme iptali - haptic feedback
+          VibrationUtil.lightVibrate();
+
           print('[QR PAYMENT CONTROLLER] Payment cancelled...');
           // Ödeme iptal edildi
           SnackbarUtils.showSuccessSnackbar(
@@ -161,6 +221,9 @@ class QrPaymentController extends GetxController {
     if (isLoading.value) return;
 
     try {
+      // QR kod kontrolü başlatma - haptic feedback
+      VibrationUtil.lightVibrate();
+
       isLoading.value = true;
       currentQrCode.value = qrData;
       qrStatus.value = 'checking';
@@ -176,6 +239,9 @@ class QrPaymentController extends GetxController {
       );
 
       if (response != null && response.success) {
+        // QR kod kontrolü başarılı - haptic feedback
+        VibrationUtil.mediumVibrate();
+
         print('[QR PAYMENT CONTROLLER] QR Check successful');
         print('[QR PAYMENT CONTROLLER] Response: ${response.message}');
 
@@ -202,6 +268,9 @@ class QrPaymentController extends GetxController {
         throw Exception(response?.message ?? 'QR kod kontrol edilemedi');
       }
     } catch (e) {
+      // QR kod kontrolü hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       print('[QR PAYMENT CONTROLLER] QR Check error: $e');
       qrStatus.value = 'error';
 
@@ -243,6 +312,9 @@ class QrPaymentController extends GetxController {
         qrStatus.value = response.status ?? 'completed';
 
         if (response.status == 'completed' || response.status == 'success') {
+          // Ödeme başarılı - haptic feedback
+          VibrationUtil.mediumVibrate();
+
           // Ödeme başarılı
           SnackbarUtils.showSuccessSnackbar(
             response.message,
@@ -257,6 +329,9 @@ class QrPaymentController extends GetxController {
             Get.back();
           });
         } else if (response.status == 'failed' || response.status == 'error') {
+          // Ödeme başarısız - haptic feedback
+          VibrationUtil.heavyVibrate();
+
           // Ödeme başarısız
           SnackbarUtils.showErrorSnackbar(
             response.message,
@@ -273,6 +348,9 @@ class QrPaymentController extends GetxController {
         throw Exception(response?.message ?? 'QR durumu kontrol edilemedi');
       }
     } catch (e) {
+      // QR durum kontrolü hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       print('[QR PAYMENT CONTROLLER] QR Status check error: $e');
       qrStatus.value = 'error';
 
@@ -280,6 +358,32 @@ class QrPaymentController extends GetxController {
       String errorMessage = 'QR durumu kontrol edilemedi';
       if (e is QrException) {
         errorMessage = e.message;
+
+        // Eğer "QR code already used" hatası ise, bu aslında ödeme başarılı demektir
+        if (errorMessage.toLowerCase().contains('already used') ||
+            errorMessage.toLowerCase().contains('zaten kullanılmış') ||
+            errorMessage.toLowerCase().contains('artıq istifadə edilib') ||
+            errorMessage.toLowerCase().contains('уже использован')) {
+          print(
+              '[QR PAYMENT CONTROLLER] QR code already used - payment was successful');
+
+          // Ödeme başarılı olarak işle
+          VibrationUtil.mediumVibrate();
+
+          SnackbarUtils.showSuccessSnackbar(
+            'qr_payment_successful'.tr,
+            textColor: Colors.white,
+          );
+
+          // Kart bakiyesini güncelle
+          _updateCardBalance();
+
+          // Ekranı kapat
+          Future.delayed(const Duration(seconds: 1), () {
+            Get.back();
+          });
+          return;
+        }
       }
 
       SnackbarUtils.showErrorSnackbar(

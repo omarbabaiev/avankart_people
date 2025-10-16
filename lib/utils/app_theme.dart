@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 
 class AppTheme {
   // Color Palette - Light & Dark
@@ -85,7 +86,7 @@ class AppTheme {
   static const Color errorColor = redColor; // Error Color (Alias)
 
   // Dark Theme Specific Colors
-  static const Color darkBackgroundColor = Color(0xFF111418); // Dark Surface
+  static const Color darkBackgroundColor = Color(0xFF0F171B); // Dark Surface
   static const Color darkSurface = Color(0xFF111418); // Dark Surface
   static const Color darkContainer = Color(0xFF1D2024); // Dark Container
   static const Color darkContainer2 = Color(0xFF1D2024); // Dark Container 2
@@ -266,7 +267,7 @@ class AppTheme {
         splashColor: const Color(0x7A1D222B),
         unselectedWidgetColor: Color(0x991D222B),
         shadowColor: Color(0xffBFC8CC),
-        scaffoldBackgroundColor: backgroundColor,
+        scaffoldBackgroundColor: Color(0xffFAFAFA),
         primaryColor: primaryColor,
         brightness: Brightness.light,
         appBarTheme: AppBarTheme(
@@ -396,8 +397,8 @@ class AppTheme {
         useMaterial3: true,
         colorScheme: ColorScheme.light(
           primary: primaryColor,
-          onPrimary: Color(0xff070F13),
-          secondary: Color(0xff161E22),
+          onPrimary: Color(0xff161E22),
+          secondary: Color(0xff1C2428),
           onSecondary: white,
           background: backgroundColor,
           onBackground: white,
@@ -560,7 +561,11 @@ class AppTheme {
         ? CupertinoButton(
             color: backgroundColor ?? primaryColor,
             disabledColor: AppTheme.buttonDisabled,
-            onPressed: onPressed,
+            onPressed: () {
+              // Button tıklama - haptic feedback
+              VibrationUtil.lightVibrate();
+              onPressed();
+            },
             child: Text(
               text,
               style: TextStyle(
@@ -571,7 +576,11 @@ class AppTheme {
             ),
           )
         : ElevatedButton(
-            onPressed: onPressed,
+            onPressed: () {
+              // Button tıklama - haptic feedback
+              VibrationUtil.lightVibrate();
+              onPressed();
+            },
             style: ElevatedButton.styleFrom(
               disabledBackgroundColor: AppTheme.buttonDisabled,
               backgroundColor: backgroundColor ?? primaryColor,
@@ -595,10 +604,21 @@ class AppTheme {
     return isIOS
         ? CupertinoSwitch(
             value: value,
-            onChanged: onChanged,
+            onChanged: (newValue) {
+              // Switch değişimi - haptic feedback
+              VibrationUtil.selectionVibrate();
+              onChanged(newValue);
+            },
             activeColor: primaryColor,
           )
-        : Switch(value: value, onChanged: onChanged, activeColor: primaryColor);
+        : Switch(
+            value: value,
+            onChanged: (newValue) {
+              // Switch değişimi - haptic feedback
+              VibrationUtil.selectionVibrate();
+              onChanged(newValue);
+            },
+            activeColor: primaryColor);
   }
 
   static Widget adaptiveCheckbox({
@@ -615,7 +635,11 @@ class AppTheme {
         hoverColor: Color(0xfff7f7f7),
         checkColor: AppTheme.sidebarBG,
         value: value,
-        onChanged: onChanged,
+        onChanged: (newValue) {
+          // Checkbox değişimi - haptic feedback
+          VibrationUtil.selectionVibrate();
+          onChanged(newValue);
+        },
         activeColor: activeColor ?? primaryColor,
         fillColor: MaterialStateProperty.resolveWith<Color>((
           Set<MaterialState> states,

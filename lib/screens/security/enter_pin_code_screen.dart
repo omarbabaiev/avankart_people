@@ -43,40 +43,6 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
             const SizedBox(height: 10),
 
             // Face ID / Fingerprint Icon
-            Obx(() {
-              if (Get.find<SecurityController>().isBiometricEnabled.value &&
-                  Get.find<SecurityController>().isBiometricAvailable.value) {
-                return GestureDetector(
-                  onTap: () async {
-                    final SecurityController securityController =
-                        Get.find<SecurityController>();
-                    final bool result =
-                        await securityController.authenticateForAppAccess();
-                    if (result) {
-                      // Biyometrik doğrulama başarılı, main screen'e yönlendir
-                      Get.offAllNamed('/main');
-                    }
-                  },
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Platform.isIOS ? Icons.face : Icons.fingerprint,
-                      size: 40,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            }),
 
             const SizedBox(height: 20),
 
@@ -195,7 +161,7 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
               }
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
+                padding: const EdgeInsets.only(bottom: 50.0, top: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -304,7 +270,7 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
             height: 20,
             color: Theme.of(context).colorScheme.onBackground,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(width: 8),
           Text(
             label,
             style: TextStyle(

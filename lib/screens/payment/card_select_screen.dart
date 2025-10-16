@@ -148,10 +148,12 @@ class CardSelectScreen extends StatelessWidget {
                     ),
                   ],
                 )
-              : RefreshIndicator(
+              : RefreshIndicator.adaptive(
                   onRefresh: () async {
                     await cardManagerController.loadAllCards(refresh: true);
                   },
+                  color: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   child: ListView.builder(
                     itemCount: cards.isEmpty ? 12 : cards.length,
                     itemBuilder: (context, index) {

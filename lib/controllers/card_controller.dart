@@ -1,4 +1,5 @@
 import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../services/cards_service.dart';
@@ -280,6 +281,9 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
 
   // Kart değiştiğinde işlemleri yeniden yükle
   void onCardChanged(int index) {
+    // Kart değişimi - haptic feedback
+    VibrationUtil.selectionVibrate();
+
     print('[CARD CONTROLLER] ===== CARD CHANGED DEBUG =====');
     print('[CARD CONTROLLER] Method called with index: $index');
     print(

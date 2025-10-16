@@ -66,7 +66,7 @@ class ProfileController extends GetxController {
       // Check if logout is required (status 2)
       // Check if logout is required (status 2) - UserModel'den status kontrol et
       if (response != null && response.status == 2) {
-        await AuthUtils.logout();
+        await AuthUtils.forceLogout();
         return;
       }
 
@@ -387,8 +387,8 @@ class ProfileController extends GetxController {
 
       final response = await _profileService.submitDeleteProfileOTP(otp: otp);
 
-      // Başarılı olursa logout yap
-      await AuthUtils.logout();
+      // Başarılı olursa force logout yap (hesap silme işlemi)
+      await AuthUtils.forceLogout();
 
       SnackbarUtils.showSuccessSnackbar('delete_account_success'.tr);
       return true;

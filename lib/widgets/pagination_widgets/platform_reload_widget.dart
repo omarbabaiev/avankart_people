@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PlatformReloadWidget extends StatelessWidget {
   final bool isLoading;
@@ -39,7 +41,7 @@ class PlatformReloadWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Yüklənir...',
+                'loading'.tr,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
@@ -75,9 +77,10 @@ class PlatformReloadWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              CupertinoButton.filled(
+              ElevatedButton(
+                style: AppTheme.primaryButtonStyle(),
                 onPressed: onRetry,
-                child: const Text('Yenidən cəhd et'),
+                child: Text('retry'.tr),
               ),
             ],
           ),
@@ -99,7 +102,7 @@ class PlatformReloadWidget extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Bütün məlumatlar yükləndi',
+                'all_data_loaded'.tr,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
@@ -130,7 +133,7 @@ class PlatformReloadWidget extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Yüklənir...',
+                'loading'.tr,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
@@ -169,11 +172,8 @@ class PlatformReloadWidget extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Yenidən cəhd et'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                ),
+                label: Text('retry'.tr),
+                style: AppTheme.primaryButtonStyle(),
               ),
             ],
           ),
@@ -195,7 +195,7 @@ class PlatformReloadWidget extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Bütün məlumatlar yükləndi',
+                'all_data_loaded'.tr,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,

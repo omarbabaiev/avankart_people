@@ -378,11 +378,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 )
               ],
             )
-          : RefreshIndicator(
+          : RefreshIndicator.adaptive(
               onRefresh: () async {
                 final favoritesController = Get.find<FavoritesController>();
                 await favoritesController.refreshFavorites();
               },
+              color: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               child: CustomScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -432,6 +434,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                       ),
                                       SizedBox(width: 8),
                                       Material(
+                                        color: Colors.transparent,
                                         child: Text(
                                           'search_placeholder'.tr,
                                           style: TextStyle(
@@ -498,20 +501,25 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         ),
                         itemCount: 6,
                         itemBuilder: (context, index) {
-                          return Skeletonizer(
-                            enabled: true,
-                            enableSwitchAnimation: true,
-                            child: CompanyCard(
-                              name: 'Loading...',
-                              location: 'Loading...',
-                              distance: '0.0 km',
-                              imageUrl: 'assets/images/image.png',
-                              isOpen: true,
-                              hasGift: false,
-                              type: 'Company',
-                              index: index,
-                              companyId: '',
-                              isFavorite: false,
+                          return Animate(
+                            effects: [
+                              FadeEffect(duration: 700.ms),
+                            ],
+                            child: Skeletonizer(
+                              enabled: true,
+                              enableSwitchAnimation: true,
+                              child: CompanyCard(
+                                name: 'Loading...',
+                                location: 'Loading...',
+                                distance: '0.0 km',
+                                imageUrl: 'assets/images/image.png',
+                                isOpen: true,
+                                hasGift: false,
+                                type: 'Company',
+                                index: index,
+                                companyId: '',
+                                isFavorite: false,
+                              ),
                             ),
                           );
                         },
@@ -519,40 +527,43 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     } else if (favoritesController.favorites.isEmpty) {
                       // Empty state
                       return SliverFillRemaining(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.favorite_border,
-                                size: 64,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.5),
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'favorites_empty'.tr,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Theme.of(context).colorScheme.outline,
+                        child: Animate(
+                          effects: [
+                            FadeEffect(duration: 700.ms),
+                          ],
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(height: Get.height / 3 - 100),
+                                Image.asset(
+                                  ImageAssets.searchfavoriteicon,
+                                  height: 80,
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'favorites_empty_description'.tr,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .withOpacity(0.7),
+                                SizedBox(height: 16),
+                                Text(
+                                  'favorites_empty'.tr,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                                SizedBox(height: 8),
+                                Text(
+                                  'favorites_empty_description'.tr,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withOpacity(0.7),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

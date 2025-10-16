@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_sheet_handle_widget.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 
 /// Bottom sheet kullanımını kolaylaştırmak için extension
 extension BottomSheetExtension on BuildContext {
@@ -16,6 +17,9 @@ extension BottomSheetExtension on BuildContext {
     bool useRootNavigator = false,
     bool useSafeArea = false,
   }) {
+    // Bottom sheet açma - haptic feedback
+    VibrationUtil.lightVibrate();
+
     return showModalBottomSheet<T>(
       context: this,
       builder: builder,
@@ -24,8 +28,7 @@ extension BottomSheetExtension on BuildContext {
       barrierColor: barrierColor,
       elevation: elevation,
       clipBehavior: Clip.hardEdge, // Performans iyileştirmesi
-      shape:
-          shape ??
+      shape: shape ??
           const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),

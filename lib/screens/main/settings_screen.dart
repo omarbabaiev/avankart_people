@@ -30,7 +30,7 @@ class SettingsScreen extends GetView<ThemeController> {
     });
 
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           toolbarHeight: 68,
           centerTitle: false,

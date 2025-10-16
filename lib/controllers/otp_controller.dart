@@ -1,5 +1,6 @@
 import '../utils/snackbar_utils.dart';
 import '../utils/api_response_parser.dart';
+import '../utils/vibration_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -54,6 +55,9 @@ class OtpController extends GetxController {
   }
 
   void submitOtp() async {
+    // OTP submit butonuna tıklandığında haptic feedback
+    VibrationUtil.lightVibrate();
+
     isLoading.value = true;
     try {
       final response = await _authService.submitOtp(
@@ -83,6 +87,9 @@ class OtpController extends GetxController {
           (message == null || message == 'OTP already verified');
 
       if (isSuccessfulOtp || isAlreadyVerified) {
+        // Başarılı OTP doğrulama - haptic feedback
+        VibrationUtil.mediumVibrate();
+
         print('[OTP SUCCESS] Token received: ${newToken.substring(0, 20)}...');
 
         // Register'dan geliyorsa login'e yönlendir
@@ -111,9 +118,14 @@ class OtpController extends GetxController {
         print('[LOGIN OTP SUCCESS] Saving token and calling home');
         await _saveTokenAndProceed(newToken, rememberMe);
       } else {
+        // OTP doğrulama hatası - haptic feedback
+        VibrationUtil.heavyVibrate();
         SnackbarUtils.showErrorSnackbar('token_could_not_be_retrieved'.tr);
       }
     } catch (e) {
+      // OTP submit hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       print('[OTP ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
@@ -172,12 +184,16 @@ class OtpController extends GetxController {
           Get.find<LoginController>().passwordController.clear();
         }
 
-        // Home controller'ı initialize et ve verileri yükle
-        if (!Get.isRegistered<HomeController>()) {
-          Get.put(HomeController(), permanent: true);
+        // Home controller'ı tamamen temizle ve yeniden oluştur
+        if (Get.isRegistered<HomeController>()) {
+          Get.delete<HomeController>();
+          print('[OTP] Deleted existing HomeController');
         }
-        final homeController = Get.find<HomeController>();
-        // await homeController.refreshUserData();
+
+        // Yeni HomeController oluştur ve selectedIndex'i 0'a set et
+        final homeController = Get.put(HomeController(), permanent: true);
+        print(
+            '[OTP] Created new HomeController with selectedIndex: ${homeController.selectedIndex}');
 
         // Home'a yönlendir
         print('[HOME SUCCESS] Navigating to home');
@@ -195,6 +211,9 @@ class OtpController extends GetxController {
 
   /// OTP'yi yeniden gönder
   Future<void> resendOtp() async {
+    // OTP yeniden gönderme butonuna tıklandığında haptic feedback
+    VibrationUtil.lightVibrate();
+
     if (email.isEmpty || loginToken.isEmpty) {
       SnackbarUtils.showErrorSnackbar('email_or_token_not_found'.tr);
       return;
@@ -213,11 +232,18 @@ class OtpController extends GetxController {
       if (success == true ||
           message == 'OTP sent successfully' ||
           message == 'ok') {
+        // Başarılı OTP yeniden gönderme - haptic feedback
+        VibrationUtil.selectionVibrate();
         SnackbarUtils.showSuccessSnackbar('verification_code_resent'.tr);
       } else {
+        // OTP yeniden gönderme hatası - haptic feedback
+        VibrationUtil.heavyVibrate();
         SnackbarUtils.showErrorSnackbar(message ?? 'otp_resend_failed'.tr);
       }
     } catch (e) {
+      // OTP yeniden gönderme hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       print('[RESEND OTP ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);

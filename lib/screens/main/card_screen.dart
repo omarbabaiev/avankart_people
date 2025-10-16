@@ -43,6 +43,7 @@ class CardScreen extends GetView<CardController> {
             appBar: AppBar(
               toolbarHeight: 68,
               backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              centerTitle: false,
               title: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
@@ -57,12 +58,14 @@ class CardScreen extends GetView<CardController> {
             body: Center(
               child: Column(
                 children: [
+                  SizedBox(height: 100),
                   Image.asset(ImageAssets.walletEmpty, height: 200),
                   SizedBox(height: 8),
                   Text(
                     'no_imtiyaz_card_found'.tr,
                     style: TextStyle(
                         fontFamily: 'Inter',
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 18,
                         fontWeight: FontWeight.w600),
                   ),
@@ -71,6 +74,7 @@ class CardScreen extends GetView<CardController> {
                     'no_imtiyaz_card_found_description'.tr,
                     style: TextStyle(
                         fontFamily: 'Inter',
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 14,
                         fontWeight: FontWeight.w400),
                   ),
@@ -171,228 +175,279 @@ class CardScreen extends GetView<CardController> {
               FadeEffect(duration: 500.ms),
             ],
             child: AnimatedContainer(
-              color: controller.cards[controller.selectedCardIndex.value]
-                  ['color'],
+              decoration: BoxDecoration(
+                color: controller.cards[controller.selectedCardIndex.value]
+                    ['color'],
+              ),
               duration: Duration(milliseconds: 700),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SafeArea(
-                  bottom: false,
-                  child: Stack(
-                    children: [
-                      // Üst kısım - Kart Bilgileri
-                      _buildCardHeader(context),
-                      // Alt kısım - İşlemler Listesi (DraggableScrollableSheet)
-                      DraggableScrollableSheet(
-                        initialChildSize: 0.7,
-                        minChildSize: 0.7,
-                        maxChildSize: 0.9,
-                        snap: true,
-                        snapSizes: [0.7, 0.9],
-                        snapAnimationDuration:
-                            const Duration(milliseconds: 1000),
-                        controller: controller.dragController,
-                        builder: (BuildContext context,
-                            ScrollController scrollController) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 16, right: 16, top: 12, bottom: 3),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'transactions'.tr,
-                                        style: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.file_download_outlined,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.analytics_outlined,
-                                              size: 20,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+              child: Stack(
+                children: [
+                  FadeInImage(
+                    placeholder: AssetImage(ImageAssets.background),
+                    image: AssetImage(ImageAssets.background),
+                    fit: BoxFit.cover,
+                  ),
+                  Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: SafeArea(
+                      bottom: false,
+                      child: Stack(
+                        children: [
+                          // Üst kısım - Kart Bilgileri
+                          _buildCardHeader(context),
+                          // Alt kısım - İşlemler Listesi (DraggableScrollableSheet)
+                          DraggableScrollableSheet(
+                            initialChildSize: 0.7,
+                            minChildSize: 0.7,
+                            maxChildSize: 0.9,
+                            snap: true,
+                            snapSizes: [0.7, 0.9],
+                            snapAnimationDuration:
+                                const Duration(milliseconds: 1000),
+                            controller: controller.dragController,
+                            builder: (BuildContext context,
+                                ScrollController scrollController) {
+                              return Hero(
+                                tag: 'card_header',
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
                                   ),
-                                ),
-                                Divider(
-                                    color: Theme.of(context).dividerColor,
-                                    thickness: .5),
-                                Expanded(
-                                  child: Obx(
-                                    () {
-                                      if (controller.hasTransactions.value ==
-                                              false &&
-                                          controller
-                                                  .isTransactionLoading.value ==
-                                              false) {
-                                        return Center(
-                                          child: Column(
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 16,
+                                              right: 16,
+                                              top: 12,
+                                              bottom: 3),
+                                          child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Icon(
-                                                Icons.receipt_long_outlined,
-                                                size: 64,
-                                                color: Colors.grey[400],
-                                              ),
-                                              SizedBox(height: 16),
                                               Text(
-                                                controller
-                                                    .emptyTransactionMessage
-                                                    .value,
+                                                'transactions'.tr,
                                                 style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.grey[600],
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
+                                                    fontFamily: 'Poppins',
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w500),
                                               ),
-                                              SizedBox(height: 8),
-                                              Text(
-                                                'new_transactions_here'.tr,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[500],
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              SizedBox(height: 80),
+                                              // Row(
+                                              //   children: [
+                                              //     Container(
+                                              //       padding: EdgeInsets.all(10),
+                                              //       decoration: BoxDecoration(
+                                              //         color: Theme.of(context)
+                                              //             .colorScheme
+                                              //             .secondaryContainer,
+                                              //         shape: BoxShape.circle,
+                                              //       ),
+                                              //       child: Icon(
+                                              //         Icons
+                                              //             .file_download_outlined,
+                                              //         size: 20,
+                                              //         color: Theme.of(context)
+                                              //             .colorScheme
+                                              //             .onBackground,
+                                              //       ),
+                                              //     ),
+                                              //     SizedBox(width: 8),
+                                              //     Container(
+                                              //       padding: EdgeInsets.all(10),
+                                              //       decoration: BoxDecoration(
+                                              //         color: Theme.of(context)
+                                              //             .colorScheme
+                                              //             .secondaryContainer,
+                                              //         shape: BoxShape.circle,
+                                              //       ),
+                                              //       child: Icon(
+                                              //         Icons.analytics_outlined,
+                                              //         size: 20,
+                                              //         color: Theme.of(context)
+                                              //             .colorScheme
+                                              //             .onBackground,
+                                              //       ),
+                                              //     ),
+                                              //   ],
+                                              // ),
                                             ],
                                           ),
-                                        );
-                                      } else if (controller
-                                          .isTransactionLoading.value) {
-                                        // Transaction listesi
-                                        return Skeletonizer(
-                                          enableSwitchAnimation: true,
-                                          enabled: true,
-                                          child: ListView.builder(
-                                            controller: scrollController,
-                                            itemCount: 5, // 5 skeleton item
-                                            itemBuilder: (context, index) {
-                                              return _buildTransactionItem({
-                                                'title': 'İşlemeweewew',
-                                                'subtitle':
-                                                    'Genelewewewewewewewe',
-                                                'amount': '0.ee',
-                                                'date': '0.ee',
-                                                'icon':
-                                                    'assets/images/Silver.png',
-                                                'isPositive': false,
-                                              });
-                                            },
-                                          ),
-                                        );
-                                      } else {
-                                        return Skeletonizer(
-                                          enabled: controller
-                                              .isTransactionLoading.value,
-                                          enableSwitchAnimation: true,
-                                          child: ListView.separated(
-                                            controller: scrollController,
-                                            itemCount:
-                                                controller.transactions.length,
-                                            separatorBuilder:
-                                                (context, index) => Divider(
-                                              indent: 16,
-                                              endIndent: 16,
-                                              color: Theme.of(context)
-                                                  .dividerColor,
-                                              thickness: .5,
-                                            ),
-                                            itemBuilder: (context, index) {
-                                              final transaction = controller
-                                                  .transactions[index];
-                                              if (index == 0 ||
-                                                  transaction['date'] !=
-                                                      controller.transactions[
-                                                          index - 1]['date']) {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 16, bottom: 8),
-                                                      child: Text(
-                                                        transaction['date'],
-                                                        style: TextStyle(
-                                                            fontFamily:
-                                                                'Poppins',
-                                                            fontSize: 13,
-                                                            color:
-                                                                Colors.black54),
+                                        ),
+                                        Divider(
+                                            color:
+                                                Theme.of(context).dividerColor,
+                                            thickness: .5),
+                                        Expanded(
+                                          child: Obx(
+                                            () {
+                                              if (controller.hasTransactions
+                                                          .value ==
+                                                      false &&
+                                                  controller
+                                                          .isTransactionLoading
+                                                          .value ==
+                                                      false) {
+                                                return Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .receipt_long_outlined,
+                                                        size: 64,
+                                                        color: Colors.grey[400],
                                                       ),
+                                                      SizedBox(height: 16),
+                                                      Text(
+                                                        controller
+                                                            .emptyTransactionMessage
+                                                            .value,
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Text(
+                                                        'new_transactions_here'
+                                                            .tr,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors.grey[500],
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      SizedBox(height: 80),
+                                                    ],
+                                                  ),
+                                                );
+                                              } else if (controller
+                                                  .isTransactionLoading.value) {
+                                                // Transaction listesi
+                                                return Skeletonizer(
+                                                  enableSwitchAnimation: true,
+                                                  enabled: true,
+                                                  child: ListView.builder(
+                                                    controller:
+                                                        scrollController,
+                                                    itemCount:
+                                                        5, // 5 skeleton item
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return _buildTransactionItem({
+                                                        'title': 'İşlemeweewew',
+                                                        'subtitle':
+                                                            'Genelewewewewewewewe',
+                                                        'amount': '0.ee',
+                                                        'date': '0.ee',
+                                                        'icon':
+                                                            'assets/images/Silver.png',
+                                                        'isPositive': false,
+                                                      });
+                                                    },
+                                                  ),
+                                                );
+                                              } else {
+                                                return Skeletonizer(
+                                                  enabled: controller
+                                                      .isTransactionLoading
+                                                      .value,
+                                                  enableSwitchAnimation: true,
+                                                  child: ListView.separated(
+                                                    controller:
+                                                        scrollController,
+                                                    itemCount: controller
+                                                        .transactions.length,
+                                                    separatorBuilder:
+                                                        (context, index) =>
+                                                            Divider(
+                                                      indent: 16,
+                                                      endIndent: 16,
+                                                      color: Theme.of(context)
+                                                          .dividerColor,
+                                                      thickness: .5,
                                                     ),
-                                                    _buildTransactionItem(
-                                                        transaction),
-                                                  ],
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      final transaction =
+                                                          controller
+                                                                  .transactions[
+                                                              index];
+                                                      if (index == 0 ||
+                                                          transaction['date'] !=
+                                                              controller.transactions[
+                                                                      index - 1]
+                                                                  ['date']) {
+                                                        return Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      bottom:
+                                                                          8),
+                                                              child: Text(
+                                                                transaction[
+                                                                    'date'],
+                                                                style: TextStyle(
+                                                                    fontFamily:
+                                                                        'Poppins',
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .black54),
+                                                              ),
+                                                            ),
+                                                            _buildTransactionItem(
+                                                                transaction),
+                                                          ],
+                                                        );
+                                                      }
+                                                      return _buildTransactionItem(
+                                                          transaction);
+                                                    },
+                                                  ),
                                                 );
                                               }
-                                              return _buildTransactionItem(
-                                                  transaction);
+                                              // Boş transaction durumu
                                             },
                                           ),
-                                        );
-                                      }
-                                      // Boş transaction durumu
-                                    },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
@@ -437,9 +492,9 @@ class CardScreen extends GetView<CardController> {
                               : 6,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
-                            color: controller.selectedCardIndex.value == index
-                                ? Theme.of(context).colorScheme.onBackground
-                                : Theme.of(context).scaffoldBackgroundColor,
+                            color: (controller.selectedCardIndex.value == index)
+                                ? AppTheme.black
+                                : AppTheme.white,
                           ),
                           duration: const Duration(milliseconds: 300),
                         ),
@@ -489,7 +544,7 @@ class CardScreen extends GetView<CardController> {
                               fontFamily: 'Poppins',
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: AppTheme.darkBodyBG,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -501,8 +556,7 @@ class CardScreen extends GetView<CardController> {
                                 fontFamily: 'Inter',
                                 fontSize: 28,
                                 fontWeight: FontWeight.w700,
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
+                                color: AppTheme.darkBodyBG,
                               ),
                             ),
                           ),
@@ -519,13 +573,33 @@ class CardScreen extends GetView<CardController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildActionButton(Icons.add, 'balance'.tr, context,
-                        onTap: () {}),
+                        onTap: () {
+                      final currentCard =
+                          controller.cards[controller.selectedCardIndex.value];
+                      Get.toNamed(AppRoutes.cardBalance, arguments: {
+                        'cardColor': currentCard['color'],
+                        'cardTitle': currentCard['title'],
+                        'cardIcon': currentCard['icon'],
+                        'cardDescription': currentCard['description'],
+                        'heroTag': 'card_header',
+                      });
+                    }),
                     _buildActionButton(Icons.qr_code_scanner, 'pay'.tr, context,
                         onTap: () {
                       Get.toNamed(AppRoutes.qrPayment);
                     }),
                     _buildActionButton(Icons.info_outline, 'info'.tr, context,
-                        onTap: () {}),
+                        onTap: () {
+                      final currentCard =
+                          controller.cards[controller.selectedCardIndex.value];
+                      Get.toNamed(AppRoutes.cardInfo, arguments: {
+                        'cardColor': currentCard['color'],
+                        'cardTitle': currentCard['title'],
+                        'cardIcon': currentCard['icon'],
+                        'cardDescription': currentCard['description'],
+                        'heroTag': 'card_header',
+                      });
+                    }),
                   ],
                 ),
               ),
@@ -553,7 +627,7 @@ class CardScreen extends GetView<CardController> {
               ),
               child: Icon(
                 icon,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: AppTheme.darkBodyBG,
                 size: 24,
               ),
             ),
@@ -564,7 +638,7 @@ class CardScreen extends GetView<CardController> {
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 13,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: AppTheme.darkBodyBG,
                 fontWeight: FontWeight.w500,
               ),
             ),

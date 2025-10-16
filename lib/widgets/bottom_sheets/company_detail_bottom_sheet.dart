@@ -82,7 +82,6 @@ class CompanyDetailBottomSheet extends StatelessWidget {
                     name: companyDetail?.muessiseName ?? "",
                     description: companyDetail?.description ??
                         "no_description_available".tr,
-                    rating: "4.8", // TODO: Get rating from API
                     schedule: companyDetail?.schedule,
                   ),
                   Container(
@@ -120,19 +119,8 @@ class CompanyDetailBottomSheet extends StatelessWidget {
                             .toList() ??
                         [
                           CategoryItem(
-                            name: "Yemək",
-                            icon: Icons.medical_services_outlined,
-                          ),
-                          CategoryItem(
-                            name: "Nahar",
-                          ),
-                          CategoryItem(
-                            name: "Şirniyyat",
-                            icon: Icons.cake,
-                          ),
-                          CategoryItem(
-                            name: "İçki",
-                            icon: Icons.local_drink,
+                            name: "no_available".tr,
+                            icon: Icons.category,
                           ),
                         ],
                   ),

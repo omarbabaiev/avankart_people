@@ -1,5 +1,6 @@
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:avankart_people/controllers/security_controller.dart';
@@ -16,6 +17,9 @@ class PinCodeController extends GetxController {
   final int pinLength = 4;
 
   void addDigit(String digit) {
+    // Her rakam girişinde haptic feedback
+    VibrationUtil.selectionVibrate();
+
     if (pin.value.length < pinLength) {
       pin.value = pin.value + digit;
 
@@ -38,6 +42,9 @@ class PinCodeController extends GetxController {
   }
 
   void removeLastDigit() {
+    // Silme işleminde haptic feedback
+    VibrationUtil.lightVibrate();
+
     if (pin.value.isNotEmpty) {
       pin.value = pin.value.substring(0, pin.value.length - 1);
     }
@@ -45,10 +52,16 @@ class PinCodeController extends GetxController {
 
   void validatePin() {
     if (pin.value == firstPin.value) {
+      // PIN kodlar eşleşiyor - başarılı haptic feedback
+      VibrationUtil.mediumVibrate();
+
       // PIN kodlar eşleşiyor
       // Kaydetme ve geri dönüş işlemleri savePin içinde yönetilir
       savePin();
     } else {
+      // PIN kodlar eşleşmiyor - hata haptic feedback
+      VibrationUtil.heavyVibrate();
+
       // PIN kodlar eşleşmiyor, shake animasyonu başlat
       shouldShake.value = true;
       Future.delayed(Duration(milliseconds: 500), () {
@@ -68,10 +81,14 @@ class PinCodeController extends GetxController {
         await securityController.authenticateWithPin(pin.value);
 
     if (isValid) {
+      // PIN doğrulama başarılı - haptic feedback
+      VibrationUtil.mediumVibrate();
+
       if (verifyOnly.value) {
         // Biyometrik enable/doğrulama için
         await Get.dialog(
           Dialog(
+            backgroundColor: Theme.of(Get.context!).colorScheme.secondary,
             insetPadding: const EdgeInsets.symmetric(horizontal: 24),
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -84,8 +101,9 @@ class PinCodeController extends GetxController {
                   Text(
                     'pin_code_verified'.tr,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
+                      color: Theme.of(Get.context!).colorScheme.onBackground,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -94,6 +112,7 @@ class PinCodeController extends GetxController {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: AppTheme.primaryButtonStyle(),
                       onPressed: () {
                         Get.back();
                         Get.back(result: true);
@@ -112,6 +131,9 @@ class PinCodeController extends GetxController {
         await _performSplashOperationsAndNavigate();
       }
     } else {
+      // Yanlış PIN - hata haptic feedback
+      VibrationUtil.heavyVibrate();
+
       // Yanlış PIN, shake animasyonu başlat
       shouldShake.value = true;
       Future.delayed(Duration(milliseconds: 500), () {
@@ -132,6 +154,9 @@ class PinCodeController extends GetxController {
 
   Future<void> savePin() async {
     try {
+      // PIN kaydetme başarılı - haptic feedback
+      VibrationUtil.mediumVibrate();
+
       final SecurityController securityController =
           Get.find<SecurityController>();
       await securityController.savePinCode(pin.value);
@@ -165,7 +190,8 @@ class PinCodeController extends GetxController {
                 Text(
                   'pin_code_saved_successfully'.tr,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: Theme.of(Get.context!).colorScheme.onBackground,
                     fontFamily: 'Poppins',
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -190,6 +216,9 @@ class PinCodeController extends GetxController {
         barrierDismissible: false,
       );
     } catch (e) {
+      // PIN kaydetme hatası - haptic feedback
+      VibrationUtil.heavyVibrate();
+
       SnackbarUtils.showErrorSnackbar(
         'pin_code_save_error'.tr,
       );

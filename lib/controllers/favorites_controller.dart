@@ -2,6 +2,7 @@ import 'package:avankart_people/models/companies_response.dart';
 import 'package:avankart_people/services/companies_service.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 
 class FavoritesController extends GetxController {
@@ -118,6 +119,9 @@ class FavoritesController extends GetxController {
   /// Toggle favorite status for a company
   Future<bool> toggleFavorite(String muessiseId) async {
     try {
+      // Favori toggle - haptic feedback
+      VibrationUtil.selectionVibrate();
+
       print('\n╔═══════════════════════════════════════════════════╗');
       print('║ [FAVORITES CONTROLLER] 🎯 Toggle Favorite Started ║');
       print('╚═══════════════════════════════════════════════════╝');
