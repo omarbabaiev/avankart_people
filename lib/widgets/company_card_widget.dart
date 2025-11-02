@@ -366,6 +366,7 @@ class _CompanyCardState extends State<CompanyCard> {
     // Eğer imageUrl network URL ise CachedNetworkImage kullan
 
     return FadeInImage(
+      placeholderColor: AppTheme.primaryColor.withOpacity(0.3),
       image: CachedNetworkImageProvider(
         "https://merchant.avankart.com/$imageUrl",
       ),

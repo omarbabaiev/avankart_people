@@ -13,17 +13,19 @@ class OtpScreen extends StatefulWidget {
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
   final OtpController controller = Get.put(OtpController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _textControllers =
       List.generate(6, (index) => TextEditingController());
   Timer? _timer;
   int _remainingTime = 299; // 4:59 dakika
+  DateTime? _endTime; // OTP-nin bitmə vaxtı (wall-clock)
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Lifecycle observer əlavə et
     _startTimer();
     // Controller'ın onInit fonksiyonu zaten email ve token'ı alıyor
 
@@ -36,7 +38,17 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // App background-dan geri gələndə timer-i yenilə
+    if (state == AppLifecycleState.resumed) {
+      _updateRemainingTime();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Observer-i sil
     _timer?.cancel();
     for (var node in _focusNodes) {
       node.dispose();
@@ -48,14 +60,27 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingTime > 0) {
-        setState(() {
-          _remainingTime--;
-        });
-      } else {
+    // Wall-clock time əsasında bitmə vaxtını təyin et
+    _endTime = DateTime.now().add(const Duration(seconds: 299));
+    _remainingTime = 299;
+
+    // Hər 100ms-də bir yoxla (daha dəqiq və background-dan qayıdışda düzgün işləyir)
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      _updateRemainingTime();
+      if (_remainingTime <= 0) {
         timer.cancel();
       }
+    });
+  }
+
+  void _updateRemainingTime() {
+    if (_endTime == null) return;
+
+    final now = DateTime.now();
+    final difference = _endTime!.difference(now);
+
+    setState(() {
+      _remainingTime = difference.inSeconds.clamp(0, 299);
     });
   }
 
@@ -184,15 +209,16 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _resendCode() async {
-    // Controller'ın resend metodunu çağır
-    await controller.resendOtp();
+    // Controller'ın resend metodunu çağır və success status-u al
+    final success = await controller.resendOtp();
 
-    // Başarılı olursa timer'ı yeniden başlat ve field'ları temizle
-    _clearAllFields();
-    setState(() {
-      _remainingTime = 299;
-    });
-    _startTimer();
+    // Yalnız success olduqda timer'ı yeniden başlat və field'ları temizle
+    if (success) {
+      _clearAllFields();
+      _timer?.cancel(); // Köhnə timer-i dayandır
+      _startTimer(); // Yeni timer başlat (wall-clock time ilə)
+    }
+    // Əgər success deyilsə, timer başlamır - əvvəlki timer davam edir
   }
 
   void _clearAllFields() {

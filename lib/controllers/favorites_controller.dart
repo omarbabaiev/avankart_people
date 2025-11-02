@@ -116,6 +116,11 @@ class FavoritesController extends GetxController {
     return ApiResponseParser.parseDioError(error);
   }
 
+  /// Check if a company is in favorites
+  bool isFavorite(String companyId) {
+    return _favorites.any((company) => company.id == companyId);
+  }
+
   /// Toggle favorite status for a company
   Future<bool> toggleFavorite(String muessiseId) async {
     try {

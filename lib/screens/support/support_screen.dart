@@ -2,11 +2,12 @@ import 'package:avankart_people/routes/app_routes.dart';
 
 import '../../assets/image_assets.dart';
 import '../../utils/conts_texts.dart';
-import '../../utils/url_utils.dart';
+import '../../utils/toast_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../widgets/support_widgets/support_contact_card.dart';
-import 'faq_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
@@ -14,6 +15,7 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       appBar: AppBar(
         centerTitle: false,
         title: Text(
@@ -63,7 +65,8 @@ class SupportScreen extends StatelessWidget {
                     child: SupportSocialCard(
                       icon: ImageAssets.whatsappIcon,
                       title: 'whatsapp'.tr,
-                      onTap: () => Get.to(() => const FAQScreen()),
+                      onTap: () => _launchWebOrCopy(ConstTexts.supportWhatsapp,
+                          ConstTexts.supportWhatsapp),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -71,7 +74,8 @@ class SupportScreen extends StatelessWidget {
                     child: SupportSocialCard(
                       icon: ImageAssets.telegram,
                       title: 'telegram'.tr,
-                      onTap: () => Get.to(() => const FAQScreen()),
+                      onTap: () => _launchWebOrCopy(ConstTexts.supportTelegram,
+                          ConstTexts.supportTelegram),
                     ),
                   ),
                 ],
@@ -93,16 +97,14 @@ class SupportScreen extends StatelessWidget {
                 icon: ImageAssets.phoneCall,
                 title: 'hotline'.tr,
                 subtitle: ConstTexts.supportPhone,
-                onTap: () async {
-                  await UrlUtils.launchPhone(ConstTexts.supportPhone);
-                },
+                onTap: () => _launchPhoneOrCopy(ConstTexts.supportPhone),
               ),
               const SizedBox(height: 16),
               SupportContactCard(
                 icon: ImageAssets.envelope2,
                 title: 'email'.tr,
                 subtitle: ConstTexts.supportEmail,
-                onTap: () => UrlUtils.launchEmail(ConstTexts.supportEmail),
+                onTap: () => _launchEmailOrCopy(ConstTexts.supportEmail),
               ),
               const SizedBox(height: 50),
             ],
@@ -110,5 +112,91 @@ class SupportScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Web URL-i launch et, uğursuz olarsa kopyala
+  Future<void> _launchWebOrCopy(String url, String copyText) async {
+    try {
+      // URL formatını yoxla və düzəlt
+      String formattedUrl = url;
+      if (!formattedUrl.startsWith('http://') &&
+          !formattedUrl.startsWith('https://')) {
+        formattedUrl = 'https://$formattedUrl';
+      }
+
+      final Uri uri = Uri.parse(formattedUrl);
+      if (await canLaunchUrl(uri)) {
+        final bool launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (launched) {
+          return; // Uğurla launch edildi
+        }
+      }
+      // Launch edilə bilməzse kopyala
+      _copyToClipboard(copyText);
+    } catch (e) {
+      // Xəta olduqda kopyala
+      _copyToClipboard(copyText);
+    }
+  }
+
+  /// Telefon nömrəsini launch et, uğursuz olarsa kopyala
+  Future<void> _launchPhoneOrCopy(String phone) async {
+    try {
+      // Telefon nömrəsini təmizlə
+      String cleanedPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
+      if (!cleanedPhone.startsWith('+')) {
+        if (cleanedPhone.startsWith('994')) {
+          cleanedPhone = '+$cleanedPhone';
+        } else {
+          cleanedPhone = '+994$cleanedPhone';
+        }
+      }
+
+      final Uri phoneUri = Uri.parse('tel:$cleanedPhone');
+      if (await canLaunchUrl(phoneUri)) {
+        final bool launched = await launchUrl(
+          phoneUri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (launched) {
+          return; // Uğurla launch edildi
+        }
+      }
+      // Launch edilə bilməzse kopyala
+      _copyToClipboard(phone);
+    } catch (e) {
+      // Xəta olduqda kopyala
+      _copyToClipboard(phone);
+    }
+  }
+
+  /// Email-i launch et, uğursuz olarsa kopyala
+  Future<void> _launchEmailOrCopy(String email) async {
+    try {
+      final Uri emailUri = Uri.parse('mailto:$email');
+      if (await canLaunchUrl(emailUri)) {
+        final bool launched = await launchUrl(
+          emailUri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (launched) {
+          return; // Uğurla launch edildi
+        }
+      }
+      // Launch edilə bilməzse kopyala
+      _copyToClipboard(email);
+    } catch (e) {
+      // Xəta olduqda kopyala
+      _copyToClipboard(email);
+    }
+  }
+
+  /// Clipboard-a kopyala və toast göstər
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ToastUtils.showCopyToast();
   }
 }

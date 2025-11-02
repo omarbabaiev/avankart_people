@@ -59,8 +59,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     VerificationBottomSheet.show(
       context,
       title: 'otp'.tr,
-      subtitle:
-          '${_profileController.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
+      subtitle: 'enter_otp_sent_to_email'
+          .tr
+          .replaceAll('{email}', _profileController.profile.value?.email ?? ''),
       showTimer: true,
       onVerify: (otp) async {
         final success = await _profileController.verifyPasswordChangeOTP(otp);
@@ -237,7 +238,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Uğurla dəyişdirildi',
+                'password_changed_successfully'.tr,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -246,7 +247,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Şifrəniz uğurla dəyişdirildi',
+                'password_changed_message'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
@@ -262,11 +263,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     Get.back();
 
                     SnackbarUtils.showSuccessSnackbar(
-                        'Şifrəniz uğurla dəyişdirildi');
+                        'password_changed_message'.tr);
                   },
                   style: AppTheme.primaryButtonStyle(),
-                  child: const Text(
-                    'Tamam',
+                  child: Text(
+                    'ok'.tr,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -345,7 +346,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Text(
           'password'.tr,
           style: TextStyle(
@@ -360,125 +363,136 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           onPressed: () => Get.back(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPasswordField(
-                  label: 'current_password'.tr,
-                  hint: 'enter_current_password'.tr,
-                  controller: _currentPasswordController,
-                  obscureText: _obscureCurrentPassword,
-                  onVisibilityChanged: (value) {
-                    setState(() {
-                      _obscureCurrentPassword = !_obscureCurrentPassword;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'current_password_empty'.tr;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                _buildPasswordField(
-                  label: 'new_password'.tr,
-                  hint: 'enter_new_password'.tr,
-                  controller: _newPasswordController,
-                  obscureText: _obscureNewPassword,
-                  onVisibilityChanged: (value) {
-                    setState(() {
-                      _obscureNewPassword = !_obscureNewPassword;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'password_empty'.tr;
-                    }
-                    if (value.length < 8) {
-                      return 'password_min_length'.tr;
-                    }
-                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                      return 'password_complexity'.tr;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                _buildPasswordField(
-                  label: 'confirm_password'.tr,
-                  hint: 'enter_confirm_password'.tr,
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  onVisibilityChanged: (value) {
-                    setState(() {
-                      _obscureConfirmPassword = !_obscureConfirmPassword;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'confirm_password_empty'.tr;
-                    }
-                    if (value != _newPasswordController.text) {
-                      return 'passwords_dont_match'.tr;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'minimum_chars'.tr,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(context).hintColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'minimum_special_char'.tr,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(context).hintColor,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Obx(() => SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _profileController.isOtpSending.value
-                            ? null
-                            : _oldChangePassword,
-                        style: AppTheme.primaryButtonStyle(),
-                        child: _profileController.isOtpSending.value
-                            ? SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                'confirm_change'.tr,
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.only(
+              top: 4,
+            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPasswordField(
+                      label: 'current_password'.tr,
+                      hint: 'enter_current_password'.tr,
+                      controller: _currentPasswordController,
+                      obscureText: _obscureCurrentPassword,
+                      onVisibilityChanged: (value) {
+                        setState(() {
+                          _obscureCurrentPassword = !_obscureCurrentPassword;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'current_password_empty'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    _buildPasswordField(
+                      label: 'new_password'.tr,
+                      hint: 'enter_new_password'.tr,
+                      controller: _newPasswordController,
+                      obscureText: _obscureNewPassword,
+                      onVisibilityChanged: (value) {
+                        setState(() {
+                          _obscureNewPassword = !_obscureNewPassword;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'password_empty'.tr;
+                        }
+                        if (value.length < 8) {
+                          return 'password_min_length'.tr;
+                        }
+                        if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                            .hasMatch(value)) {
+                          return 'password_complexity'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    _buildPasswordField(
+                      label: 'confirm_password'.tr,
+                      hint: 'enter_confirm_password'.tr,
+                      controller: _confirmPasswordController,
+                      obscureText: _obscureConfirmPassword,
+                      onVisibilityChanged: (value) {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'confirm_password_empty'.tr;
+                        }
+                        if (value != _newPasswordController.text) {
+                          return 'passwords_dont_match'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'minimum_chars'.tr,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).hintColor,
                       ),
-                    )),
-              ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'minimum_special_char'.tr,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Obx(() => SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: _profileController.isOtpSending.value
+                                ? null
+                                : _oldChangePassword,
+                            style: AppTheme.primaryButtonStyle(),
+                            child: _profileController.isOtpSending.value
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'confirm_change'.tr,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:avankart_people/assets/image_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -15,6 +16,7 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  final GetStorage _getStorage = GetStorage();
 
   final List<String> _introImages = [
     ImageAssets.frame1,
@@ -29,8 +31,16 @@ class _IntroScreenState extends State<IntroScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Intro screen açıldığında hemen hasSeenIntro flag'ini true yap
+    _markIntroAsSeen();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Column(
@@ -159,6 +169,16 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       ),
     );
+  }
+
+  /// Intro görüldü olarak işaretle
+  void _markIntroAsSeen() {
+    try {
+      _getStorage.write('hasSeenIntro', true);
+      print('[INTRO] Intro marked as seen');
+    } catch (e) {
+      print('[INTRO] Error marking intro as seen: $e');
+    }
   }
 
   @override

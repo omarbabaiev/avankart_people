@@ -362,16 +362,19 @@ class AuthService {
     }
   }
 
-  /// OTP'yi yeniden gönder
+  /// OTP'yi yeniden gönder (JSON-da /auth/retry-otp endpoint-i)
   Future<Map<String, dynamic>> resendOtp({
     required String email,
     required String token,
   }) async {
     try {
+      DebugLogger.apiRequest('/people/auth/retry-otp', {
+        'email': email,
+      });
       print(
           '[RESEND OTP REQUEST] email: $email, token: ${token.substring(0, 20)}...');
       final response = await _dio.post(
-        '/people/auth/resend-otp',
+        '/people/auth/retry-otp', // JSON-da /auth/retry-otp endpoint-i istifadə olunur
         data: {
           'email': email,
         },
@@ -379,13 +382,16 @@ class AuthService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
+      DebugLogger.apiResponse('/people/auth/retry-otp', response.data);
       print('[RESEND OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
       print('[RESEND OTP ERROR] ${e.response?.data}');
-      if (e.response != null) {
+      if (e.response != null && e.response?.data != null) {
+        DebugLogger.apiError('/people/auth/retry-otp', e.response!.data);
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
+        DebugLogger.apiError('/people/auth/retry-otp', e);
         print('[RESEND OTP ERROR] Ağ hatası: ${e.toString()}');
         throw AuthException('network_error'.tr + ': ${e.message}');
       }

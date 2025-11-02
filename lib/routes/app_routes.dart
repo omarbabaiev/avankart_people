@@ -24,6 +24,7 @@ import 'package:avankart_people/screens/other/company_detail_screen.dart';
 import 'package:avankart_people/screens/other/card_info_screen.dart';
 import 'package:avankart_people/screens/other/card_balance_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
+import 'package:avankart_people/screens/payment/payment_result_screen.dart';
 import 'package:avankart_people/screens/security/pin_code_screen.dart';
 import 'package:avankart_people/screens/security/enter_pin_code_screen.dart';
 import 'package:avankart_people/screens/security/security_screen.dart';
@@ -81,6 +82,7 @@ class AppRoutes {
   static const String enterPinCode = '/enter-pin-code';
   static const String profil = '/profil';
   static const String qrPayment = '/qr-payment';
+  static const String paymentResult = '/payment-result';
   static const String searchCompany = '/search-company';
   static const String membershipDetail = '/membership-detail';
   static const String membershipList = '/membership-list';
@@ -134,6 +136,15 @@ class AppRoutes {
     GetPage(
       name: qrPayment,
       page: () => const QrPaymentScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: paymentResult,
+      page: () => PaymentResultScreen(
+        isSuccess: Get.arguments['isSuccess'] ?? false,
+        paymentData: Get.arguments['paymentData'] ?? {},
+        errorMessage: Get.arguments['errorMessage'],
+      ),
       transition: Transition.fadeIn,
     ),
     GetPage(

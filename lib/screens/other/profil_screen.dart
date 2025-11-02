@@ -4,6 +4,7 @@ import 'package:avankart_people/utils/toast_utils.dart';
 import 'package:avankart_people/widgets/bottom_sheets/name_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/birth_date_change_bottom_sheet.dart';
 import 'package:avankart_people/widgets/bottom_sheets/phone_change_bottom_sheet.dart';
+import 'package:avankart_people/widgets/bottom_sheets/gender_change_bottom_sheet.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,9 +98,9 @@ class ProfilScreen extends StatelessWidget {
               _buildProfileTile(
                 context,
                 'gender'.tr,
-                'Kişi', // API'den gelmiyorsa default değer
+                _getGenderDisplay(user?.gender),
                 ImageAssets.pencil,
-                () {},
+                () => GenderChangeBottomSheet.show(context),
               ),
               _buildProfileTile(
                 context,
@@ -149,6 +150,19 @@ class ProfilScreen extends StatelessWidget {
     PhoneChangeBottomSheet.show(context, selectedCountry, (country) {
       selectedCountry = country;
     });
+  }
+
+  String _getGenderDisplay(String? gender) {
+    if (gender == null || gender.isEmpty) {
+      return 'undefined'.tr;
+    }
+    // Gender değeri 'male' veya 'female' olabilir
+    if (gender == 'male') {
+      return 'male'.tr;
+    } else if (gender == 'female') {
+      return 'female'.tr;
+    }
+    return 'undefined'.tr;
   }
 
   ListTile _buildProfileTile(

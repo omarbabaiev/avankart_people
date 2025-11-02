@@ -43,9 +43,22 @@ class SecurityController extends GetxController {
   // Biyometrik authentication mevcutluğunu kontrol et
   Future<void> _checkBiometricAvailability() async {
     try {
+      print('\n╔═══════════════════════════════════════════════════╗');
+      print('║ [SECURITY CONTROLLER] 🔍 Checking Biometric Availability ║');
+      print('╚═══════════════════════════════════════════════════╝');
+      print(
+          '[SECURITY CONTROLLER] 📱 Platform: ${Platform.isIOS ? "iOS" : "Android"}');
+
       final bool isAvailable = await _localAuth.canCheckBiometrics;
       final List<BiometricType> availableBiometrics =
           await _localAuth.getAvailableBiometrics();
+
+      print('[SECURITY CONTROLLER] 📊 Biometric Check Results:');
+      print('[SECURITY CONTROLLER]   - canCheckBiometrics: $isAvailable');
+      print(
+          '[SECURITY CONTROLLER]   - Available Biometrics: $availableBiometrics');
+      print(
+          '[SECURITY CONTROLLER]   - Available Count: ${availableBiometrics.length}');
 
       // Platform'a göre uygun biyometrik türünü kontrol et
       bool hasRequiredBiometric = false;
@@ -54,15 +67,47 @@ class SecurityController extends GetxController {
         hasRequiredBiometric =
             availableBiometrics.contains(BiometricType.face) ||
                 availableBiometrics.contains(BiometricType.fingerprint);
+        print('[SECURITY CONTROLLER] 🍎 iOS Biometric Check:');
+        print(
+            '[SECURITY CONTROLLER]   - Has Face ID: ${availableBiometrics.contains(BiometricType.face)}');
+        print(
+            '[SECURITY CONTROLLER]   - Has Touch ID: ${availableBiometrics.contains(BiometricType.fingerprint)}');
+        print('[SECURITY CONTROLLER]   - Has Required: $hasRequiredBiometric');
       } else if (Platform.isAndroid) {
-        // Android'de parmak izi kontrolü
+        // Android'de parmak izi kontrolü - hem fingerprint hem de strong biometric kontrol et
         hasRequiredBiometric =
-            availableBiometrics.contains(BiometricType.fingerprint);
+            availableBiometrics.contains(BiometricType.fingerprint) ||
+                availableBiometrics.contains(BiometricType.strong);
+        print('[SECURITY CONTROLLER] 🤖 Android Biometric Check:');
+        print(
+            '[SECURITY CONTROLLER]   - Has Fingerprint: ${availableBiometrics.contains(BiometricType.fingerprint)}');
+        print(
+            '[SECURITY CONTROLLER]   - Has Strong: ${availableBiometrics.contains(BiometricType.strong)}');
+        print(
+            '[SECURITY CONTROLLER]   - Has Weak: ${availableBiometrics.contains(BiometricType.weak)}');
+        print('[SECURITY CONTROLLER]   - Has Required: $hasRequiredBiometric');
       }
 
-      isBiometricAvailable.value = isAvailable && hasRequiredBiometric;
+      final bool finalResult = isAvailable && hasRequiredBiometric;
+      isBiometricAvailable.value = finalResult;
+
+      print('[SECURITY CONTROLLER] ✅ Final Result:');
+      print('[SECURITY CONTROLLER]   - isAvailable: $isAvailable');
+      print(
+          '[SECURITY CONTROLLER]   - hasRequiredBiometric: $hasRequiredBiometric');
+      print(
+          '[SECURITY CONTROLLER]   - Final Biometric Available: $finalResult');
+      print('╔═══════════════════════════════════════════════════╗');
+      print('║ [SECURITY CONTROLLER] ✅ Biometric Check Complete ║');
+      print('╚═══════════════════════════════════════════════════╝\n');
     } catch (e) {
-      print('Error checking biometric availability: $e');
+      print('┌─────────────────────────────────────────────────┐');
+      print('│ [SECURITY CONTROLLER] ❌ Biometric Check Error  │');
+      print('└─────────────────────────────────────────────────┘');
+      print('[SECURITY CONTROLLER] 🚫 Error Details:');
+      print('[SECURITY CONTROLLER]   - Type: ${e.runtimeType}');
+      print('[SECURITY CONTROLLER]   - Message: $e');
+      print('[SECURITY CONTROLLER]   - Setting isBiometricAvailable to false');
       isBiometricAvailable.value = false;
     }
   }
@@ -142,9 +187,11 @@ class SecurityController extends GetxController {
           allowedBiometrics = [BiometricType.fingerprint];
         }
       } else if (Platform.isAndroid) {
-        // Android'de sadece parmak izi
+        // Android'de parmak izi veya strong biometric
         if (availableBiometrics.contains(BiometricType.fingerprint)) {
           allowedBiometrics = [BiometricType.fingerprint];
+        } else if (availableBiometrics.contains(BiometricType.strong)) {
+          allowedBiometrics = [BiometricType.strong];
         }
       }
 
@@ -243,10 +290,22 @@ class SecurityController extends GetxController {
 
   // PIN kod ayarlarını yenile
   Future<void> refreshSettings() async {
+    print('\n╔═══════════════════════════════════════════════════╗');
+    print('║ [SECURITY CONTROLLER] 🔄 Refreshing Settings      ║');
+    print('╚═══════════════════════════════════════════════════╝');
+
     await _loadSecuritySettings();
     await _checkBiometricAvailability();
+
+    print('[SECURITY CONTROLLER] 📊 Settings Refreshed:');
+    print('[SECURITY CONTROLLER]   - isPinEnabled: ${isPinEnabled.value}');
     print(
-        'Settings refreshed - isPinEnabled: ${isPinEnabled.value}, isBiometricEnabled: ${isBiometricEnabled.value}');
+        '[SECURITY CONTROLLER]   - isBiometricEnabled: ${isBiometricEnabled.value}');
+    print(
+        '[SECURITY CONTROLLER]   - isBiometricAvailable: ${isBiometricAvailable.value}');
+    print('╔═══════════════════════════════════════════════════╗');
+    print('║ [SECURITY CONTROLLER] ✅ Settings Refresh Complete║');
+    print('╚═══════════════════════════════════════════════════╝\n');
   }
 
   // Session'ı sıfırla (uygulama kapatıldığında veya logout'ta)

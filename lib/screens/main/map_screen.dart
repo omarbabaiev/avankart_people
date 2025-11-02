@@ -210,20 +210,6 @@ class _MapContent extends StatelessWidget {
       children: [
         // Ana harita - Optimized
         _buildGoogleMap(),
-
-        // Konum butonu - Optimized
-        const Positioned(
-          right: 16,
-          bottom: 120,
-          child: _LocationButton(),
-        ),
-
-        // Yakınlaştırma/Uzaklaştırma butonları - Optimized
-        const Positioned(
-          right: 16,
-          bottom: 180,
-          child: _ZoomControls(),
-        ),
       ],
     );
   }
@@ -325,72 +311,7 @@ class _MapContent extends StatelessWidget {
 }
 
 // Optimized Location Button
-class _LocationButton extends StatelessWidget {
-  const _LocationButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<MapController>(
-      builder: (controller) => Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: IconButton(
-          onPressed: () => controller.getCurrentLocation(),
-          icon: const Icon(Icons.my_location, color: Colors.black),
-          iconSize: 20,
-        ),
-      ),
-    );
-  }
-}
+// Removed Location button as requested
 
 // Optimized Zoom Controls
-class _ZoomControls extends StatelessWidget {
-  const _ZoomControls();
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<MapController>(
-      builder: (controller) => Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            IconButton(
-              onPressed: controller.zoomIn,
-              icon: const Icon(Icons.add, color: Colors.black),
-              iconSize: 20,
-            ),
-            Container(
-              height: 1,
-              color: Colors.grey[300],
-            ),
-            IconButton(
-              onPressed: controller.zoomOut,
-              icon: const Icon(Icons.remove, color: Colors.black),
-              iconSize: 20,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// Removed Zoom controls as requested

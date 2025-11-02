@@ -87,8 +87,14 @@ class AuthUtils {
       // Clear all controllers
       Get.deleteAll();
 
-      // Navigate to login screen
-      Get.offAllNamed('/login');
+      // hasSeenIntro flag'i varsa login'e yönlendirme (intro zaten açık)
+      final hasSeenIntro = GetStorage().read('hasSeenIntro') ?? false;
+      if (!hasSeenIntro) {
+        // Navigate to login screen
+        Get.offAllNamed('/login');
+      } else {
+        print('[AUTH UTILS] hasSeenIntro is true, skipping login navigation');
+      }
     } catch (e) {
       print('[AUTH UTILS] Force logout error: $e');
       // Hata olsa bile login'e yönlendir
@@ -122,6 +128,10 @@ class AuthUtils {
       await storage.deleteAll();
       print('[AUTH UTILS] SecureStorage cleared');
 
+      // hasSeenIntro flag'ini koru
+      final hasSeenIntro = GetStorage().read('hasSeenIntro') ?? false;
+      print('[AUTH UTILS] Preserving hasSeenIntro: $hasSeenIntro');
+
       // Clear GetStorage
       print('[AUTH UTILS] Clearing GetStorage...');
       await GetStorage().erase();
@@ -130,6 +140,12 @@ class AuthUtils {
       // isFirstLaunch'u tekrar true yap (artık ilk açılış değil anlamında)
       print('[AUTH UTILS] Setting isFirstLaunch to true after logout');
       await GetStorage().write('isFirstLaunch', true);
+
+      // hasSeenIntro flag'ini geri yaz
+      if (hasSeenIntro) {
+        await GetStorage().write('hasSeenIntro', true);
+        print('[AUTH UTILS] hasSeenIntro flag restored');
+      }
 
       print('[AUTH UTILS] All storage data cleared successfully');
     } catch (e) {

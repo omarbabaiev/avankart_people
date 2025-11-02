@@ -14,7 +14,7 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
   Widget build(BuildContext context) {
     // Controller'ı başlat
     Get.put(PinCodeController());
-    Get.find<SecurityController>();
+    final securityController = Get.find<SecurityController>();
 
     // Args
     final Map<String, dynamic>? arguments =
@@ -26,6 +26,11 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
     controller.startEnterMode();
     // verifyOnly bilgisini controller tarafında da kullanılabilsin
     controller.setVerifyOnly(verifyOnly);
+
+    // Otomatik biometric authentication başlat (eğer aktifse)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAutoBiometricAuth(securityController);
+    });
 
     return WillPopScope(
       onWillPop: () async =>
@@ -171,9 +176,18 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
                         icon: ImageAssets.faceId,
                         label: 'face_id'.tr,
                         onTap: () async {
+                          print(
+                              '[EnterPinCodeScreen] 🔐 Manual Face ID authentication started');
                           final ok = await Get.find<SecurityController>()
                               .authenticateForAppAccess();
-                          if (ok) Get.offAllNamed('/main');
+                          if (ok) {
+                            print(
+                                '[EnterPinCodeScreen] ✅ Manual Face ID successful');
+                            Get.offAllNamed('/main');
+                          } else {
+                            print(
+                                '[EnterPinCodeScreen] ❌ Manual Face ID failed');
+                          }
                         },
                       ),
                     if (Platform.isAndroid)
@@ -182,9 +196,18 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
                         icon: ImageAssets.fingerprint,
                         label: 'finger_print'.tr,
                         onTap: () async {
+                          print(
+                              '[EnterPinCodeScreen] 🔐 Manual Fingerprint authentication started');
                           final ok = await Get.find<SecurityController>()
                               .authenticateForAppAccess();
-                          if (ok) Get.offAllNamed('/main');
+                          if (ok) {
+                            print(
+                                '[EnterPinCodeScreen] ✅ Manual Fingerprint successful');
+                            Get.offAllNamed('/main');
+                          } else {
+                            print(
+                                '[EnterPinCodeScreen] ❌ Manual Fingerprint failed');
+                          }
                         },
                       ),
                   ],
@@ -206,8 +229,8 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Container(
-          width: 100,
-          height: 100,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Theme.of(context).colorScheme.onPrimary,
@@ -235,8 +258,8 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Container(
-          width: 100,
-          height: 100,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Theme.of(context).colorScheme.onPrimary,
@@ -282,5 +305,60 @@ class EnterPinCodeScreen extends GetView<PinCodeController> {
         ],
       ),
     );
+  }
+
+  /// Otomatik biometric authentication başlat
+  Future<void> _startAutoBiometricAuth(
+      SecurityController securityController) async {
+    try {
+      // Biometric aktif ve mevcut mu kontrol et
+      if (!securityController.isBiometricEnabled.value ||
+          !securityController.isBiometricAvailable.value) {
+        print('[EnterPinCodeScreen] Biometric not available or not enabled');
+        return;
+      }
+
+      print('\n╔═══════════════════════════════════════════════════╗');
+      print('║ [EnterPinCodeScreen] 🔐 Starting Auto Biometric   ║');
+      print('╚═══════════════════════════════════════════════════╝');
+      print(
+          '[EnterPinCodeScreen] 📱 Platform: ${Platform.isIOS ? "iOS" : "Android"}');
+      print('[EnterPinCodeScreen] 🔍 Biometric Status:');
+      print(
+          '[EnterPinCodeScreen]   - isBiometricEnabled: ${securityController.isBiometricEnabled.value}');
+      print(
+          '[EnterPinCodeScreen]   - isBiometricAvailable: ${securityController.isBiometricAvailable.value}');
+
+      // Kısa bir gecikme ekle (UI render olsun)
+      await Future.delayed(Duration(milliseconds: 500));
+
+      // Biometric authentication başlat
+      final bool didAuthenticate =
+          await securityController.authenticateForAppAccess();
+
+      if (didAuthenticate) {
+        print('[EnterPinCodeScreen] ✅ Biometric authentication successful');
+        print('[EnterPinCodeScreen] 🚀 Navigating to main screen');
+
+        // Başarılı authentication sonrası ana ekrana git
+        Get.offAllNamed('/main');
+      } else {
+        print(
+            '[EnterPinCodeScreen] ❌ Biometric authentication failed or cancelled');
+        print('[EnterPinCodeScreen] 📱 User can now use PIN code');
+      }
+
+      print('╔═══════════════════════════════════════════════════╗');
+      print('║ [EnterPinCodeScreen] ✅ Auto Biometric Complete   ║');
+      print('╚═══════════════════════════════════════════════════╝\n');
+    } catch (e) {
+      print('┌─────────────────────────────────────────────────┐');
+      print('│ [EnterPinCodeScreen] ❌ Auto Biometric Error    │');
+      print('└─────────────────────────────────────────────────┘');
+      print('[EnterPinCodeScreen] 🚫 Error Details:');
+      print('[EnterPinCodeScreen]   - Type: ${e.runtimeType}');
+      print('[EnterPinCodeScreen]   - Message: $e');
+      print('[EnterPinCodeScreen] 📱 User can use PIN code as fallback');
+    }
   }
 }

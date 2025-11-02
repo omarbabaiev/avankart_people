@@ -107,6 +107,7 @@ class ProfileService {
     String? oldPassword,
     String? newPassword,
     String? confirmNewPassword,
+    String? gender,
   }) async {
     try {
       print('[REQUEST CHANGE] duty: $duty');
@@ -121,6 +122,7 @@ class ProfileService {
         if (newPassword != null) 'new_password': newPassword,
         if (confirmNewPassword != null)
           'confirm_new_password': confirmNewPassword,
+        if (gender != null) 'gender': gender,
       };
       print('[REQUEST CHANGE REQUEST] $data');
 
@@ -317,6 +319,10 @@ class ProfileService {
           throw ProfileException('invalid_password_format'.tr);
         }
         break;
+      case 'gender':
+        duty = 'updateGender';
+        data['gender'] = newValue; // 'male' or 'female'
+        break;
       default:
         throw ProfileException('invalid_field'.tr + ': $field');
     }
@@ -331,6 +337,7 @@ class ProfileService {
       oldPassword: data['old_password'],
       newPassword: data['new_password'],
       confirmNewPassword: data['confirm_new_password'],
+      gender: data['gender'],
     );
   }
 

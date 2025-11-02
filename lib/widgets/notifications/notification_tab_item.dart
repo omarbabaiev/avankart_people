@@ -39,32 +39,38 @@ class NotificationTabItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              text,
-              maxLines: 1,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                overflow: TextOverflow.ellipsis,
-                fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onBackground
-                    : Theme.of(context).unselectedWidgetColor,
+            Expanded(
+              flex: 4,
+              child: Text(
+                text,
+                maxLines: 1,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  overflow: TextOverflow.ellipsis,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.onBackground
+                      : Theme.of(context).unselectedWidgetColor,
+                ),
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                count,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  color: Theme.of(context).colorScheme.onBackground,
+            Expanded(
+              flex: 1,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  count,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
             ),

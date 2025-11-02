@@ -234,21 +234,27 @@ class CompanyContactWidget extends StatelessWidget {
 
   Future<void> _openWhatsApp(String phoneNumber) async {
     try {
-      // Phone number'dan + ve boşlukları temizle
-      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[+\s-]'), '');
-
-      // WhatsApp URL'si oluştur
-      String whatsappUrl = 'https://wa.me/$cleanNumber';
-      final Uri uri = Uri.parse(whatsappUrl);
-
-      print('[WHATSAPP] Opening WhatsApp for: $cleanNumber');
-
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] WhatsApp launched successfully');
-      } else {
-        print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
+      if (phoneNumber.isEmpty) {
+        print('[WHATSAPP] No WhatsApp number available');
+        return;
       }
+
+      final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+      final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
+      final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
+
+      print('[WHATSAPP] Trying to open for: $cleanNumber');
+      if (await canLaunchUrl(androidUri)) {
+        await launchUrl(androidUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP] Opened via whatsapp://');
+        return;
+      }
+      if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP] Opened via wa.me');
+        return;
+      }
+      print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
       print('[WHATSAPP] Error opening WhatsApp: $e');
     }

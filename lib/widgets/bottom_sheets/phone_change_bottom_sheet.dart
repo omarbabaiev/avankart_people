@@ -34,9 +34,9 @@ class PhoneChangeBottomSheet {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 context.buildBottomSheetHandle(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Form(
@@ -52,7 +52,7 @@ class PhoneChangeBottomSheet {
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         TextFormField(
                           style: TextStyle(
                             fontFamily: "Poppins",
@@ -167,7 +167,7 @@ class PhoneChangeBottomSheet {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         GetBuilder<ProfileController>(
                           builder: (controller) {
                             return Obx(() => SizedBox(
@@ -221,7 +221,7 @@ class PhoneChangeBottomSheet {
                                 ));
                           },
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         TextButton(
                           onPressed: () => Get.back(),
                           child: Text(
@@ -234,6 +234,7 @@ class PhoneChangeBottomSheet {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),

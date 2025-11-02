@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.avankart.people</string>
+	<string>com.avankart.peopleapp</string>
 	<key>PROJECT_ID</key>
 	<string>avankart-cbb4e</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:368607788248:ios:9a928152948e6ac9156bad</string>
+	<string>1:368607788248:ios:71de77f059099d43156bad</string>
 </dict>
 </plist>

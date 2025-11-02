@@ -39,6 +39,7 @@ class ProfileController extends GetxController {
   final isOtpVerifying = false.obs;
   final otpRemainingTime = 0.obs;
   Timer? _otpTimer;
+  DateTime? _otpEndTime; // OTP-nin bitmə vaxtı (wall-clock)
 
   // Güncellenecek veri
   String _pendingUpdateField = '';
@@ -250,15 +251,18 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// OTP timer'ını başlat (4 dakika 59 saniye)
+  /// OTP timer'ını başlat (4 dakika 59 saniye) - Wall-clock time əsasında
   void _startOtpTimer() {
     _stopOtpTimer(); // Mevcut timer'ı durdur
+
+    // Wall-clock time əsasında bitmə vaxtını təyin et
+    _otpEndTime = DateTime.now().add(const Duration(seconds: 299));
     otpRemainingTime.value = 299; // 4:59
 
-    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (otpRemainingTime.value > 0) {
-        otpRemainingTime.value--;
-      } else {
+    // Hər 100ms-də bir yoxla (daha dəqiq və background-dan qayıdışda düzgün işləyir)
+    _otpTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      _updateOtpRemainingTime();
+      if (otpRemainingTime.value <= 0) {
         _stopOtpTimer();
         isVerificationRequired.value = false;
         _clearPendingUpdate();
@@ -270,6 +274,17 @@ class ProfileController extends GetxController {
   void _stopOtpTimer() {
     _otpTimer?.cancel();
     _otpTimer = null;
+    _otpEndTime = null;
+  }
+
+  /// OTP qalan vaxtını yenilə (wall-clock time əsasında)
+  void _updateOtpRemainingTime() {
+    if (_otpEndTime == null) return;
+
+    final now = DateTime.now();
+    final difference = _otpEndTime!.difference(now);
+
+    otpRemainingTime.value = difference.inSeconds.clamp(0, 299);
   }
 
   /// Bekleyen güncelleme verilerini temizle
@@ -345,7 +360,7 @@ class ProfileController extends GetxController {
       isVerificationRequired.value = false;
       _clearPendingUpdate();
 
-      SnackbarUtils.showSuccessSnackbar('Şifrəniz uğurla dəyişdirildi');
+      SnackbarUtils.showSuccessSnackbar('password_changed_successfully'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);

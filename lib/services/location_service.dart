@@ -31,8 +31,7 @@ class LocationService {
 
       // Location permission kontrolü
       final permissionStatus = await _checkLocationPermission();
-      if (permissionStatus != LocationPermission.always &&
-          permissionStatus != LocationPermission.whileInUse) {
+      if (permissionStatus != LocationPermission.whileInUse) {
         print('[LOCATION SERVICE] Location permission denied');
         return null;
       }

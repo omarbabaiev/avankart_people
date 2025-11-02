@@ -83,11 +83,18 @@ class SplashController extends GetxController {
       print('[SPLASH] Remember me: $rememberMe');
       print('[SPLASH] Remember me is true: $rememberMe');
 
+      // Token yoksa önce intro kontrolü yap
+      if (token == null || token.isEmpty) {
+        print('[SPLASH] No token found, checking intro first');
+        await _checkIntroAndNavigate(rememberMe);
+        return; // Intro kontrolünden sonra çık
+      }
+
       // 4 saniye animasyon oynat, sonra dur
       await _playAnimationOnce();
 
       // Token varsa home request at (remember me kontrolü opsiyonel)
-      if (token != null && token.isNotEmpty) {
+      if (token.isNotEmpty) {
         print('[SPLASH] Token found, calling home endpoint');
         try {
           final homeResponse = await _authService.home();
@@ -121,21 +128,6 @@ class SplashController extends GetxController {
           showRetryButton.value = true;
           retryMessage.value = _extractErrorMessage(e);
         }
-      } else {
-        // Token yoksa remember me'yi temizle ve login'e git (GÜVENLİK)
-        if (rememberMe == true) {
-          print(
-              '[SPLASH] No token found but remember me is true, clearing remember me and navigating to login');
-          // Remember me'yi temizle çünkü token yok - GÜVENLİK
-          GetStorage().remove('rememberMe');
-        } else {
-          print(
-              '[SPLASH] No token found and remember me is false, clearing data and navigating to login');
-          // Remember me false ise sadece storage'ı temizle, logout API çağırma
-          await AuthUtils.clearDataWhenRememberMeFalse();
-        }
-        _clearPasswordField();
-        Get.offAllNamed(AppRoutes.login);
       }
     } catch (e) {
       print('[SPLASH] Error during auth check: $e');
@@ -146,12 +138,13 @@ class SplashController extends GetxController {
         showRetryButton.value = true;
         // Retry butonu göster, login'e gitme
       } else {
-        print('[SPLASH] Non-retryable error, navigating to login');
+        print('[SPLASH] Non-retryable error, checking intro and navigating');
         // Hata durumunda tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
         await _storage.deleteAll();
         print('[SPLASH] All storage cleared due to error');
         _clearPasswordField();
-        Get.offAllNamed(AppRoutes.login);
+        // Hata durumunda da intro kontrolü yap
+        await _checkIntroAndNavigate(false);
       }
     } finally {
       isInitialized.value = true;
@@ -270,6 +263,42 @@ class SplashController extends GetxController {
       print('[SPLASH] Error checking PIN code: $e');
       // Hata durumunda direkt main'e git
       Get.offAllNamed(AppRoutes.main);
+    }
+  }
+
+  /// Intro kontrolü yap ve uygun ekrana yönlendir
+  Future<void> _checkIntroAndNavigate(bool rememberMe) async {
+    try {
+      // Intro görülmüş mü kontrol et
+      final hasSeenIntro = _getStorage.read('hasSeenIntro') ?? false;
+      print('[SPLASH] Has seen intro: $hasSeenIntro');
+
+      if (!hasSeenIntro) {
+        print('[SPLASH] First time user, navigating to intro');
+        // İlk kez açılıyor, intro'ya git
+        Get.offAllNamed(AppRoutes.intro);
+      } else {
+        print('[SPLASH] Returning user, navigating to login');
+        // Daha önce intro görülmüş, login'e git
+        if (rememberMe == true) {
+          print(
+              '[SPLASH] No token found but remember me is true, clearing remember me and navigating to login');
+          // Remember me'yi temizle çünkü token yok - GÜVENLİK
+          GetStorage().remove('rememberMe');
+        } else {
+          print(
+              '[SPLASH] No token found and remember me is false, clearing data and navigating to login');
+          // Remember me false ise sadece storage'ı temizle, logout API çağırma
+          await AuthUtils.clearDataWhenRememberMeFalse();
+        }
+        _clearPasswordField();
+        Get.offAllNamed(AppRoutes.login);
+      }
+    } catch (e) {
+      print('[SPLASH] Error checking intro: $e');
+      // Hata durumunda login'e git
+      _clearPasswordField();
+      Get.offAllNamed(AppRoutes.login);
     }
   }
 

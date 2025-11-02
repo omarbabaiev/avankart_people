@@ -186,6 +186,7 @@ class CardScreen extends GetView<CardController> {
                     placeholder: AssetImage(ImageAssets.background),
                     image: AssetImage(ImageAssets.background),
                     fit: BoxFit.cover,
+                    width: double.infinity,
                   ),
                   Scaffold(
                     backgroundColor: Colors.transparent,
@@ -197,11 +198,11 @@ class CardScreen extends GetView<CardController> {
                           _buildCardHeader(context),
                           // Alt kısım - İşlemler Listesi (DraggableScrollableSheet)
                           DraggableScrollableSheet(
-                            initialChildSize: 0.7,
-                            minChildSize: 0.7,
+                            initialChildSize: 0.65,
+                            minChildSize: 0.65,
                             maxChildSize: 0.9,
                             snap: true,
-                            snapSizes: [0.7, 0.9],
+                            snapSizes: [0.65, 0.9],
                             snapAnimationDuration:
                                 const Duration(milliseconds: 1000),
                             controller: controller.dragController,

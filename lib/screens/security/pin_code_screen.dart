@@ -169,8 +169,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Container(
-          width: 100,
-          height: 100,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Theme.of(context).colorScheme.onPrimary,
@@ -198,8 +198,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Container(
-          width: 100,
-          height: 100,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Theme.of(context).colorScheme.onPrimary,

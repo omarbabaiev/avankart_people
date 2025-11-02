@@ -88,13 +88,13 @@ class QueryController extends GetxController {
         // API'den başarısız response geldiğinde hata mesajı göster
         final errorMsg = response['message'] ?? 'error_occurred'.tr;
         errorMessage.value = errorMsg;
-        ToastUtils.showErrorToast(errorMsg);
+        // Toast mesajını kaldırdık - sadece errorMessage'ı set ediyoruz
       }
     } catch (error) {
       print('Error fetching queries: $error');
       final errorMsg = error.toString();
       errorMessage.value = errorMsg;
-      ToastUtils.showErrorToast('error_occurred'.tr);
+      // Toast mesajını kaldırdık - sadece errorMessage'ı set ediyoruz
     } finally {
       isLoading.value = false;
     }

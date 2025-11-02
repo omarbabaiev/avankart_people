@@ -210,13 +210,14 @@ class OtpController extends GetxController {
   }
 
   /// OTP'yi yeniden gönder
-  Future<void> resendOtp() async {
+  /// Returns: true if successful, false otherwise
+  Future<bool> resendOtp() async {
     // OTP yeniden gönderme butonuna tıklandığında haptic feedback
     VibrationUtil.lightVibrate();
 
     if (email.isEmpty || loginToken.isEmpty) {
       SnackbarUtils.showErrorSnackbar('email_or_token_not_found'.tr);
-      return;
+      return false;
     }
 
     isResending.value = true;
@@ -229,16 +230,20 @@ class OtpController extends GetxController {
       final success = response['success'];
       final message = response['message'];
 
+      // JSON-da "OTP resent successfully" və ya "OTP sent successfully" mesajı qayıdır
       if (success == true ||
           message == 'OTP sent successfully' ||
+          message == 'OTP resent successfully' ||
           message == 'ok') {
         // Başarılı OTP yeniden gönderme - haptic feedback
         VibrationUtil.selectionVibrate();
         SnackbarUtils.showSuccessSnackbar('verification_code_resent'.tr);
+        return true; // Success qaytar
       } else {
         // OTP yeniden gönderme hatası - haptic feedback
         VibrationUtil.heavyVibrate();
         SnackbarUtils.showErrorSnackbar(message ?? 'otp_resend_failed'.tr);
+        return false; // Success deyil
       }
     } catch (e) {
       // OTP yeniden gönderme hatası - haptic feedback
@@ -247,6 +252,7 @@ class OtpController extends GetxController {
       print('[RESEND OTP ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
+      return false; // Success deyil
     } finally {
       isResending.value = false;
     }

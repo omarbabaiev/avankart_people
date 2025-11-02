@@ -39,6 +39,12 @@ class SettingsRadioItem<T> extends StatelessWidget {
           return Theme.of(context).hintColor.withOpacity(.5);
         }),
       ),
+      onTap: () {
+        // Bütün tile-a tıklananda seçim edilsin
+        if (value != groupValue) {
+          onChanged(value);
+        }
+      },
     );
   }
 }

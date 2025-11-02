@@ -184,8 +184,9 @@ class NameChangeBottomSheet {
         VerificationBottomSheet.show(
           currentContext,
           title: 'otp'.tr,
-          subtitle:
-              '${controller.profile.value?.email} + email_otp_description'.tr,
+          subtitle: 'enter_otp_sent_to_email'
+              .tr
+              .replaceAll('{email}', controller.profile.value?.email ?? ''),
           showTimer: true,
           onVerify: (otp) async {
             await controller.verifyUpdateOTP(otp);
@@ -204,7 +205,9 @@ class NameChangeBottomSheet {
     VerificationBottomSheet.show(
       context,
       title: 'otp'.tr,
-      subtitle: '${controller.profile.value?.email} + email_otp_description'.tr,
+      subtitle: 'enter_otp_sent_to_email'
+          .tr
+          .replaceAll('{email}', controller.profile.value?.email ?? ''),
       showTimer: true,
       onVerify: (otp) async {
         await controller.verifyUpdateOTP(otp);

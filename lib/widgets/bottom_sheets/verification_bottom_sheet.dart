@@ -49,7 +49,7 @@ class VerificationBottomSheet {
                         fontFamily: "Poppins",
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -81,8 +81,9 @@ class VerificationBottomSheet {
                                     fontFamily: "Poppins",
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
                                   ),
                                 ),
                               ));
@@ -98,7 +99,7 @@ class VerificationBottomSheet {
                                           ? onResend
                                           : null,
                                   child: Text(
-                                    'Yenidən göndər',
+                                    'resend'.tr,
                                     style: TextStyle(
                                       fontFamily: "Poppins",
                                       fontSize: 15,
@@ -163,7 +164,7 @@ class VerificationBottomSheet {
                                         ),
                                       )
                                     : Text(
-                                        buttonText ?? 'Təsdiqlə',
+                                        buttonText ?? 'verify'.tr,
                                         style: TextStyle(
                                           fontFamily: "Poppins",
                                           fontSize: 16,
@@ -179,7 +180,7 @@ class VerificationBottomSheet {
                     TextButton(
                       onPressed: () => Get.back(),
                       child: Text(
-                        'Ləğv et',
+                        'cancel'.tr,
                         style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 15,
@@ -214,7 +215,7 @@ class VerificationBottomSheet {
         border: Border(
           bottom: BorderSide(
             color: focusNodes[index].hasFocus
-                ? Theme.of(context).colorScheme.primary
+                ? Theme.of(context).dividerColor
                 : Theme.of(context).shadowColor,
             width: focusNodes[index].hasFocus ? 2 : 1,
           ),
@@ -223,7 +224,7 @@ class VerificationBottomSheet {
       child: TextField(
         style: TextStyle(
           fontFamily: "Poppins",
-          color: Theme.of(context).colorScheme.onSurface,
+          color: Theme.of(context).colorScheme.onBackground,
           fontSize: 24,
           fontWeight: FontWeight.w600,
         ),
@@ -238,7 +239,8 @@ class VerificationBottomSheet {
         onChanged: (value) {
           // Paste durumu kontrolü (6 haneli kod yapıştırıldıysa)
           if (value.length == 6 && index == 0) {
-            _fillAllFields(value, textControllers, focusNodes, otpController);
+            _fillAllFields(
+                value, textControllers, focusNodes, otpController, context);
             setState(() {}); // UI'ı güncelle
             return;
           }
@@ -252,8 +254,8 @@ class VerificationBottomSheet {
             );
           }
 
-          _onCodeChanged(
-              value, index, textControllers, focusNodes, otpController);
+          _onCodeChanged(value, index, textControllers, focusNodes,
+              otpController, context);
           setState(() {}); // UI'ı güncelle
         },
         onTap: () {
@@ -265,7 +267,12 @@ class VerificationBottomSheet {
         decoration: InputDecoration(
           fillColor: Colors.transparent,
           counter: const SizedBox.shrink(),
-          border: InputBorder.none,
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).shadowColor,
+              width: 1,
+            ),
+          ),
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
@@ -278,10 +285,21 @@ class VerificationBottomSheet {
     List<TextEditingController> textControllers,
     List<FocusNode> focusNodes,
     TextEditingController otpController,
+    BuildContext context,
   ) {
     // Eğer bir karakter girildi ve son field değilse, sonrakine geç
     if (value.length == 1 && index < 5) {
       focusNodes[index + 1].requestFocus();
+    }
+    // Son field'a girildi və kod tamamlandıysa, klavyeyi kapat
+    if (value.length == 1 && index == 5) {
+      // OTP kodu tamamlandı - klavyeyi kapat
+      Future.delayed(Duration(milliseconds: 300), () {
+        FocusScope.of(context).unfocus();
+        for (var focusNode in focusNodes) {
+          focusNode.unfocus();
+        }
+      });
     }
     // Eğer karakter silindi ve ilk field değilse, öncekine geç
     if (value.isEmpty && index > 0) {
@@ -308,6 +326,7 @@ class VerificationBottomSheet {
     List<TextEditingController> textControllers,
     List<FocusNode> focusNodes,
     TextEditingController otpController,
+    BuildContext context,
   ) {
     // 6 haneli kodu tüm field'lara dağıt
     for (int i = 0; i < 6 && i < code.length; i++) {
@@ -316,6 +335,13 @@ class VerificationBottomSheet {
     // Son field'a focus ver
     if (code.length == 6) {
       focusNodes[5].requestFocus();
+      // OTP kodu tamamlandı - klavyeyi kapat
+      Future.delayed(Duration(milliseconds: 300), () {
+        FocusScope.of(context).unfocus();
+        for (var focusNode in focusNodes) {
+          focusNode.unfocus();
+        }
+      });
     }
     _updateOtpFromFields(textControllers, otpController);
   }

@@ -3,9 +3,11 @@ import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:avankart_people/controllers/security_controller.dart';
 import 'package:avankart_people/controllers/splash_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
+import 'dart:io';
 
 class PinCodeController extends GetxController {
   final RxString pin = ''.obs;
@@ -254,8 +256,10 @@ class PinCodeController extends GetxController {
 
       // Loading overlay göster
       Get.dialog(
-        const Center(
-          child: CircularProgressIndicator(),
+        Center(
+          child: Platform.isIOS
+              ? const CupertinoActivityIndicator(radius: 20)
+              : const CircularProgressIndicator(),
         ),
         barrierDismissible: false,
       );

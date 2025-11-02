@@ -334,31 +334,34 @@ class _CardInfoScreenState extends State<CardInfoScreen>
   Widget _buildUsageRulesContent(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'food_card_usage_rule'.tr,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+      child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'food_card_usage_rule'.tr,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          SizedBox(height: 16),
-          _buildExpansionTileCard(
-              title: 'card_restaurant_only'.tr,
-              content: 'card_restaurant_only'.tr,
-              context: context),
-          _buildExpansionTileCard(
-              title: 'balance_warning'.tr,
-              content: 'balance_warning'.tr,
-              context: context),
-          _buildExpansionTileCard(
-              title: 'partner_validity'.tr,
-              content: 'partner_validity'.tr,
-              context: context),
-        ],
+            SizedBox(height: 16),
+            _buildExpansionTileCard(
+                title: 'card_restaurant_only'.tr,
+                content: 'card_restaurant_only'.tr,
+                context: context),
+            _buildExpansionTileCard(
+                title: 'balance_warning'.tr,
+                content: 'balance_warning'.tr,
+                context: context),
+            _buildExpansionTileCard(
+                title: 'partner_validity'.tr,
+                content: 'partner_validity'.tr,
+                context: context),
+          ],
+        ),
       ),
     );
   }

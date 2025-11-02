@@ -1,3 +1,5 @@
+import 'package:avankart_people/assets/image_assets.dart';
+import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -90,9 +92,9 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -100,28 +102,23 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
+            context.buildBottomSheetHandle(),
+            SizedBox(height: 10),
 
             // QR Code Icon
             Container(
               width: 60,
               height: 60,
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.qr_code,
-                size: 30,
-                color: AppTheme.primaryColor,
+              child: Image.asset(
+                ImageAssets.barcode,
+                width: 32,
+                height: 32,
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
             ),
             const SizedBox(height: 16),
@@ -132,7 +129,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.black,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontFamily: 'Poppins',
               ),
             ),
@@ -155,7 +152,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(16, (index) {
                 return Container(
-                  width: 18,
+                  width: 21,
                   height: 40,
                   child: TextField(
                     controller: _controllers[index],
@@ -166,13 +163,21 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.black,
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontFamily: 'Poppins',
                     ),
                     decoration: InputDecoration(
+                      fillColor: Colors.transparent,
                       counterText: '',
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context)
+                                .unselectedWidgetColor!
+                                .withOpacity(0.5)),
+                      ),
                       border: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey[300]!),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).unselectedWidgetColor),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide:
@@ -199,7 +204,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.disabled)) {
-                            return Colors.grey[300]!;
+                            return Theme.of(context).unselectedWidgetColor!;
                           }
                           return AppTheme.primaryColor;
                         },
@@ -222,7 +227,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                               fontWeight: FontWeight.w600,
                               color: _isAllFieldsFilled.value
                                   ? Colors.white
-                                  : Colors.grey[600],
+                                  : Theme.of(context).unselectedWidgetColor,
                               fontFamily: 'Poppins',
                             ),
                           ),
@@ -237,7 +242,7 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                 'cancel'.tr,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).unselectedWidgetColor,
                   fontFamily: 'Poppins',
                 ),
               ),

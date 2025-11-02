@@ -368,6 +368,11 @@ class ApiResponseParser {
       return 'notif.invalid_status'.tr;
     }
 
+    if (message.toLowerCase().contains('invalid value')) {
+      print('[API PARSER] Invalid value detected, using invalid_value');
+      return 'invalid_value'.tr;
+    }
+
     if (message.toLowerCase().contains('notification not found')) {
       print(
           '[API PARSER] Notification not found detected, using notif.not_found');

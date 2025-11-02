@@ -4,6 +4,8 @@ import 'package:avankart_people/widgets/appbar/adaptive_appbar.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
 import 'login_screen.dart';
@@ -98,6 +100,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    if (Platform.isIOS) {
+      await _showCupertinoDatePicker(context);
+    } else {
+      await _showMaterialDatePicker(context);
+    }
+  }
+
+  Future<void> _showMaterialDatePicker(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
@@ -108,8 +118,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppTheme.primaryColor,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+              onPrimary: Theme.of(context).scaffoldBackgroundColor,
+              onSurface: Theme.of(context).colorScheme.onBackground,
             ),
           ),
           child: child!,
@@ -118,10 +128,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (picked != null) {
-      setState(() {
-        _birthDateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
+      _setPickedDate(picked);
     }
+  }
+
+  Future<void> _showCupertinoDatePicker(BuildContext context) async {
+    DateTime selectedDate =
+        DateTime.now().subtract(const Duration(days: 365 * 18));
+
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          height: 400,
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerRight,
+                child: CupertinoButton(
+                  child: Text('accept'.tr),
+                  onPressed: () {
+                    Navigator.of(context).pop(selectedDate);
+                  },
+                ),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: selectedDate,
+                  minimumDate: DateTime(1900),
+                  maximumDate: DateTime.now(),
+                  onDateTimeChanged: (DateTime newDate) {
+                    selectedDate = newDate;
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).then((pickedDate) {
+      if (pickedDate != null) {
+        _setPickedDate(pickedDate);
+      }
+    });
+  }
+
+  void _setPickedDate(DateTime date) {
+    setState(() {
+      _birthDateController.text = DateFormat('yyyy-MM-dd').format(date);
+    });
   }
 
   void _showGenderBottomSheet() {
@@ -663,6 +723,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       separator: ' ',
                     ),
                   ],
+                  onChanged: (value) {
+                    // Telefon nömrəsi tamamlandıqda (9 rəqəm: "XX XXX XX XX" = 11 simvol) klavyeyi kapat
+                    String cleanedValue = value.replaceAll(' ', '');
+                    if (cleanedValue.length == 9) {
+                      Future.delayed(Duration(milliseconds: 300), () {
+                        FocusScope.of(context).unfocus();
+                      });
+                    }
+                  },
                   decoration:
                       AppTheme.registerInputDecoration("XX XXX XX XX", context)
                           .copyWith(
@@ -696,15 +765,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'phone_number_empty'.tr;
-                    }
-                    String cleanedValue = value.replaceAll(' ', '');
-                    if (cleanedValue.length < 9) {
-                      return 'invalid_phone_number'.tr;
+                    // Artıq opsiyonaldır, yalnız doldurulubsa yoxla
+                    if (value != null && value.isNotEmpty) {
+                      String cleanedValue = value.replaceAll(' ', '');
+                      if (cleanedValue.length < 9) {
+                        return 'invalid_phone_number'.tr;
+                      }
                     }
                     return null;
                   },
+                ),
+                Text(
+                  '*  ' + 'phone_optional_note'.tr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).unselectedWidgetColor,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -751,6 +827,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
+                  ),
+                ),
+                Text(
+                  '*  ' + 'gender_optional_note'.tr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).unselectedWidgetColor,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -896,7 +979,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(width: 8),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => Get.to(AppRoutes.terms),
+                        onTap: () => Get.toNamed(AppRoutes.terms),
                         child: Text.rich(
                           TextSpan(
                             children: [

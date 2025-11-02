@@ -129,6 +129,7 @@ class QueryScreen extends GetView<QueryController> {
                           SizedBox(height: 8),
                           Text(
                             'no_query_found_description'.tr,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: 'Inter',
                                 color:

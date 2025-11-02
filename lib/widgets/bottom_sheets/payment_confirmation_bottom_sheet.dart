@@ -86,9 +86,9 @@ class _PaymentConfirmationBottomSheetState
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Column(
                 children: [
@@ -172,14 +172,14 @@ class _PaymentConfirmationBottomSheetState
   Widget _buildDetailRow(String label, String value,
       {bool isAmount = false, bool isStatus = false, String? status}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 7),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               color: Theme.of(context).unselectedWidgetColor,
               fontFamily: 'Poppins',
             ),
@@ -194,9 +194,9 @@ class _PaymentConfirmationBottomSheetState
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 13,
                   color: Colors.orange[800],
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -205,7 +205,7 @@ class _PaymentConfirmationBottomSheetState
             Text(
               value,
               style: TextStyle(
-                fontSize: isAmount ? 16 : 14,
+                fontSize: isAmount ? 14 : 13,
                 fontWeight: isAmount ? FontWeight.w500 : FontWeight.w500,
                 color: Theme.of(context).colorScheme.onBackground,
                 fontFamily: 'Poppins',

@@ -77,14 +77,13 @@ class RegisterController extends GetxController {
   }
 
   void _checkFormValidity() {
+    // phoneNumber və selectedGender artıq opsiyonaldır
     isFormValid.value = firstName.value.isNotEmpty &&
         lastName.value.isNotEmpty &&
         email.value.isNotEmpty &&
         birthDate.value.isNotEmpty &&
-        phoneNumber.value.isNotEmpty &&
         password.value.isNotEmpty &&
         confirmPassword.value.isNotEmpty &&
-        selectedGender.value.isNotEmpty &&
         agreeToTerms.value;
   }
 

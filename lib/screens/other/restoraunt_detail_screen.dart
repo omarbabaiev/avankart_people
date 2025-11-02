@@ -88,13 +88,20 @@ class CompanyDetailScreen extends StatelessWidget {
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            CompanyActionButtonsWidget(),
+            CompanyActionButtonsWidget(
+              social: companyDetail?.social,
+              phones: companyDetail?.phone,
+              latitude: companyDetail?.latitude,
+              longitude: companyDetail?.longitude,
+            ),
             Container(
               height: 4,
               color: Theme.of(context).colorScheme.secondary,
             ),
             CompanyAddressWidget(
               address: companyDetail?.address ?? "Address not available",
+              latitude: companyDetail?.latitude,
+              longitude: companyDetail?.longitude,
             ),
             Container(
               height: 4,

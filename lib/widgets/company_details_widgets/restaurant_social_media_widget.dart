@@ -42,23 +42,26 @@ class CompanySocialMediaWidget extends StatelessWidget {
     List<Widget> icons = [];
 
     if (social?.facebook != null && social!.facebook!.isNotEmpty) {
+      String facebookUrl = _formatSocialUrl(social!.facebook!, 'facebook');
       icons.add(_buildSocialMediaIcon(
-          context, ImageAssets.facebookIcon, social!.facebook!, 'Facebook'));
+          context, ImageAssets.facebookIcon, facebookUrl, 'Facebook'));
     }
 
     if (social?.instagram != null && social!.instagram!.isNotEmpty) {
+      String instagramUrl = _formatSocialUrl(social!.instagram!, 'instagram');
       icons.add(_buildSocialMediaIcon(
           context,
           ImageAssets.instagram, // Instagram özel ikonu
-          social!.instagram!,
+          instagramUrl,
           'Instagram'));
     }
 
     if (social?.telegram != null && social!.telegram!.isNotEmpty) {
+      String telegramUrl = _formatSocialUrl(social!.telegram!, 'telegram');
       icons.add(_buildSocialMediaIcon(
           context,
           ImageAssets.telegram, // Telegram özel ikonu
-          social!.telegram!,
+          telegramUrl,
           'Telegram'));
     }
 
@@ -122,29 +125,61 @@ class CompanySocialMediaWidget extends StatelessWidget {
 
   Future<void> _openWhatsApp(String phoneNumber) async {
     try {
-      // WhatsApp numarası kontrolü
       if (phoneNumber.isEmpty) {
         print('[WHATSAPP SOCIAL] No WhatsApp number available');
         return;
       }
 
-      // Phone number'dan + ve boşlukları temizle
-      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[+\s-]'), '');
+      final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+      final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
+      final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
 
-      // WhatsApp URL'si oluştur
-      String whatsappUrl = 'https://wa.me/$cleanNumber';
-      final Uri uri = Uri.parse(whatsappUrl);
-
-      print('[WHATSAPP SOCIAL] Opening WhatsApp for: $cleanNumber');
-
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP SOCIAL] WhatsApp launched successfully');
-      } else {
-        print('[WHATSAPP SOCIAL] Cannot launch WhatsApp for: $cleanNumber');
+      print('[WHATSAPP SOCIAL] Trying to open for: $cleanNumber');
+      if (await canLaunchUrl(androidUri)) {
+        await launchUrl(androidUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP SOCIAL] Opened via whatsapp://');
+        return;
       }
+      if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP SOCIAL] Opened via wa.me');
+        return;
+      }
+      print('[WHATSAPP SOCIAL] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
       print('[WHATSAPP SOCIAL] Error opening WhatsApp: $e');
+    }
+  }
+
+  /// Sosial media URL-lərini formatla (username → tam URL)
+  String _formatSocialUrl(String input, String platform) {
+    // Əgər artıq tam URL-dirsə, onu olduğu kimi qaytar
+    if (input.startsWith('http://') || input.startsWith('https://')) {
+      return input;
+    }
+
+    // @ işarəsini sil
+    String username = input.replaceAll('@', '').trim();
+
+    // Platforma görə düzgün URL yarat
+    switch (platform.toLowerCase()) {
+      case 'facebook':
+        return 'https://www.facebook.com/$username';
+      case 'instagram':
+        return 'https://www.instagram.com/$username';
+      case 'telegram':
+        // Telegram həm username həm də t.me formatını dəstəkləyir
+        if (username.startsWith('t.me/')) {
+          return 'https://$username';
+        }
+        return 'https://t.me/$username';
+      case 'linkedin':
+        return 'https://www.linkedin.com/in/$username';
+      case 'twitter':
+      case 'x':
+        return 'https://twitter.com/$username';
+      default:
+        return input; // Bilinməyən platformalar üçün olduğu kimi qaytar
     }
   }
 }

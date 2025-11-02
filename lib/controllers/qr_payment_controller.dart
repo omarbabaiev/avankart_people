@@ -315,28 +315,17 @@ class QrPaymentController extends GetxController {
           // Ödeme başarılı - haptic feedback
           VibrationUtil.mediumVibrate();
 
-          // Ödeme başarılı
-          SnackbarUtils.showSuccessSnackbar(
-            response.message,
-            textColor: Colors.white,
-          );
-
           // Kart bakiyesini güncelle
           _updateCardBalance();
 
-          // Ekranı kapat
-          Future.delayed(const Duration(seconds: 1), () {
-            Get.back();
-          });
+          // Ödeme başarılı ekranını göster
+          _showPaymentResultScreen(true, response.message);
         } else if (response.status == 'failed' || response.status == 'error') {
           // Ödeme başarısız - haptic feedback
           VibrationUtil.heavyVibrate();
 
-          // Ödeme başarısız
-          SnackbarUtils.showErrorSnackbar(
-            response.message,
-            textColor: Colors.white,
-          );
+          // Ödeme başarısız ekranını göster
+          _showPaymentResultScreen(false, response.message);
           qrStatus.value = 'error';
         } else {
           // Hala işleniyor, tekrar kontrol et
@@ -370,18 +359,11 @@ class QrPaymentController extends GetxController {
           // Ödeme başarılı olarak işle
           VibrationUtil.mediumVibrate();
 
-          SnackbarUtils.showSuccessSnackbar(
-            'qr_payment_successful'.tr,
-            textColor: Colors.white,
-          );
-
           // Kart bakiyesini güncelle
           _updateCardBalance();
 
-          // Ekranı kapat
-          Future.delayed(const Duration(seconds: 1), () {
-            Get.back();
-          });
+          // Ödeme başarılı ekranını göster
+          _showPaymentResultScreen(true, 'qr_payment_successful'.tr);
           return;
         }
       }
@@ -427,5 +409,37 @@ class QrPaymentController extends GetxController {
   void onClose() {
     cancelQrPayment();
     Get.back();
+  }
+
+  // Ödeme sonuç ekranını göster
+  void _showPaymentResultScreen(bool isSuccess, String message) {
+    print('[QR PAYMENT CONTROLLER] ===== SHOW PAYMENT RESULT SCREEN =====');
+    print('[QR PAYMENT CONTROLLER] Success: $isSuccess, Message: $message');
+
+    // Ödeme verilerini hazırla
+    final paymentData = {
+      'amount': qrCheckData.value?.amount ?? '0.00',
+      'transaction_id':
+          qrCheckData.value?.transactionId ?? 'TRX-XXXXXXXXXXXXXX',
+      'card_type': qrCheckData.value?.cardName ?? cardName.value,
+      'payment_date': qrCheckData.value != null
+          ? _formatTimestamp(qrCheckData.value!.timestamp)
+          : '31.12.2024, 13:22:16',
+      'receiving_institution':
+          qrCheckData.value?.muessiseName ?? 'Özsüt Restoran',
+      'paying_company': qrCheckData.value?.sirketName ?? 'Şirkət',
+      'payer_id': qrCheckData.value?.userSirketId ?? 'RO-321',
+    };
+
+    print('[QR PAYMENT CONTROLLER] Payment Data: $paymentData');
+
+    // Mevcut ekranları kapat ve yeni ekranı göster
+    Get.toNamed('/payment-result', arguments: {
+      'isSuccess': isSuccess,
+      'paymentData': paymentData,
+      'errorMessage': message,
+    });
+
+    print('[QR PAYMENT CONTROLLER] =====================================');
   }
 }

@@ -21,24 +21,10 @@ class CompanyDetailScreen extends StatefulWidget {
 }
 
 class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
-  late bool _isFavorite;
+  bool? _isFavorite;
   bool _isLoading = false;
   final FavoritesController favoritesController =
       Get.put<FavoritesController>(FavoritesController());
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Get arguments from navigation
-    final arguments = Get.arguments as Map<String, dynamic>?;
-    final companyDetailResponse =
-        arguments?['company_detail'] as CompanyDetailResponse?;
-    final companyDetail = companyDetailResponse?.data.responseData;
-
-    // Initialize favorite status
-    _isFavorite = companyDetail?.isFavorite ?? false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +36,9 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     final companyDetail = companyDetailResponse?.data.responseData;
 
     print('[Company DETAIL] Company ID: $companyId');
-    print('[Company DETAIL] Company Detail: $companyDetail');
+    print('[Company DETAIL] Company Detail: ${companyDetail?.toJson()}');
+    print(
+        '[Company DETAIL] Company Detail isFavorite: ${companyDetail?.isFavorite}');
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -93,7 +81,9 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
                     ),
                   )
                 : Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    companyDetail?.isFavorite == true
+                        ? Icons.favorite
+                        : Icons.favorite_border,
                     color: Colors.white,
                     size: 24,
                   ),
@@ -124,6 +114,8 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
             CompanyActionButtonsWidget(
               social: companyDetail?.social,
               phones: companyDetail?.phone,
+              latitude: companyDetail?.latitude,
+              longitude: companyDetail?.longitude,
             ),
             Container(
               height: 4,

@@ -492,6 +492,7 @@ class NotificationItem extends StatelessWidget {
     final Offset offset = button.localToGlobal(Offset.zero);
 
     showMenu(
+      color: Theme.of(context).colorScheme.secondary,
       context: context,
       position: RelativeRect.fromLTRB(
         offset.dx + button.size.width - 150, // Sağ tarafa kaydır

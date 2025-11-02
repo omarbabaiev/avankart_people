@@ -8,73 +8,77 @@ class FAQScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'faq_screen_title'.tr,
+          'support'.tr,
           style: TextStyle(
-    fontFamily: 'Poppins',
+            fontFamily: 'Poppins',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onBackground,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'faq'.tr,
-                style: TextStyle(
-    fontFamily: 'Poppins',
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 5),
+        child: Container(
+          color: Theme.of(context).colorScheme.onPrimary,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'faq'.tr,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'support_subtitle'.tr,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      color: Theme.of(context).unselectedWidgetColor,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildFAQCard(
+                    title: 'faq_question_2'.tr,
+                    content: 'faq_answer_2'.tr,
+                    context: context,
+                  ),
+                  _buildFAQCard(
+                    title: 'faq_question_5'.tr,
+                    content: 'faq_answer_5'.tr,
+                    context: context,
+                  ),
+                  _buildFAQCard(
+                    title: 'faq_question_3'.tr,
+                    content: 'faq_answer_3'.tr,
+                    context: context,
+                  ),
+                  _buildFAQCard(
+                    title: 'faq_question_4'.tr,
+                    content: 'faq_answer_4'.tr,
+                    context: context,
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                'support_subtitle'.tr,
-                style: TextStyle(
-    fontFamily: 'Poppins',
-                  fontSize: 14,
-                  color: Theme.of(context).unselectedWidgetColor,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _buildFAQCard(
-                title: 'faq_question_1'.tr,
-                content: 'faq_answer_1'.tr,
-                context: context,
-              ),
-              _buildFAQCard(
-                title: 'faq_question_2'.tr,
-                content: 'faq_answer_2'.tr,
-                context: context,
-              ),
-              _buildFAQCard(
-                title: 'faq_question_5'.tr,
-                content: 'faq_answer_5'.tr,
-                context: context,
-              ),
-              _buildFAQCard(
-                title: 'faq_question_3'.tr,
-                content: 'faq_answer_3'.tr,
-                context: context,
-              ),
-              _buildFAQCard(
-                title: 'faq_question_4'.tr,
-                content: 'faq_answer_4'.tr,
-                context: context,
-              ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
         ),
       ),
@@ -103,7 +107,7 @@ class FAQScreen extends StatelessWidget {
           title: Text(
             title,
             style: TextStyle(
-    fontFamily: 'Poppins',
+              fontFamily: 'Poppins',
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onBackground,

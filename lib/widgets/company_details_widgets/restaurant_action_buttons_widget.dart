@@ -9,11 +9,15 @@ import 'package:url_launcher/url_launcher.dart';
 class CompanyActionButtonsWidget extends StatelessWidget {
   final dynamic social; // WhatsApp bilgisi için
   final List<PhoneModel>? phones; // Telefon numaraları için
+  final double? latitude; // Şirket konumu
+  final double? longitude; // Şirket konumu
 
   const CompanyActionButtonsWidget({
     Key? key,
     this.social,
     this.phones,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -152,136 +156,148 @@ class CompanyActionButtonsWidget extends StatelessWidget {
             children: [
               const SizedBox(height: 10),
               context.buildBottomSheetHandle(),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Image.asset(
-                          ImageAssets.boltIcon,
+              GestureDetector(
+                onTap: () => _openBolt(),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Image.asset(
+                            ImageAssets.boltIcon,
+                          ),
                         ),
+                        radius: 28,
+                        backgroundColor: AppTheme.tableHover,
                       ),
-                      radius: 28,
-                      backgroundColor: AppTheme.tableHover,
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "bolt_continue".tr,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                      SizedBox(width: 12),
+                      Text(
+                        "bolt_continue".tr,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Colors.black,
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Image.asset(
-                          ImageAssets.uberIcon,
+              GestureDetector(
+                onTap: () => _openUber(),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.black,
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Image.asset(
+                            ImageAssets.uberIcon,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "uber_continue".tr,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                      SizedBox(width: 12),
+                      Text(
+                        "uber_continue".tr,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Color(0xff24A7D3),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          ImageAssets.wazeIcon,
+              GestureDetector(
+                onTap: () => _openWaze(),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Color(0xff24A7D3),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            ImageAssets.wazeIcon,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "waze_continue".tr,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                      SizedBox(width: 12),
+                      Text(
+                        "waze_continue".tr,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: AppTheme.tableHover,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          ImageAssets.googleMapsIcon,
+              GestureDetector(
+                onTap: () => _openGoogleMaps(),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: AppTheme.tableHover,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            ImageAssets.googleMapsIcon,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "google_maps_continue".tr,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                      SizedBox(width: 12),
+                      Text(
+                        "google_maps_continue".tr,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               SizedBox(height: 50),
@@ -358,25 +374,169 @@ class CompanyActionButtonsWidget extends StatelessWidget {
         return;
       }
 
-      String phoneNumber = social.whatsapp;
+      final String cleanNumber =
+          social.whatsapp.toString().replaceAll(RegExp(r'[^0-9+]'), '');
 
-      // Phone number'dan + ve boşlukları temizle
-      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[+\s-]'), '');
+      // Önce Android için whatsapp:// dene, sonra https://wa.me fallback
+      final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
+      final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
 
-      // WhatsApp URL'si oluştur
-      String whatsappUrl = 'https://wa.me/$cleanNumber';
-      final Uri uri = Uri.parse(whatsappUrl);
-
-      print('[WHATSAPP] Opening WhatsApp for: $cleanNumber');
-
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] WhatsApp launched successfully');
-      } else {
-        print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
+      print('[WHATSAPP] Trying to open for: $cleanNumber');
+      if (await canLaunchUrl(androidUri)) {
+        await launchUrl(androidUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP] Opened via whatsapp://');
+        return;
       }
+      if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        print('[WHATSAPP] Opened via wa.me');
+        return;
+      }
+      print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
       print('[WHATSAPP] Error opening WhatsApp: $e');
+    }
+  }
+
+  // Bolt uygulamasını aç
+  Future<void> _openBolt() async {
+    try {
+      if (latitude == null || longitude == null) {
+        print('[BOLT] No coordinates available');
+        return;
+      }
+
+      final String boltUrl =
+          'bolt://destination?latitude=$latitude&longitude=$longitude';
+      final String fallbackUrl = 'https://bolt.eu/';
+
+      final Uri boltUri = Uri.parse(boltUrl);
+      final Uri fallbackUri = Uri.parse(fallbackUrl);
+
+      print('[BOLT] Trying to open Bolt for: $latitude, $longitude');
+
+      if (await canLaunchUrl(boltUri)) {
+        await launchUrl(boltUri, mode: LaunchMode.externalApplication);
+        print('[BOLT] Opened via bolt://');
+        return;
+      }
+
+      if (await canLaunchUrl(fallbackUri)) {
+        await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+        print('[BOLT] Opened via web fallback');
+        return;
+      }
+
+      print('[BOLT] Cannot launch Bolt');
+    } catch (e) {
+      print('[BOLT] Error opening Bolt: $e');
+    }
+  }
+
+  // Uber uygulamasını aç
+  Future<void> _openUber() async {
+    try {
+      if (latitude == null || longitude == null) {
+        print('[UBER] No coordinates available');
+        return;
+      }
+
+      final String uberUrl =
+          'uber://?action=setPickup&pickup=my_location&destination[latitude]=$latitude&destination[longitude]=$longitude';
+      final String fallbackUrl =
+          'https://m.uber.com/ul/?action=setPickup&pickup=my_location&destination[latitude]=$latitude&destination[longitude]=$longitude';
+
+      final Uri uberUri = Uri.parse(uberUrl);
+      final Uri fallbackUri = Uri.parse(fallbackUrl);
+
+      print('[UBER] Trying to open Uber for: $latitude, $longitude');
+
+      if (await canLaunchUrl(uberUri)) {
+        await launchUrl(uberUri, mode: LaunchMode.externalApplication);
+        print('[UBER] Opened via uber://');
+        return;
+      }
+
+      if (await canLaunchUrl(fallbackUri)) {
+        await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+        print('[UBER] Opened via web fallback');
+        return;
+      }
+
+      print('[UBER] Cannot launch Uber');
+    } catch (e) {
+      print('[UBER] Error opening Uber: $e');
+    }
+  }
+
+  // Waze uygulamasını aç
+  Future<void> _openWaze() async {
+    try {
+      if (latitude == null || longitude == null) {
+        print('[WAZE] No coordinates available');
+        return;
+      }
+
+      final String wazeUrl = 'waze://?ll=$latitude,$longitude&navigate=yes';
+      final String fallbackUrl =
+          'https://waze.com/ul?ll=$latitude,$longitude&navigate=yes';
+
+      final Uri wazeUri = Uri.parse(wazeUrl);
+      final Uri fallbackUri = Uri.parse(fallbackUrl);
+
+      print('[WAZE] Trying to open Waze for: $latitude, $longitude');
+
+      if (await canLaunchUrl(wazeUri)) {
+        await launchUrl(wazeUri, mode: LaunchMode.externalApplication);
+        print('[WAZE] Opened via waze://');
+        return;
+      }
+
+      if (await canLaunchUrl(fallbackUri)) {
+        await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+        print('[WAZE] Opened via web fallback');
+        return;
+      }
+
+      print('[WAZE] Cannot launch Waze');
+    } catch (e) {
+      print('[WAZE] Error opening Waze: $e');
+    }
+  }
+
+  // Google Maps uygulamasını aç
+  Future<void> _openGoogleMaps() async {
+    try {
+      if (latitude == null || longitude == null) {
+        print('[GOOGLE MAPS] No coordinates available');
+        return;
+      }
+
+      final String mapsUrl = 'comgooglemaps://?q=$latitude,$longitude';
+      final String fallbackUrl =
+          'https://maps.google.com/maps?q=$latitude,$longitude';
+
+      final Uri mapsUri = Uri.parse(mapsUrl);
+      final Uri fallbackUri = Uri.parse(fallbackUrl);
+
+      print(
+          '[GOOGLE MAPS] Trying to open Google Maps for: $latitude, $longitude');
+
+      if (await canLaunchUrl(mapsUri)) {
+        await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
+        print('[GOOGLE MAPS] Opened via comgooglemaps://');
+        return;
+      }
+
+      if (await canLaunchUrl(fallbackUri)) {
+        await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+        print('[GOOGLE MAPS] Opened via web fallback');
+        return;
+      }
+
+      print('[GOOGLE MAPS] Cannot launch Google Maps');
+    } catch (e) {
+      print('[GOOGLE MAPS] Error opening Google Maps: $e');
     }
   }
 }
