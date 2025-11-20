@@ -37,9 +37,9 @@ class QrPaymentController extends GetxController {
     try {
       if (Get.isRegistered<CardController>()) {
         final cardController = Get.find<CardController>();
-        print(
+        debugPrint(
             '[QR PAYMENT CONTROLLER] Cards count: ${cardController.cards.length}');
-        print(
+        debugPrint(
             '[QR PAYMENT CONTROLLER] Selected payment index: ${cardController.selectedPaymentIndex.value}');
 
         if (cardController.cards.isNotEmpty &&
@@ -52,16 +52,18 @@ class QrPaymentController extends GetxController {
           cardName.value = selectedCard['title'] ?? 'card'.tr;
           balance.value = (selectedCard['balance'] ?? 0.0).toDouble();
 
-          print(
+          debugPrint(
               '[QR PAYMENT CONTROLLER] Selected card: ${selectedCard['title']}');
-          print('[QR PAYMENT CONTROLLER] Card ID: ${selectedCard['cardId']}');
-          print('[QR PAYMENT CONTROLLER] Balance: ${selectedCard['balance']}');
+          debugPrint(
+              '[QR PAYMENT CONTROLLER] Card ID: ${selectedCard['cardId']}');
+          debugPrint(
+              '[QR PAYMENT CONTROLLER] Balance: ${selectedCard['balance']}');
         } else {
-          print('[QR PAYMENT CONTROLLER] No valid card selected');
+          debugPrint('[QR PAYMENT CONTROLLER] No valid card selected');
         }
       }
     } catch (e) {
-      print('[QR PAYMENT CONTROLLER] Error getting selected card: $e');
+      debugPrint('[QR PAYMENT CONTROLLER] Error getting selected card: $e');
       // Error mesajını gösterme, sadece log'la
     }
   }
@@ -83,7 +85,7 @@ class QrPaymentController extends GetxController {
         });
       }
     } catch (e) {
-      print('[QR PAYMENT CONTROLLER] Error listening to card updates: $e');
+      debugPrint('[QR PAYMENT CONTROLLER] Error listening to card updates: $e');
     }
   }
 
@@ -102,11 +104,13 @@ class QrPaymentController extends GetxController {
           cardName.value = selectedCard['title'] ?? 'card'.tr;
           balance.value = (selectedCard['balance'] ?? 0.0).toDouble();
 
-          print('[QR PAYMENT CONTROLLER] Balance updated: ${balance.value}');
+          debugPrint(
+              '[QR PAYMENT CONTROLLER] Balance updated: ${balance.value}');
         }
       }
     } catch (e) {
-      print('[QR PAYMENT CONTROLLER] Error updating balance from cards: $e');
+      debugPrint(
+          '[QR PAYMENT CONTROLLER] Error updating balance from cards: $e');
     }
   }
 
@@ -116,12 +120,12 @@ class QrPaymentController extends GetxController {
     VibrationUtil.lightVibrate();
 
     isFlashOn.value = !isFlashOn.value;
-    print('[QR PAYMENT CONTROLLER] Flash toggled: ${isFlashOn.value}');
+    debugPrint('[QR PAYMENT CONTROLLER] Flash toggled: ${isFlashOn.value}');
   }
 
   // QR kod scanner'ını aç - Artık screen içinde
   void showQrScanner() {
-    print('[QR PAYMENT CONTROLLER] QR Scanner artık screen içinde aktif');
+    debugPrint('[QR PAYMENT CONTROLLER] QR Scanner artık screen içinde aktif');
     // QR scanner artık screen içinde çalışıyor, sadece manuel giriş seçeneği sun
     showManualQrInput();
   }
@@ -131,14 +135,15 @@ class QrPaymentController extends GetxController {
     // Manuel QR girişi açma - haptic feedback
     VibrationUtil.lightVibrate();
 
-    print('[QR PAYMENT CONTROLLER] ===== SHOW MANUAL QR INPUT =====');
-    print('[QR PAYMENT CONTROLLER] Opening manual QR input bottom sheet...');
+    debugPrint('[QR PAYMENT CONTROLLER] ===== SHOW MANUAL QR INPUT =====');
+    debugPrint(
+        '[QR PAYMENT CONTROLLER] Opening manual QR input bottom sheet...');
 
     Get.bottomSheet(
       ManualQrInputBottomSheet(
         onQrCodeEntered: (qrCode) {
-          print('[QR PAYMENT CONTROLLER] QR Code entered: $qrCode');
-          print('[QR PAYMENT CONTROLLER] Calling checkQrCode directly...');
+          debugPrint('[QR PAYMENT CONTROLLER] QR Code entered: $qrCode');
+          debugPrint('[QR PAYMENT CONTROLLER] Calling checkQrCode directly...');
           // QR kod girildi, direkt olarak checkQrCode API'sini çağır
           checkQrCode(qrCode.toUpperCase());
         },
@@ -148,13 +153,13 @@ class QrPaymentController extends GetxController {
       elevation: 0,
     );
 
-    print('[QR PAYMENT CONTROLLER] ===================================');
+    debugPrint('[QR PAYMENT CONTROLLER] ===================================');
   }
 
   // Ödeme onayı bottom sheet'ini aç
   void _showPaymentConfirmation(QrCheckData qrData) {
-    print('[QR PAYMENT CONTROLLER] ===== SHOW PAYMENT CONFIRMATION =====');
-    print('[QR PAYMENT CONTROLLER] QR Data: ${qrData.toJson()}');
+    debugPrint('[QR PAYMENT CONTROLLER] ===== SHOW PAYMENT CONFIRMATION =====');
+    debugPrint('[QR PAYMENT CONTROLLER] QR Data: ${qrData.toJson()}');
 
     // API'den gelen verilerle ödeme verilerini hazırla
     final paymentData = {
@@ -169,19 +174,21 @@ class QrPaymentController extends GetxController {
       'expire_time': _formatTimestamp(qrData.expireTime),
     };
 
-    print('[QR PAYMENT CONTROLLER] Payment Data: $paymentData');
-    print(
+    debugPrint('[QR PAYMENT CONTROLLER] Payment Data: $paymentData');
+    debugPrint(
         '[QR PAYMENT CONTROLLER] Opening payment confirmation bottom sheet...');
 
     Get.bottomSheet(
       PaymentConfirmationBottomSheet(
         paymentData: paymentData,
-        onConfirm: () {
+        onConfirm: () async {
           // Ödeme onayı - haptic feedback
           VibrationUtil.mediumVibrate();
 
-          print(
+          debugPrint(
               '[QR PAYMENT CONTROLLER] Payment confirmed, calling checkQrStatus...');
+          // Önce card balance'ı güncelle (yeni bakiye için request at)
+          await _updateCardBalance();
           // Ödeme onaylandı, checkQrStatus API'sini çağır
           _checkQrStatus(qrData.qrCodeId);
         },
@@ -189,8 +196,10 @@ class QrPaymentController extends GetxController {
           // Ödeme iptali - haptic feedback
           VibrationUtil.lightVibrate();
 
-          print('[QR PAYMENT CONTROLLER] Payment cancelled...');
-          // Ödeme iptal edildi
+          debugPrint('[QR PAYMENT CONTROLLER] Payment cancelled...');
+          // Ödeme iptal edildi, scanner'ı yeniden başlat
+          restartScanning();
+          
           SnackbarUtils.showSuccessSnackbar(
             'payment_cancelled'.tr,
             textColor: Colors.white,
@@ -202,7 +211,7 @@ class QrPaymentController extends GetxController {
       elevation: 0,
     );
 
-    print('[QR PAYMENT CONTROLLER] =====================================');
+    debugPrint('[QR PAYMENT CONTROLLER] =====================================');
   }
 
   // ISO timestamp'i formatla
@@ -228,10 +237,10 @@ class QrPaymentController extends GetxController {
       currentQrCode.value = qrData;
       qrStatus.value = 'checking';
 
-      print('[QR PAYMENT CONTROLLER] ===== CHECK QR CODE =====');
-      print('[QR PAYMENT CONTROLLER] QR Data: $qrData');
-      print('[QR PAYMENT CONTROLLER] Card ID: ${currentCardId.value}');
-      print('[QR PAYMENT CONTROLLER] =========================');
+      debugPrint('[QR PAYMENT CONTROLLER] ===== CHECK QR CODE =====');
+      debugPrint('[QR PAYMENT CONTROLLER] QR Data: $qrData');
+      debugPrint('[QR PAYMENT CONTROLLER] Card ID: ${currentCardId.value}');
+      debugPrint('[QR PAYMENT CONTROLLER] =========================');
 
       final response = await _qrService.checkQrCode(
         qrCode: qrData,
@@ -242,14 +251,15 @@ class QrPaymentController extends GetxController {
         // QR kod kontrolü başarılı - haptic feedback
         VibrationUtil.mediumVibrate();
 
-        print('[QR PAYMENT CONTROLLER] QR Check successful');
-        print('[QR PAYMENT CONTROLLER] Response: ${response.message}');
+        debugPrint('[QR PAYMENT CONTROLLER] QR Check successful');
+        debugPrint('[QR PAYMENT CONTROLLER] Response: ${response.message}');
 
         // QR verilerini sakla
         if (response.data != null) {
           qrCheckData.value = response.data!;
           currentQrCodeId.value = response.data!.qrCodeId;
-          print('[QR PAYMENT CONTROLLER] QR Data: ${response.data!.toJson()}');
+          debugPrint(
+              '[QR PAYMENT CONTROLLER] QR Data: ${response.data!.toJson()}');
         }
 
         // Başarılı mesaj göster
@@ -259,7 +269,7 @@ class QrPaymentController extends GetxController {
         );
 
         // Success true ise preview göster
-        print(
+        debugPrint(
             '[QR PAYMENT CONTROLLER] Success true, showing payment preview...');
         if (response.data != null) {
           _showPaymentConfirmation(response.data!);
@@ -271,7 +281,7 @@ class QrPaymentController extends GetxController {
       // QR kod kontrolü hatası - haptic feedback
       VibrationUtil.heavyVibrate();
 
-      print('[QR PAYMENT CONTROLLER] QR Check error: $e');
+      debugPrint('[QR PAYMENT CONTROLLER] QR Check error: $e');
       qrStatus.value = 'error';
 
       // Sadece parser'dan çıkarılmış error mesajını göster
@@ -294,10 +304,10 @@ class QrPaymentController extends GetxController {
     if (qrCodeId.isEmpty) return;
 
     try {
-      print('[QR PAYMENT CONTROLLER] ===== CHECK QR STATUS =====');
-      print('[QR PAYMENT CONTROLLER] QR Code ID: $qrCodeId');
-      print('[QR PAYMENT CONTROLLER] Card ID: ${currentCardId.value}');
-      print('[QR PAYMENT CONTROLLER] ===========================');
+      debugPrint('[QR PAYMENT CONTROLLER] ===== CHECK QR STATUS =====');
+      debugPrint('[QR PAYMENT CONTROLLER] QR Code ID: $qrCodeId');
+      debugPrint('[QR PAYMENT CONTROLLER] Card ID: ${currentCardId.value}');
+      debugPrint('[QR PAYMENT CONTROLLER] ===========================');
 
       final response = await _qrService.checkQrStatus(
         qrCodeId: qrCodeId,
@@ -305,9 +315,9 @@ class QrPaymentController extends GetxController {
       );
 
       if (response != null && response.success) {
-        print('[QR PAYMENT CONTROLLER] QR Status check successful');
-        print('[QR PAYMENT CONTROLLER] Status: ${response.status}');
-        print('[QR PAYMENT CONTROLLER] Message: ${response.message}');
+        debugPrint('[QR PAYMENT CONTROLLER] QR Status check successful');
+        debugPrint('[QR PAYMENT CONTROLLER] Status: ${response.status}');
+        debugPrint('[QR PAYMENT CONTROLLER] Message: ${response.message}');
 
         qrStatus.value = response.status ?? 'completed';
 
@@ -340,7 +350,7 @@ class QrPaymentController extends GetxController {
       // QR durum kontrolü hatası - haptic feedback
       VibrationUtil.heavyVibrate();
 
-      print('[QR PAYMENT CONTROLLER] QR Status check error: $e');
+      debugPrint('[QR PAYMENT CONTROLLER] QR Status check error: $e');
       qrStatus.value = 'error';
 
       // Sadece parser'dan çıkarılmış error mesajını göster
@@ -353,7 +363,7 @@ class QrPaymentController extends GetxController {
             errorMessage.toLowerCase().contains('zaten kullanılmış') ||
             errorMessage.toLowerCase().contains('artıq istifadə edilib') ||
             errorMessage.toLowerCase().contains('уже использован')) {
-          print(
+          debugPrint(
               '[QR PAYMENT CONTROLLER] QR code already used - payment was successful');
 
           // Ödeme başarılı olarak işle
@@ -376,15 +386,38 @@ class QrPaymentController extends GetxController {
   }
 
   // Kart bakiyesini güncelle
-  void _updateCardBalance() {
+  Future<void> _updateCardBalance() async {
     try {
       if (Get.isRegistered<CardController>()) {
         final cardController = Get.find<CardController>();
-        // Kart controller'ı yenile
-        cardController.loadMyCards();
+        debugPrint('[QR PAYMENT CONTROLLER] Updating card balance and transactions...');
+        
+        // Önce kartları yenile
+        await cardController.loadMyCards();
+        
+        // Kartlar yüklendikten sonra transaction'ları da yenile
+        // Seçili kartın transaction'larını refresh et
+        if (cardController.cards.isNotEmpty) {
+          final selectedIndex = cardController.selectedPaymentIndex.value.clamp(
+            0, 
+            cardController.cards.length - 1
+          );
+          final selectedCard = cardController.cards[selectedIndex];
+          final cardId = selectedCard['cardId'] as String?;
+          
+          if (cardId != null && cardId.isNotEmpty) {
+            debugPrint('[QR PAYMENT CONTROLLER] Refreshing transactions for card: $cardId');
+            await cardController.loadCardTransactions(
+              cardId: cardId,
+              refresh: true, // Force refresh to show updated balance
+            );
+          }
+        }
+        
+        debugPrint('[QR PAYMENT CONTROLLER] Card balance and transactions updated successfully');
       }
     } catch (e) {
-      print('[QR PAYMENT CONTROLLER] Error updating card balance: $e');
+      debugPrint('[QR PAYMENT CONTROLLER] Error updating card balance: $e');
       // Error mesajını gösterme, sadece log'la
     }
   }
@@ -398,11 +431,14 @@ class QrPaymentController extends GetxController {
   }
 
   // QR taramayı yeniden başlat
+  final RxBool shouldRestartScanning = false.obs;
+  
   void restartScanning() {
     qrStatus.value = 'pending';
     isLoading.value = false;
     currentQrCode.value = '';
-    print('[QR PAYMENT CONTROLLER] Scanning restarted');
+    shouldRestartScanning.value = !shouldRestartScanning.value; // Toggle to trigger rebuild
+    debugPrint('[QR PAYMENT CONTROLLER] Scanning restarted');
   }
 
   // Geri tuşuna basınca
@@ -413,8 +449,10 @@ class QrPaymentController extends GetxController {
 
   // Ödeme sonuç ekranını göster
   void _showPaymentResultScreen(bool isSuccess, String message) {
-    print('[QR PAYMENT CONTROLLER] ===== SHOW PAYMENT RESULT SCREEN =====');
-    print('[QR PAYMENT CONTROLLER] Success: $isSuccess, Message: $message');
+    debugPrint(
+        '[QR PAYMENT CONTROLLER] ===== SHOW PAYMENT RESULT SCREEN =====');
+    debugPrint(
+        '[QR PAYMENT CONTROLLER] Success: $isSuccess, Message: $message');
 
     // Ödeme verilerini hazırla
     final paymentData = {
@@ -431,7 +469,7 @@ class QrPaymentController extends GetxController {
       'payer_id': qrCheckData.value?.userSirketId ?? 'RO-321',
     };
 
-    print('[QR PAYMENT CONTROLLER] Payment Data: $paymentData');
+    debugPrint('[QR PAYMENT CONTROLLER] Payment Data: $paymentData');
 
     // Mevcut ekranları kapat ve yeni ekranı göster
     Get.toNamed('/payment-result', arguments: {
@@ -440,6 +478,6 @@ class QrPaymentController extends GetxController {
       'errorMessage': message,
     });
 
-    print('[QR PAYMENT CONTROLLER] =====================================');
+    debugPrint('[QR PAYMENT CONTROLLER] =====================================');
   }
 }

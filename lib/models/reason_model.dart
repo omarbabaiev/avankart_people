@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ReasonModel {
   final String id;
   final String name;
@@ -60,8 +62,8 @@ class ReasonsResponse {
         message: json['message'],
       );
     } catch (e) {
-      print('[ERROR] Failed to parse ReasonsResponse: $e');
-      print('[ERROR] JSON data: $json');
+      debugPrint('[ERROR] Failed to parse ReasonsResponse: $e');
+      debugPrint('[ERROR] JSON data: $json');
       return ReasonsResponse(
         success: false,
         data: {},

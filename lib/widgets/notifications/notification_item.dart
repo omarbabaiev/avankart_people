@@ -62,7 +62,7 @@ class NotificationItem extends StatelessWidget {
       }
       return '';
     } catch (e) {
-      print('[NOTIFICATION] Error formatting date: $e');
+      debugPrint('[NOTIFICATION] Error formatting date: $e');
       return '';
     }
   }

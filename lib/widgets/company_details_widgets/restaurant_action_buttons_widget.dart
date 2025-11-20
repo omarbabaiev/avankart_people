@@ -316,7 +316,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
     try {
       // Telefon numarası kontrolü
       if (!_hasPhoneNumber()) {
-        print('[PHONE CALL] No phone number available');
+        debugPrint('[PHONE CALL] No phone number available');
         return;
       }
 
@@ -331,36 +331,36 @@ class CompanyActionButtonsWidget extends StatelessWidget {
 
       // Geçerli telefon numarası kontrolü
       if (cleanNumber.isEmpty || cleanNumber.length < 7) {
-        print('[PHONE CALL] Invalid phone number: $cleanNumber');
+        debugPrint('[PHONE CALL] Invalid phone number: $cleanNumber');
         return;
       }
 
-      print('[PHONE CALL] Original: $fullNumber, Clean: $cleanNumber');
+      debugPrint('[PHONE CALL] Original: $fullNumber, Clean: $cleanNumber');
 
       // iOS için tel scheme kullan
       final Uri phoneUri = Uri(scheme: 'tel', path: cleanNumber);
 
-      print('[PHONE CALL] Attempting to call: $cleanNumber');
+      debugPrint('[PHONE CALL] Attempting to call: $cleanNumber');
 
       // canLaunchUrl kontrolü
       if (await canLaunchUrl(phoneUri)) {
-        print('[PHONE CALL] Can launch URL, launching...');
+        debugPrint('[PHONE CALL] Can launch URL, launching...');
         await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
-        print('[PHONE CALL] URL launched successfully');
+        debugPrint('[PHONE CALL] URL launched successfully');
       } else {
-        print('[PHONE CALL] Cannot launch URL for: $cleanNumber');
+        debugPrint('[PHONE CALL] Cannot launch URL for: $cleanNumber');
         // Alternatif olarak telprompt scheme'ini dene (iOS'ta daha iyi çalışabilir)
         final Uri telPromptUri = Uri(scheme: 'telprompt', path: cleanNumber);
         if (await canLaunchUrl(telPromptUri)) {
-          print('[PHONE CALL] Using telprompt scheme...');
+          debugPrint('[PHONE CALL] Using telprompt scheme...');
           await launchUrl(telPromptUri, mode: LaunchMode.externalApplication);
         } else {
-          print(
+          debugPrint(
               '[PHONE CALL] Both tel and telprompt schemes failed for: $cleanNumber');
         }
       }
     } catch (e) {
-      print('[PHONE CALL] Error making phone call: $e');
+      debugPrint('[PHONE CALL] Error making phone call: $e');
     }
   }
 
@@ -370,7 +370,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       if (social == null ||
           social.whatsapp == null ||
           social.whatsapp.isEmpty) {
-        print('[WHATSAPP] No WhatsApp number available');
+        debugPrint('[WHATSAPP] No WhatsApp number available');
         return;
       }
 
@@ -381,20 +381,20 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
       final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
 
-      print('[WHATSAPP] Trying to open for: $cleanNumber');
+      debugPrint('[WHATSAPP] Trying to open for: $cleanNumber');
       if (await canLaunchUrl(androidUri)) {
         await launchUrl(androidUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] Opened via whatsapp://');
+        debugPrint('[WHATSAPP] Opened via whatsapp://');
         return;
       }
       if (await canLaunchUrl(webUri)) {
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] Opened via wa.me');
+        debugPrint('[WHATSAPP] Opened via wa.me');
         return;
       }
-      print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
+      debugPrint('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
-      print('[WHATSAPP] Error opening WhatsApp: $e');
+      debugPrint('[WHATSAPP] Error opening WhatsApp: $e');
     }
   }
 
@@ -402,7 +402,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
   Future<void> _openBolt() async {
     try {
       if (latitude == null || longitude == null) {
-        print('[BOLT] No coordinates available');
+        debugPrint('[BOLT] No coordinates available');
         return;
       }
 
@@ -413,23 +413,29 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       final Uri boltUri = Uri.parse(boltUrl);
       final Uri fallbackUri = Uri.parse(fallbackUrl);
 
-      print('[BOLT] Trying to open Bolt for: $latitude, $longitude');
+      debugPrint('[BOLT] Trying to open Bolt for: $latitude, $longitude');
 
-      if (await canLaunchUrl(boltUri)) {
-        await launchUrl(boltUri, mode: LaunchMode.externalApplication);
-        print('[BOLT] Opened via bolt://');
-        return;
+      // Try app deep link first
+      try {
+        final launched =
+            await launchUrl(boltUri, mode: LaunchMode.externalApplication);
+        if (launched) {
+          debugPrint('[BOLT] Opened via bolt://');
+          return;
+        }
+      } catch (e) {
+        debugPrint('[BOLT] App not installed, trying fallback: $e');
       }
 
-      if (await canLaunchUrl(fallbackUri)) {
+      // Fallback to web
+      try {
         await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-        print('[BOLT] Opened via web fallback');
-        return;
+        debugPrint('[BOLT] Opened via web fallback');
+      } catch (e) {
+        debugPrint('[BOLT] Failed to open fallback: $e');
       }
-
-      print('[BOLT] Cannot launch Bolt');
     } catch (e) {
-      print('[BOLT] Error opening Bolt: $e');
+      debugPrint('[BOLT] Error opening Bolt: $e');
     }
   }
 
@@ -437,7 +443,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
   Future<void> _openUber() async {
     try {
       if (latitude == null || longitude == null) {
-        print('[UBER] No coordinates available');
+        debugPrint('[UBER] No coordinates available');
         return;
       }
 
@@ -449,23 +455,29 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       final Uri uberUri = Uri.parse(uberUrl);
       final Uri fallbackUri = Uri.parse(fallbackUrl);
 
-      print('[UBER] Trying to open Uber for: $latitude, $longitude');
+      debugPrint('[UBER] Trying to open Uber for: $latitude, $longitude');
 
-      if (await canLaunchUrl(uberUri)) {
-        await launchUrl(uberUri, mode: LaunchMode.externalApplication);
-        print('[UBER] Opened via uber://');
-        return;
+      // Try app deep link first
+      try {
+        final launched =
+            await launchUrl(uberUri, mode: LaunchMode.externalApplication);
+        if (launched) {
+          debugPrint('[UBER] Opened via uber://');
+          return;
+        }
+      } catch (e) {
+        debugPrint('[UBER] App not installed, trying fallback: $e');
       }
 
-      if (await canLaunchUrl(fallbackUri)) {
+      // Fallback to web
+      try {
         await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-        print('[UBER] Opened via web fallback');
-        return;
+        debugPrint('[UBER] Opened via web fallback');
+      } catch (e) {
+        debugPrint('[UBER] Failed to open fallback: $e');
       }
-
-      print('[UBER] Cannot launch Uber');
     } catch (e) {
-      print('[UBER] Error opening Uber: $e');
+      debugPrint('[UBER] Error opening Uber: $e');
     }
   }
 
@@ -473,7 +485,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
   Future<void> _openWaze() async {
     try {
       if (latitude == null || longitude == null) {
-        print('[WAZE] No coordinates available');
+        debugPrint('[WAZE] No coordinates available');
         return;
       }
 
@@ -484,23 +496,29 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       final Uri wazeUri = Uri.parse(wazeUrl);
       final Uri fallbackUri = Uri.parse(fallbackUrl);
 
-      print('[WAZE] Trying to open Waze for: $latitude, $longitude');
+      debugPrint('[WAZE] Trying to open Waze for: $latitude, $longitude');
 
-      if (await canLaunchUrl(wazeUri)) {
-        await launchUrl(wazeUri, mode: LaunchMode.externalApplication);
-        print('[WAZE] Opened via waze://');
-        return;
+      // Try app deep link first
+      try {
+        final launched =
+            await launchUrl(wazeUri, mode: LaunchMode.externalApplication);
+        if (launched) {
+          debugPrint('[WAZE] Opened via waze://');
+          return;
+        }
+      } catch (e) {
+        debugPrint('[WAZE] App not installed, trying fallback: $e');
       }
 
-      if (await canLaunchUrl(fallbackUri)) {
+      // Fallback to web
+      try {
         await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-        print('[WAZE] Opened via web fallback');
-        return;
+        debugPrint('[WAZE] Opened via web fallback');
+      } catch (e) {
+        debugPrint('[WAZE] Failed to open fallback: $e');
       }
-
-      print('[WAZE] Cannot launch Waze');
     } catch (e) {
-      print('[WAZE] Error opening Waze: $e');
+      debugPrint('[WAZE] Error opening Waze: $e');
     }
   }
 
@@ -508,7 +526,7 @@ class CompanyActionButtonsWidget extends StatelessWidget {
   Future<void> _openGoogleMaps() async {
     try {
       if (latitude == null || longitude == null) {
-        print('[GOOGLE MAPS] No coordinates available');
+        debugPrint('[GOOGLE MAPS] No coordinates available');
         return;
       }
 
@@ -519,24 +537,30 @@ class CompanyActionButtonsWidget extends StatelessWidget {
       final Uri mapsUri = Uri.parse(mapsUrl);
       final Uri fallbackUri = Uri.parse(fallbackUrl);
 
-      print(
+      debugPrint(
           '[GOOGLE MAPS] Trying to open Google Maps for: $latitude, $longitude');
 
-      if (await canLaunchUrl(mapsUri)) {
-        await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
-        print('[GOOGLE MAPS] Opened via comgooglemaps://');
-        return;
+      // Try app deep link first
+      try {
+        final launched =
+            await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
+        if (launched) {
+          debugPrint('[GOOGLE MAPS] Opened via comgooglemaps://');
+          return;
+        }
+      } catch (e) {
+        debugPrint('[GOOGLE MAPS] App not installed, trying fallback: $e');
       }
 
-      if (await canLaunchUrl(fallbackUri)) {
+      // Fallback to web
+      try {
         await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-        print('[GOOGLE MAPS] Opened via web fallback');
-        return;
+        debugPrint('[GOOGLE MAPS] Opened via web fallback');
+      } catch (e) {
+        debugPrint('[GOOGLE MAPS] Failed to open fallback: $e');
       }
-
-      print('[GOOGLE MAPS] Cannot launch Google Maps');
     } catch (e) {
-      print('[GOOGLE MAPS] Error opening Google Maps: $e');
+      debugPrint('[GOOGLE MAPS] Error opening Google Maps: $e');
     }
   }
 }

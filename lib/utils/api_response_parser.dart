@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ApiResponseParser {
@@ -25,14 +26,14 @@ class ApiResponseParser {
           message = nestedMessage;
         } else {
           // Nested Map'te de String bulunamadıysa, JSON'u string'e çevir
-          print(
+          debugPrint(
               '[API PARSER] Message is nested Map but no valid string field found: $apiMessage');
           return 'unknown_error'.tr;
         }
       } else if (messageStr is String && messageStr.isNotEmpty) {
         message = messageStr;
       } else {
-        print(
+        debugPrint(
             '[API PARSER] Message is Map but no valid string field found: $apiMessage');
         return 'unknown_error'.tr;
       }
@@ -47,204 +48,217 @@ class ApiResponseParser {
 
     // Auth hataları
     if (message.toLowerCase().contains('auth.username_or_password')) {
-      print(
+      debugPrint(
           '[API PARSER] Username or password error detected, using auth.username_or_password');
       return 'auth.username_or_password'.tr;
     }
 
     if (message.toLowerCase().contains('auth.email_or_phone_suffix')) {
-      print(
+      debugPrint(
           '[API PARSER] Email or phone suffix error detected, using auth.email_or_phone_suffix');
       return 'auth.email_or_phone_suffix'.tr;
     }
 
     if (message.toLowerCase().contains('auth.email_already_exist')) {
-      print(
+      debugPrint(
           '[API PARSER] Email already exists error detected, using auth.email_already_exist');
       return 'auth.email_already_exist'.tr;
     }
 
     if (message.toLowerCase().contains('invalid token')) {
-      print('[API PARSER] Invalid token detected, using auth.invalid_token');
+      debugPrint(
+          '[API PARSER] Invalid token detected, using auth.invalid_token');
       return 'auth.invalid_token'.tr;
     }
 
     if (message.toLowerCase().contains('otp already verified')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP already verified detected, using error.otp_already_verified');
       return 'error.otp_already_verified'.tr;
     }
 
     if (message.toLowerCase().contains('invalid otp')) {
-      print('[API PARSER] Invalid OTP detected, using error.invalid_otp');
+      debugPrint('[API PARSER] Invalid OTP detected, using error.invalid_otp');
       return 'error.invalid_otp'.tr;
     }
 
     if (message.toLowerCase().contains('otp expired')) {
-      print('[API PARSER] OTP expired detected, using error.otp_expired');
+      debugPrint('[API PARSER] OTP expired detected, using error.otp_expired');
       return 'error.otp_expired'.tr;
     }
 
+    if (message.toLowerCase().contains('otp doğrulanmayıb') ||
+        message.toLowerCase().contains('otp not verified') ||
+        message.toLowerCase().contains('otp doğrulanmadı') ||
+        message.toLowerCase().contains('otp не подтвержден')) {
+      debugPrint(
+          '[API PARSER] OTP not verified detected, using error.otp_not_verified');
+      return 'error.otp_not_verified'.tr;
+    }
+
     if (message.toLowerCase().contains('old password is required')) {
-      print(
+      debugPrint(
           '[API PARSER] Old password required detected, using error.old_password_required');
       return 'error.old_password_required'.tr;
     }
 
     if (message.toLowerCase().contains('passwords do not match')) {
-      print(
+      debugPrint(
           '[API PARSER] Passwords do not match detected, using error.passwords_dont_match');
       return 'error.passwords_dont_match'.tr;
     }
 
     // Profile hataları
     if (message.toLowerCase().contains('user not found')) {
-      print('[API PARSER] User not found detected, using error.user_not_found');
+      debugPrint(
+          '[API PARSER] User not found detected, using error.user_not_found');
       return 'error.user_not_found'.tr;
     }
 
     if (message.toLowerCase().contains('phone is required')) {
-      print(
+      debugPrint(
           '[API PARSER] Phone is required detected, using error.phone_required');
       return 'error.phone_required'.tr;
     }
 
     if (message.toLowerCase().contains('birth date is required')) {
-      print(
+      debugPrint(
           '[API PARSER] Birth date is required detected, using error.birth_date_required');
       return 'error.birth_date_required'.tr;
     }
 
     if (message.toLowerCase().contains('name is required')) {
-      print(
+      debugPrint(
           '[API PARSER] Name is required detected, using error.name_required');
       return 'error.name_required'.tr;
     }
 
     if (message.toLowerCase().contains('email is required')) {
-      print(
+      debugPrint(
           '[API PARSER] Email is required detected, using error.email_required');
       return 'error.email_required'.tr;
     }
 
     if (message.toLowerCase().contains('email already exists')) {
-      print(
+      debugPrint(
           '[API PARSER] Email already exists detected, using error.email_already_exists');
       return 'error.email_already_exists'.tr;
     }
 
     // QR Payment hataları
     if (message.toLowerCase().contains('qr code not found')) {
-      print(
+      debugPrint(
           '[API PARSER] QR code not found detected, using error.qr_code_not_found');
       return 'error.qr_code_not_found'.tr;
     }
 
     if (message.toLowerCase().contains('change request not found')) {
-      print(
+      debugPrint(
           '[API PARSER] Change request not found detected, using error.change_request_not_found');
       return 'error.change_request_not_found'.tr;
     }
 
     if (message.toLowerCase().contains('not a delete request')) {
-      print(
+      debugPrint(
           '[API PARSER] Not a delete request detected, using error.not_delete_request');
       return 'error.not_delete_request'.tr;
     }
 
     if (message.toLowerCase().contains('cannot send otp')) {
-      print(
+      debugPrint(
           '[API PARSER] Cannot send OTP detected, using error.cannot_send_otp');
       return 'error.cannot_send_otp'.tr;
     }
 
     if (message.toLowerCase().contains('internal server error')) {
-      print(
+      debugPrint(
           '[API PARSER] Internal server error detected, using error.internal_server_error');
       return 'error.internal_server_error'.tr;
     }
 
     // QR Code hataları
     if (message.toLowerCase().contains('qr code info missing')) {
-      print(
+      debugPrint(
           '[API PARSER] QR code info missing detected, using qr_code_info_missing');
       return 'qr_code_info_missing'.tr;
     }
 
     if (message.toLowerCase().contains('qr code generation failed')) {
-      print(
+      debugPrint(
           '[API PARSER] QR code generation failed detected, using qr_code_generation_failed');
       return 'qr_code_generation_failed'.tr;
     }
 
     if (message.toLowerCase().contains('qr code cancellation failed')) {
-      print(
+      debugPrint(
           '[API PARSER] QR code cancellation failed detected, using qr_code_cancellation_failed');
       return 'qr_code_cancellation_failed'.tr;
     }
 
     if (message.toLowerCase().contains('qr code check failed')) {
-      print(
+      debugPrint(
           '[API PARSER] QR code check failed detected, using qr_code_check_failed');
       return 'qr_code_check_failed'.tr;
     }
 
     if (message.toLowerCase().contains('qr kod ləğv edildi')) {
-      print('[API PARSER] QR code canceled detected, using qr_code_canceled');
+      debugPrint(
+          '[API PARSER] QR code canceled detected, using qr_code_canceled');
       return 'qr_code_canceled'.tr;
     }
 
     // Notification hataları
     if (message.toLowerCase().contains('notification load failed')) {
-      print(
+      debugPrint(
           '[API PARSER] Notification load failed detected, using notification_load_failed');
       return 'notification_load_failed'.tr;
     }
 
     if (message.toLowerCase().contains('invite response failed')) {
-      print(
+      debugPrint(
           '[API PARSER] Invite response failed detected, using invite_response_failed');
       return 'invite_response_failed'.tr;
     }
 
     if (message.toLowerCase().contains('notification status update failed')) {
-      print(
+      debugPrint(
           '[API PARSER] Notification status update failed detected, using notification_status_update_failed');
       return 'notification_status_update_failed'.tr;
     }
 
     // Success mesajları
     if (message.toLowerCase().contains('otp sent successfully')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP sent successfully detected, using success.otp_sent');
       return 'success.otp_sent'.tr;
     }
 
     if (message.toLowerCase().contains('otp verified')) {
-      print('[API PARSER] OTP verified detected, using success.otp_verified');
+      debugPrint(
+          '[API PARSER] OTP verified detected, using success.otp_verified');
       return 'success.otp_verified'.tr;
     }
 
     if (message.toLowerCase().contains('change request received')) {
-      print(
+      debugPrint(
           '[API PARSER] Change request received detected, using success.change_request_received');
       return 'success.change_request_received'.tr;
     }
 
     if (message.toLowerCase().contains('profile updated successfully')) {
-      print(
+      debugPrint(
           '[API PARSER] Profile updated successfully detected, using success.profile_updated');
       return 'success.profile_updated'.tr;
     }
 
     if (message.toLowerCase().contains('account deleted')) {
-      print(
+      debugPrint(
           '[API PARSER] Account deleted detected, using success.account_deleted');
       return 'success.account_deleted'.tr;
     }
 
     if (message.toLowerCase().contains('otp resent successfully')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP resent successfully detected, using success.otp_resent');
       return 'success.otp_resent'.tr;
     }
@@ -252,141 +266,142 @@ class ApiResponseParser {
     if (message
         .toLowerCase()
         .contains('change request cancelled successfully')) {
-      print(
+      debugPrint(
           '[API PARSER] Change request cancelled successfully detected, using success.change_request_cancelled');
       return 'success.change_request_cancelled'.tr;
     }
 
     // Responses.json'dan gelen yeni mesajlar
     if (message.toLowerCase().contains('your login has been restricted')) {
-      print(
+      debugPrint(
           '[API PARSER] Login restricted detected, using auth.login_restricted');
       return 'auth.login_restricted'.tr;
     }
 
     if (message.toLowerCase().contains('otp verification required')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP verification required detected, using auth.otp_required');
       return 'auth.otp_required'.tr;
     }
 
     if (message.toLowerCase().contains('auth.phone_already_exist')) {
-      print(
+      debugPrint(
           '[API PARSER] Phone already exists detected, using auth.phone_already_exist');
       return 'auth.phone_already_exist'.tr;
     }
 
     if (message.toLowerCase().contains('otp not found or has expired')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP not found or expired detected, using auth.otp_expired_or_not_found');
       return 'auth.otp_expired_or_not_found'.tr;
     }
 
     if (message.toLowerCase().contains('token missing')) {
-      print('[API PARSER] Token missing detected, using auth.token_missing');
+      debugPrint(
+          '[API PARSER] Token missing detected, using auth.token_missing');
       return 'auth.token_missing'.tr;
     }
 
     if (message.toLowerCase().contains('logged out')) {
-      print('[API PARSER] Logged out detected, using auth.logged_out');
+      debugPrint('[API PARSER] Logged out detected, using auth.logged_out');
       return 'auth.logged_out'.tr;
     }
 
     if (message.toLowerCase().contains('error during logout')) {
-      print('[API PARSER] Logout error detected, using auth.logout_error');
+      debugPrint('[API PARSER] Logout error detected, using auth.logout_error');
       return 'auth.logout_error'.tr;
     }
 
     if (message.toLowerCase().contains('password updated')) {
-      print(
+      debugPrint(
           '[API PARSER] Password updated detected, using auth.password_updated');
       return 'auth.password_updated'.tr;
     }
 
     if (message.toLowerCase().contains('email and otp are required')) {
-      print(
+      debugPrint(
           '[API PARSER] Email and OTP required detected, using otp.email_and_code_required');
       return 'otp.email_and_code_required'.tr;
     }
 
     if (message.toLowerCase().contains('unsupported otp method')) {
-      print(
+      debugPrint(
           '[API PARSER] Unsupported OTP method detected, using otp.method_unsupported');
       return 'otp.method_unsupported'.tr;
     }
 
     if (message.toLowerCase().contains('otp not found, please request again')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP not found request again detected, using otp.not_found_request_again');
       return 'otp.not_found_request_again'.tr;
     }
 
     if (message.toLowerCase().contains('otp is invalid (3 attempts)')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP invalid 3 attempts detected, using otp.invalid_3_attempts');
       return 'otp.invalid_3_attempts'.tr;
     }
 
     if (message.toLowerCase().contains('too many attempts')) {
-      print(
+      debugPrint(
           '[API PARSER] Too many attempts detected, using otp.too_many_attempts');
       return 'otp.too_many_attempts'.tr;
     }
 
     if (message.toLowerCase().contains('otp cancelled')) {
-      print('[API PARSER] OTP cancelled detected, using otp.cancelled');
+      debugPrint('[API PARSER] OTP cancelled detected, using otp.cancelled');
       return 'otp.cancelled'.tr;
     }
 
     if (message.toLowerCase().contains('otp not found for this email')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP not found for email detected, using otp.not_found_for_email');
       return 'otp.not_found_for_email'.tr;
     }
 
     if (message.toLowerCase().contains('retry limit exceeded')) {
-      print(
+      debugPrint(
           '[API PARSER] Retry limit exceeded detected, using otp.retry_limit_exceeded');
       return 'otp.retry_limit_exceeded'.tr;
     }
 
     if (message.toLowerCase().contains('invalid page number')) {
-      print(
+      debugPrint(
           '[API PARSER] Invalid page number detected, using notif.invalid_page');
       return 'notif.invalid_page'.tr;
     }
 
     if (message.toLowerCase().contains('invalid filter value')) {
-      print(
+      debugPrint(
           '[API PARSER] Invalid filter value detected, using notif.invalid_filter');
       return 'notif.invalid_filter'.tr;
     }
 
     if (message.toLowerCase().contains('invalid status value')) {
-      print(
+      debugPrint(
           '[API PARSER] Invalid status value detected, using notif.invalid_status');
       return 'notif.invalid_status'.tr;
     }
 
     if (message.toLowerCase().contains('invalid value')) {
-      print('[API PARSER] Invalid value detected, using invalid_value');
+      debugPrint('[API PARSER] Invalid value detected, using invalid_value');
       return 'invalid_value'.tr;
     }
 
     if (message.toLowerCase().contains('notification not found')) {
-      print(
+      debugPrint(
           '[API PARSER] Notification not found detected, using notif.not_found');
       return 'notif.not_found'.tr;
     }
 
     if (message.toLowerCase().contains('status was already up to date')) {
-      print(
+      debugPrint(
           '[API PARSER] Status no change detected, using notif.status_nochange');
       return 'notif.status_nochange'.tr;
     }
 
     if (message.toLowerCase().contains('notification status updated')) {
-      print(
+      debugPrint(
           '[API PARSER] Notification status updated detected, using notif.status_updated');
       return 'notif.status_updated'.tr;
     }
@@ -394,35 +409,38 @@ class ApiResponseParser {
     if (message
         .toLowerCase()
         .contains('notification not found or not an invitation')) {
-      print(
+      debugPrint(
           '[API PARSER] Invite not found or invalid detected, using invite.not_found_or_invalid');
       return 'invite.not_found_or_invalid'.tr;
     }
 
     if (message.toLowerCase().contains('invitation ignored')) {
-      print('[API PARSER] Invitation ignored detected, using invite.ignored');
+      debugPrint(
+          '[API PARSER] Invitation ignored detected, using invite.ignored');
       return 'invite.ignored'.tr;
     }
 
     if (message.toLowerCase().contains('invitation accepted')) {
-      print('[API PARSER] Invitation accepted detected, using invite.accepted');
+      debugPrint(
+          '[API PARSER] Invitation accepted detected, using invite.accepted');
       return 'invite.accepted'.tr;
     }
 
     if (message.toLowerCase().contains('invalid action')) {
-      print(
+      debugPrint(
           '[API PARSER] Invalid action detected, using invite.invalid_action');
       return 'invite.invalid_action'.tr;
     }
 
-    if (message.toLowerCase().contains('old password is incorrect')) {
-      print(
+    if (message.toLowerCase().contains('old password is incorrect') ||
+        message.toLowerCase().contains('old password incorrect')) {
+      debugPrint(
           '[API PARSER] Old password incorrect detected, using profile.old_password_incorrect');
       return 'profile.old_password_incorrect'.tr;
     }
 
     if (message.toLowerCase().contains('failed to send otp')) {
-      print(
+      debugPrint(
           '[API PARSER] OTP send failed detected, using profile.otp_send_failed');
       return 'profile.otp_send_failed'.tr;
     }
@@ -430,18 +448,18 @@ class ApiResponseParser {
     if (message
         .toLowerCase()
         .contains('only pending qr codes can be canceled')) {
-      print(
+      debugPrint(
           '[API PARSER] Only pending QR cancellable detected, using qr.only_pending_cancellable');
       return 'qr.only_pending_cancellable'.tr;
     }
 
     if (message.toLowerCase().contains('qr code has been canceled')) {
-      print('[API PARSER] QR canceled OK detected, using qr.canceled_ok');
+      debugPrint('[API PARSER] QR canceled OK detected, using qr.canceled_ok');
       return 'qr.canceled_ok'.tr;
     }
 
     if (message.toLowerCase().contains('organization not found')) {
-      print(
+      debugPrint(
           '[API PARSER] Organization not found detected, using org.not_found');
       return 'org.not_found'.tr;
     }
@@ -449,45 +467,48 @@ class ApiResponseParser {
     if (message
         .toLowerCase()
         .contains('price is required and must be a valid number')) {
-      print(
+      debugPrint(
           '[API PARSER] Price required invalid detected, using price.required_invalid');
       return 'price.required_invalid'.tr;
     }
 
     if (message.toLowerCase().contains('failed to generate qr code image')) {
-      print(
+      debugPrint(
           '[API PARSER] QR image generation failed detected, using qr.image_generation_failed');
       return 'qr.image_generation_failed'.tr;
     }
 
     if (message.toLowerCase().contains('code is required')) {
-      print('[API PARSER] Code required detected, using code.required');
+      debugPrint('[API PARSER] Code required detected, using code.required');
       return 'code.required'.tr;
     }
 
     if (message.toLowerCase().contains('user id is required')) {
-      print('[API PARSER] User ID required detected, using user_id.required');
+      debugPrint(
+          '[API PARSER] User ID required detected, using user_id.required');
       return 'user_id.required'.tr;
     }
 
     if (message.toLowerCase().contains('qr code not found!')) {
-      print('[API PARSER] QR not found EN detected, using qr.not_found_en');
+      debugPrint(
+          '[API PARSER] QR not found EN detected, using qr.not_found_en');
       return 'qr.not_found_en'.tr;
     }
 
     if (message.toLowerCase().contains('unknown status value')) {
-      print('[API PARSER] QR unknown status detected, using qr.unknown_status');
+      debugPrint(
+          '[API PARSER] QR unknown status detected, using qr.unknown_status');
       return 'qr.unknown_status'.tr;
     }
 
     if (message.toLowerCase().contains('internal server error!')) {
-      print(
+      debugPrint(
           '[API PARSER] Server internal error bang detected, using server.internal_error_bang');
       return 'server.internal_error_bang'.tr;
     }
 
     if (message.toLowerCase().contains('no delete request found')) {
-      print(
+      debugPrint(
           '[API PARSER] Delete request not found detected, using delete_request.not_found');
       return 'delete_request.not_found'.tr;
     }
@@ -499,22 +520,33 @@ class ApiResponseParser {
         final localizedMessage = message.tr;
         // Eğer tr() metodu aynı string'i döndürüyorsa, localization'da yok demektir
         if (localizedMessage != message) {
-          print(
+          debugPrint(
               '[API PARSER] Localized message found: $message -> $localizedMessage');
           return localizedMessage;
         } else {
-          print(
+          debugPrint(
               '[API PARSER] No localization found for: $message, using original');
           return message;
         }
       } catch (e) {
-        print('[API PARSER] Error parsing message: $message, using original');
+        debugPrint(
+            '[API PARSER] Error parsing message: $message, using original');
         return message;
       }
     }
 
     // Key formatında değilse direkt döndür
-    print('[API PARSER] Message is not in key format: $message');
+    debugPrint('[API PARSER] Message is not in key format: $message');
+    // Known plain-text → translation key mapping (for backend plain messages)
+    final lower = message.toLowerCase().trim();
+    const knownMap = {
+      'invalid pin code': 'pin_code_error',
+    };
+    for (final entry in knownMap.entries) {
+      if (lower == entry.key) {
+        return entry.value.tr;
+      }
+    }
     return message;
   }
 
@@ -548,7 +580,7 @@ class ApiResponseParser {
             }
           }
           // Hiçbir String bulunamadıysa, unknown error döndür
-          print(
+          debugPrint(
               '[API PARSER] Message is deeply nested Map, no string found: $responseData');
           return 'unknown_error'.tr;
         }
@@ -593,7 +625,7 @@ class ApiResponseParser {
         }
       }
     } catch (e) {
-      print('[API PARSER] Error extracting exception message: $e');
+      debugPrint('[API PARSER] Error extracting exception message: $e');
     }
 
     // DioException ise response data'sını parse et
@@ -606,14 +638,24 @@ class ApiResponseParser {
           return parseApiError(responsePart);
         }
       } catch (e) {
-        print('[API PARSER] Error parsing DioException: $e');
+        debugPrint('[API PARSER] Error parsing DioException: $e');
       }
     }
 
+    // Connection timeout hataları için spesifik kontrol
+    final errorStrLower = error.toString().toLowerCase();
+    if (errorStrLower.contains('connection took longer') ||
+        errorStrLower.contains('connection timeout') ||
+        errorStrLower.contains('the request connection took longer')) {
+      debugPrint(
+          '[API PARSER] Connection timeout detected, using error.connection_timeout');
+      return 'error.connection_timeout'.tr;
+    }
+
     // Network hataları için özel kontrol
-    if (error.toString().toLowerCase().contains('network') ||
-        error.toString().toLowerCase().contains('connection') ||
-        error.toString().toLowerCase().contains('timeout')) {
+    if (errorStrLower.contains('network') ||
+        errorStrLower.contains('connection') ||
+        errorStrLower.contains('timeout')) {
       return 'network_error_retry'.tr;
     }
 

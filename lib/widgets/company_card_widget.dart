@@ -133,14 +133,8 @@ class _CompanyCardState extends State<CompanyCard> {
                           ),
                           gradient: LinearGradient(
                             colors: [
-                              Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(.09),
-                              Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(.07),
+                              AppTheme.black.withOpacity(.09),
+                              AppTheme.black.withOpacity(.07),
                             ],
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
@@ -363,22 +357,38 @@ class _CompanyCardState extends State<CompanyCard> {
   }
 
   Widget _buildCompanyImage(BuildContext context, String imageUrl) {
-    // Eğer imageUrl network URL ise CachedNetworkImage kullan
+    // Android-də düzgün işləmək üçün CachedNetworkImage istifadə edirik
+    if (imageUrl.isEmpty) {
+      return _buildImagePlaceholder(context);
+    }
 
-    return FadeInImage(
-      placeholderColor: AppTheme.primaryColor.withOpacity(0.3),
-      image: CachedNetworkImageProvider(
-        "https://merchant.avankart.com/$imageUrl",
-      ),
+    final String fullImageUrl = "https://merchant.avankart.com/$imageUrl";
+
+    return CachedNetworkImage(
+      imageUrl: fullImageUrl,
       height: 160,
       width: double.infinity,
       fit: BoxFit.cover,
-      placeholder: AssetImage(ImageAssets.png_logo),
-      imageErrorBuilder: (context, error, stackTrace) =>
-          _buildImagePlaceholder(context),
+      placeholder: (context, url) => Container(
+        height: 160,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              AppTheme.primaryColor.withOpacity(0.5),
+            ),
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => _buildImagePlaceholder(context),
+      fadeInDuration: Duration(milliseconds: 300),
+      fadeOutDuration: Duration(milliseconds: 100),
     );
-
-    // Default placeholder
   }
 
   Widget _buildImagePlaceholder(BuildContext context) {
@@ -396,29 +406,6 @@ class _CompanyCardState extends State<CompanyCard> {
         color: AppTheme.primaryColor.withOpacity(0.3),
       ),
     );
-  }
-
-  IconData _getCompanyIcon() {
-    switch (widget.type) {
-      case 'Company':
-        return Icons.abc;
-      case 'cafe':
-        return Icons.local_cafe;
-      case 'petrol':
-        return Icons.local_gas_station;
-      case 'market':
-        return Icons.store;
-      case 'hotel':
-        return Icons.hotel;
-      case 'gym':
-        return Icons.fitness_center;
-      case 'pharmacy':
-        return Icons.local_pharmacy;
-      case 'beauty':
-        return Icons.face;
-      default:
-        return Icons.business;
-    }
   }
 
   /// Navigate to company detail

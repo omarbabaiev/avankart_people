@@ -3,12 +3,14 @@ class SocialModel {
   final String? facebook;
   final String? whatsapp;
   final String? telegram;
+  final String? linkedin;
 
   SocialModel({
     this.instagram,
     this.facebook,
     this.whatsapp,
     this.telegram,
+    this.linkedin,
   });
 
   factory SocialModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class SocialModel {
       facebook: json['facebook'],
       whatsapp: json['whatsapp'],
       telegram: json['telegram'],
+      linkedin: json['linkedin'],
     );
   }
 }

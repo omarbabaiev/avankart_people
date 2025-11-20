@@ -162,24 +162,58 @@ class CardTransactionDetails {
   final String id;
   final double amount;
   final DateTime? createdAt;
+  final DateTime? date;
   final String status;
   final String? muessiseName;
   final String? muessiseCategory;
-  final String category;
+  final String? category;
+  final String? transactionId;
+  final String? subject;
+  final String? note;
+  final String? currency;
+  final String? destination;
+  final double? comission;
+  final double? cashback;
+  final String? cardId;
+  final String? userId;
+  final String? from;
+  final String? fromSirket;
+  final Map<String, dynamic>? to;
   final Map<String, dynamic>? additionalData;
 
   CardTransactionDetails({
     required this.id,
     required this.amount,
     this.createdAt,
+    this.date,
     required this.status,
     this.muessiseName,
     this.muessiseCategory,
-    required this.category,
+    this.category,
+    this.transactionId,
+    this.subject,
+    this.note,
+    this.currency,
+    this.destination,
+    this.comission,
+    this.cashback,
+    this.cardId,
+    this.userId,
+    this.from,
+    this.fromSirket,
+    this.to,
     this.additionalData,
   });
 
   factory CardTransactionDetails.fromJson(Map<String, dynamic> json) {
+    // "to" objesi içinden muessise_name'i al
+    String? muessiseName;
+    if (json['to'] != null && json['to'] is Map<String, dynamic>) {
+      muessiseName = json['to']['muessise_name'];
+    } else {
+      muessiseName = json['muessise_name'];
+    }
+
     return CardTransactionDetails(
       id: json['_id'] ?? json['id'] ?? '',
       amount: (json['amount'] ?? 0).toDouble(),
@@ -188,10 +222,27 @@ class CardTransactionDetails {
           : json['createdAt'] != null
               ? DateTime.tryParse(json['createdAt'])
               : null,
+      date: json['date'] != null ? DateTime.tryParse(json['date']) : null,
       status: json['status'] ?? '',
-      muessiseName: json['muessise_name'],
-      muessiseCategory: json['muessise_category'],
-      category: json['category'] ?? 'transaction',
+      muessiseName: muessiseName,
+      muessiseCategory: json['muessise_category'] ?? json['cardCategory'],
+      category: json['category'] ?? json['cardCategory'] ?? 'transaction',
+      transactionId: json['transaction_id'],
+      subject: json['subject'],
+      note: json['note'],
+      currency: json['currency'],
+      destination: json['destination'],
+      comission: json['comission'] != null
+          ? (json['comission'] as num).toDouble()
+          : null,
+      cashback: json['cashback'] != null
+          ? (json['cashback'] as num).toDouble()
+          : null,
+      cardId: json['cards'] ?? json['card_id'],
+      userId: json['user'],
+      from: json['from'],
+      fromSirket: json['from_sirket'],
+      to: json['to'] is Map<String, dynamic> ? json['to'] : null,
       additionalData: json['additional_data'] ?? json['additionalData'],
     );
   }
@@ -201,10 +252,23 @@ class CardTransactionDetails {
       'id': id,
       'amount': amount,
       'created_at': createdAt?.toIso8601String(),
+      'date': date?.toIso8601String(),
       'status': status,
       'muessise_name': muessiseName,
       'muessise_category': muessiseCategory,
       'category': category,
+      'transaction_id': transactionId,
+      'subject': subject,
+      'note': note,
+      'currency': currency,
+      'destination': destination,
+      'comission': comission,
+      'cashback': cashback,
+      'cards': cardId,
+      'user': userId,
+      'from': from,
+      'from_sirket': fromSirket,
+      'to': to,
       'additional_data': additionalData,
     };
   }
@@ -305,10 +369,12 @@ class CardTransactionDetailsResponse {
 
   factory CardTransactionDetailsResponse.fromJson(Map<String, dynamic> json) {
     CardTransactionDetails? details;
-    if (json['transaction_details'] != null) {
-      details = CardTransactionDetails.fromJson(json['transaction_details']);
-    } else if (json['data'] != null) {
-      details = CardTransactionDetails.fromJson(json['data']);
+    
+    // Önce data objesi içinde transaction detail'i ara
+    if (json['data'] != null && json['data'] is Map<String, dynamic>) {
+      details = CardTransactionDetails.fromJson(json['data'] as Map<String, dynamic>);
+    } else if (json['transaction_details'] != null && json['transaction_details'] is Map<String, dynamic>) {
+      details = CardTransactionDetails.fromJson(json['transaction_details'] as Map<String, dynamic>);
     }
 
     return CardTransactionDetailsResponse(
@@ -316,5 +382,98 @@ class CardTransactionDetailsResponse {
       message: json['message'],
       transactionDetails: details,
     );
+  }
+}
+
+/// Card filter item - Filter için kart bilgisi
+class CardFilterItem {
+  final String id;
+  final String name;
+
+  CardFilterItem({
+    required this.id,
+    required this.name,
+  });
+
+  factory CardFilterItem.fromJson(Map<String, dynamic> json) {
+    return CardFilterItem(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+}
+
+/// Card filter category - Filter için kategori bilgisi
+class CardFilterCategory {
+  final String id;
+  final String name;
+  final List<CardFilterItem> cards;
+
+  CardFilterCategory({
+    required this.id,
+    required this.name,
+    required this.cards,
+  });
+
+  factory CardFilterCategory.fromJson(Map<String, dynamic> json) {
+    List<CardFilterItem> cardsList = [];
+    if (json['cards'] != null && json['cards'] is List) {
+      cardsList = (json['cards'] as List)
+          .map((cardJson) => CardFilterItem.fromJson(cardJson))
+          .toList();
+    }
+
+    return CardFilterCategory(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      cards: cardsList,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'cards': cards.map((card) => card.toJson()).toList(),
+    };
+  }
+}
+
+/// Card filter response - Filter cards endpoint response
+class CardFilterResponse {
+  final bool success;
+  final List<CardFilterCategory> data;
+
+  CardFilterResponse({
+    required this.success,
+    required this.data,
+  });
+
+  factory CardFilterResponse.fromJson(Map<String, dynamic> json) {
+    List<CardFilterCategory> categoriesList = [];
+    if (json['data'] != null && json['data'] is List) {
+      categoriesList = (json['data'] as List)
+          .map((categoryJson) => CardFilterCategory.fromJson(categoryJson))
+          .toList();
+    }
+
+    return CardFilterResponse(
+      success: json['success'] ?? false,
+      data: categoriesList,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'data': data.map((category) => category.toJson()).toList(),
+    };
   }
 }

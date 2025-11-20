@@ -16,6 +16,8 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
         Get.arguments as Map<String, dynamic>?;
     final bool allowBackFromArgs = arguments?['allowBack'] ?? false;
     final bool finalAllowBack = allowBack || allowBackFromArgs;
+    final bool forBiometric = arguments?['forBiometric'] ?? false;
+    final String platform = arguments?['platform'] ?? '';
 
     // Controller'ı başlat
     Get.put(PinCodeController());
@@ -23,6 +25,11 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
 
     // PIN ayarlama modunu başlat
     controller.startSetupMode();
+
+    // Biometric için gidildiyse controller'a bilgi ver
+    if (forBiometric) {
+      controller.setForBiometric(true, platform);
+    }
 
     return WillPopScope(
       onWillPop: () async =>
@@ -34,36 +41,39 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
           elevation: 0,
           automaticallyImplyLeading:
               finalAllowBack, // Settings'den geliyorsa geri tuşunu göster
-          title: Text(
-            'set_pin_code'.tr,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          title: Obx(() => Text(
+                _getAppBarTitle(
+                    controller.isForBiometric.value, controller.platform.value),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              )),
         ),
         body: Column(
           children: [
             const SizedBox(height: 20),
 
             // Title
-            Text(
-              'pin_code'.tr,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
+            Obx(() => Text(
+                  _getTitle(controller.isForBiometric.value,
+                      controller.platform.value),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                )),
             const SizedBox(height: 16),
 
             // Subtitle
             Obx(() => Text(
-                  controller.isConfirmScreen.value
-                      ? 'pin_code_repeat'.tr
-                      : 'pin_code_enter'.tr,
+                  _getSubtitle(
+                      controller.isConfirmScreen.value,
+                      controller.isForBiometric.value,
+                      controller.platform.value),
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,
@@ -215,5 +225,50 @@ class SetPinCodeScreen extends GetView<PinCodeController> {
         ),
       ),
     );
+  }
+
+  String _getAppBarTitle(bool isForBiometric, String platform) {
+    if (isForBiometric) {
+      if (platform == 'ios') {
+        return 'set_pin_code_for_face_id'.tr;
+      } else {
+        return 'set_pin_code_for_fingerdebugPrint'.tr;
+      }
+    }
+    return 'set_pin_code'.tr;
+  }
+
+  String _getTitle(bool isForBiometric, String platform) {
+    if (isForBiometric) {
+      if (platform == 'ios') {
+        return 'face_id'.tr;
+      } else {
+        return 'finger_debugPrint'.tr;
+      }
+    }
+    return 'pin_code'.tr;
+  }
+
+  String _getSubtitle(
+      bool isConfirmScreen, bool isForBiometric, String platform) {
+    if (isConfirmScreen) {
+      if (isForBiometric) {
+        if (platform == 'ios') {
+          return 'pin_code_repeat_for_face_id'.tr;
+        } else {
+          return 'pin_code_repeat_for_fingerdebugPrint'.tr;
+        }
+      }
+      return 'pin_code_repeat'.tr;
+    } else {
+      if (isForBiometric) {
+        if (platform == 'ios') {
+          return 'pin_code_enter_for_face_id'.tr;
+        } else {
+          return 'pin_code_enter_for_fingerdebugPrint'.tr;
+        }
+      }
+      return 'pin_code_enter'.tr;
+    }
   }
 }

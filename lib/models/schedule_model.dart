@@ -1,19 +1,22 @@
 class WorkingHours {
   final String? open;
   final String? close;
-  final bool? isOpen;
+  final bool? isOpen; // Legacy support
+  final bool? enabled; // New API format
 
   WorkingHours({
     this.open,
     this.close,
     this.isOpen,
+    this.enabled,
   });
 
   factory WorkingHours.fromJson(Map<String, dynamic> json) {
     return WorkingHours(
       open: json['open'],
       close: json['close'],
-      isOpen: json['isOpen'],
+      isOpen: json['isOpen'], // Legacy support
+      enabled: json['enabled'], // New API format
     );
   }
 }

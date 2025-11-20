@@ -65,8 +65,8 @@ class SupportScreen extends StatelessWidget {
                     child: SupportSocialCard(
                       icon: ImageAssets.whatsappIcon,
                       title: 'whatsapp'.tr,
-                      onTap: () => _launchWebOrCopy(ConstTexts.supportWhatsapp,
-                          ConstTexts.supportWhatsapp),
+                      onTap: () =>
+                          _launchWhatsAppOrCopy(ConstTexts.supportWhatsapp),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -74,8 +74,8 @@ class SupportScreen extends StatelessWidget {
                     child: SupportSocialCard(
                       icon: ImageAssets.telegram,
                       title: 'telegram'.tr,
-                      onTap: () => _launchWebOrCopy(ConstTexts.supportTelegram,
-                          ConstTexts.supportTelegram),
+                      onTap: () =>
+                          _launchTelegramOrCopy(ConstTexts.supportTelegram),
                     ),
                   ),
                 ],
@@ -112,6 +112,103 @@ class SupportScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// WhatsApp-i launch et, uğursuz olarsa kopyala
+  Future<void> _launchWhatsAppOrCopy(String url) async {
+    try {
+      // WhatsApp URL'inden telefon numarasını çıkar
+      // https://wa.me/0553485137 formatından numarayı al
+      String? phoneNumber;
+      if (url.contains('wa.me/')) {
+        phoneNumber = url.split('wa.me/').last.split('?').first;
+      } else if (url.contains('whatsapp.com/send?phone=')) {
+        phoneNumber =
+            url.split('whatsapp.com/send?phone=').last.split('&').first;
+      }
+
+      if (phoneNumber != null && phoneNumber.isNotEmpty) {
+        // Telefon numarasını temizle
+        String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+
+        // Önce Android için whatsapp:// dene
+        final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
+        if (await canLaunchUrl(androidUri)) {
+          final bool launched = await launchUrl(
+            androidUri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (launched) {
+            return; // Uğurla launch edildi
+          }
+        }
+
+        // Fallback olarak https://wa.me/ dene
+        final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
+        if (await canLaunchUrl(webUri)) {
+          final bool launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (launched) {
+            return; // Uğurla launch edildi
+          }
+        }
+      }
+
+      // Launch edilə bilməzse kopyala
+      _copyToClipboard(url);
+    } catch (e) {
+      // Xəta olduqda kopyala
+      _copyToClipboard(url);
+    }
+  }
+
+  /// Telegram-i launch et, uğursuz olarsa kopyala
+  Future<void> _launchTelegramOrCopy(String url) async {
+    try {
+      // Telegram URL'inden domain/username'i çıkar
+      // https://t.me/avankart formatından domain'i al
+      String? domain;
+      if (url.contains('t.me/')) {
+        domain = url.split('t.me/').last.split('?').first.split('/').first;
+      } else if (url.contains('telegram.me/')) {
+        domain =
+            url.split('telegram.me/').last.split('?').first.split('/').first;
+      }
+
+      if (domain != null && domain.isNotEmpty) {
+        // Önce Android için tg:// dene
+        final Uri androidUri = Uri.parse('tg://resolve?domain=$domain');
+        if (await canLaunchUrl(androidUri)) {
+          final bool launched = await launchUrl(
+            androidUri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (launched) {
+            return; // Uğurla launch edildi
+          }
+        }
+
+        // Fallback olarak https://t.me/ dene
+        final Uri webUri = Uri.parse('https://t.me/$domain');
+        if (await canLaunchUrl(webUri)) {
+          final bool launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (launched) {
+            return; // Uğurla launch edildi
+          }
+        }
+      }
+
+      // Launch edilə bilməzse kopyala
+      _copyToClipboard(url);
+    } catch (e) {
+      // Xəta olduqda kopyala
+      _copyToClipboard(url);
+    }
   }
 
   /// Web URL-i launch et, uğursuz olarsa kopyala

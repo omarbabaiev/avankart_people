@@ -3,6 +3,7 @@ import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import '../models/login_response.dart';
 import '../models/register_response.dart';
 import '../models/forgot_password_response.dart';
@@ -189,21 +190,21 @@ class AuthService {
         '/people/auth/logout',
         data: {},
       );
-      print('[LOGOUT RESPONSE] ' + response.data.toString());
+      debugPrint('[LOGOUT RESPONSE] ' + response.data.toString());
       return response.data;
     } on DioException catch (e) {
       // Sessiz error'ları handle et
       if (_isSilentError(e)) {
-        print(
+        debugPrint(
             '[LOGOUT SILENT ERROR] İnternet bağlantısı yok veya unauthorized: ${e.message}');
         return null; // Sessizce null döndür
       }
 
       if (e.response != null && e.response?.data != null) {
-        print('[LOGOUT ERROR RESPONSE] ' + e.response!.data.toString());
+        debugPrint('[LOGOUT ERROR RESPONSE] ' + e.response!.data.toString());
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[LOGOUT ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[LOGOUT ERROR] Ağ hatası: ' + e.toString());
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -212,22 +213,22 @@ class AuthService {
   /// Forgot Password
   Future<ForgotPasswordResponse> forgotPassword({required String email}) async {
     try {
-      print('[FORGOT PASSWORD REQUEST] email: ' + email);
+      debugPrint('[FORGOT PASSWORD REQUEST] email: ' + email);
       final response = await _dio.post(
         '/people/auth/forgot-password',
         data: {
           'email': email,
         },
       );
-      print('[FORGOT PASSWORD RESPONSE] ' + response.data.toString());
+      debugPrint('[FORGOT PASSWORD RESPONSE] ' + response.data.toString());
       return ForgotPasswordResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print(
+        debugPrint(
             '[FORGOT PASSWORD ERROR RESPONSE] ' + e.response!.data.toString());
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[FORGOT PASSWORD ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[FORGOT PASSWORD ERROR] Ağ hatası: ' + e.toString());
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -248,7 +249,7 @@ class AuthService {
     required bool terms,
   }) async {
     try {
-      print(
+      debugPrint(
           '[REGISTER REQUEST] name: $name, surname: $surname, email: $email, phone: +$phoneSuffix $phoneNumber');
       final response = await _dio.post(
         '/people/auth/register',
@@ -266,14 +267,14 @@ class AuthService {
           'terms': terms,
         },
       );
-      print('[REGISTER RESPONSE] ' + response.data.toString());
+      debugPrint('[REGISTER RESPONSE] ' + response.data.toString());
       return RegisterResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[REGISTER ERROR RESPONSE] ' + e.response!.data.toString());
+        debugPrint('[REGISTER ERROR RESPONSE] ' + e.response!.data.toString());
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[REGISTER ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[REGISTER ERROR] Ağ hatası: ' + e.toString());
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -284,13 +285,13 @@ class AuthService {
     try {
       // Token'ı storage'dan oku
       final tokenToUse = await _storage.read(key: SecureStorageConfig.tokenKey);
-      print('[HOME REQUEST] Token: ${tokenToUse?.substring(0, 20)}...');
-      print('[DEBUG] Full token: $tokenToUse');
-      print('[DEBUG] Token length: ${tokenToUse?.length}');
+      debugPrint('[HOME REQUEST] Token: ${tokenToUse?.substring(0, 20)}...');
+      debugPrint('[DEBUG] Full token: $tokenToUse');
+      debugPrint('[DEBUG] Token length: ${tokenToUse?.length}');
 
       // Firebase token al
       String? firebaseToken = await _firebaseServiceInstance.getStoredToken();
-      print(
+      debugPrint(
           '[HOME REQUEST] Firebase Token: ${firebaseToken?.substring(0, 20)}...');
 
       final response = await _dio.post(
@@ -299,26 +300,27 @@ class AuthService {
           'firebase_token': firebaseToken ?? 'token',
         },
       );
-      print('[HOME RESPONSE] ' + response.data.toString());
+      debugPrint('[HOME RESPONSE] ' + response.data.toString());
       return HomeResponse.fromJson(response.data);
     } on DioException catch (e) {
       // Hata kategorilerini belirle
       if (_isTokenInvalidError(e)) {
-        print('[HOME TOKEN INVALID] Token geçersiz, logout gerekli');
+        debugPrint('[HOME TOKEN INVALID] Token geçersiz, logout gerekli');
         // Token geçersiz - logout yap
         await _handleTokenInvalid();
         return null;
       } else if (_isLogoutRequiredError(e)) {
-        print('[HOME LOGOUT REQUIRED] Status 2 veya logout gerekli');
+        debugPrint('[HOME LOGOUT REQUIRED] Status 2 veya logout gerekli');
         // Status 2 veya logout gerekli - logout yap
         await _handleLogoutRequired();
         return null;
       } else if (_isNetworkError(e)) {
-        print('[HOME NETWORK ERROR] Ağ hatası, retry gerekli: ${e.message}');
+        debugPrint(
+            '[HOME NETWORK ERROR] Ağ hatası, retry gerekli: ${e.message}');
         // Ağ hatası - retry butonu göster
         throw AuthException('network_error_retry'.tr);
       } else {
-        print('[HOME OTHER ERROR] Diğer hata: ${e.message}');
+        debugPrint('[HOME OTHER ERROR] Diğer hata: ${e.message}');
         // Diğer hatalar - retry butonu göster
         if (e.response != null && e.response?.data != null) {
           final errorMessage =
@@ -338,7 +340,7 @@ class AuthService {
     required String confirmPassword,
   }) async {
     try {
-      print('[SUBMIT NEW PASSWORD REQUEST]');
+      debugPrint('[SUBMIT NEW PASSWORD REQUEST]');
       final response = await _dio.post(
         '/people/auth/submit-forgotten-password',
         data: {
@@ -349,14 +351,15 @@ class AuthService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      print('[SUBMIT NEW PASSWORD RESPONSE] ' + response.data.toString());
+      debugPrint('[SUBMIT NEW PASSWORD RESPONSE] ' + response.data.toString());
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[SUBMIT NEW PASSWORD ERROR] ' + e.response!.data.toString());
+        debugPrint(
+            '[SUBMIT NEW PASSWORD ERROR] ' + e.response!.data.toString());
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[SUBMIT NEW PASSWORD ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[SUBMIT NEW PASSWORD ERROR] Ağ hatası: ' + e.toString());
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -371,7 +374,7 @@ class AuthService {
       DebugLogger.apiRequest('/people/auth/retry-otp', {
         'email': email,
       });
-      print(
+      debugPrint(
           '[RESEND OTP REQUEST] email: $email, token: ${token.substring(0, 20)}...');
       final response = await _dio.post(
         '/people/auth/retry-otp', // JSON-da /auth/retry-otp endpoint-i istifadə olunur
@@ -383,16 +386,16 @@ class AuthService {
         ),
       );
       DebugLogger.apiResponse('/people/auth/retry-otp', response.data);
-      print('[RESEND OTP RESPONSE] ${response.data}');
+      debugPrint('[RESEND OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[RESEND OTP ERROR] ${e.response?.data}');
+      debugPrint('[RESEND OTP ERROR] ${e.response?.data}');
       if (e.response != null && e.response?.data != null) {
         DebugLogger.apiError('/people/auth/retry-otp', e.response!.data);
         throw AuthException(ApiResponseParser.parseApiError(e.response?.data));
       } else {
         DebugLogger.apiError('/people/auth/retry-otp', e);
-        print('[RESEND OTP ERROR] Ağ hatası: ${e.toString()}');
+        debugPrint('[RESEND OTP ERROR] Ağ hatası: ${e.toString()}');
         throw AuthException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -401,7 +404,7 @@ class AuthService {
   /// Token'ı kaydet
   Future<void> saveToken(String token) async {
     await _storage.write(key: SecureStorageConfig.tokenKey, value: token);
-    print('[TOKEN SAVED] $token');
+    debugPrint('[TOKEN SAVED] $token');
   }
 
   /// İnternet bağlantısı kontrolü
@@ -455,13 +458,13 @@ class AuthService {
   /// Token geçersiz durumunda logout yap
   Future<void> _handleTokenInvalid() async {
     await _storage.delete(key: SecureStorageConfig.tokenKey);
-    print('[AUTH SERVICE] Token invalid, cleared storage');
+    debugPrint('[AUTH SERVICE] Token invalid, cleared storage');
   }
 
   /// Logout gerekli durumunda logout yap
   Future<void> _handleLogoutRequired() async {
     await _storage.delete(key: SecureStorageConfig.tokenKey);
-    print('[AUTH SERVICE] Logout required, cleared storage');
+    debugPrint('[AUTH SERVICE] Logout required, cleared storage');
   }
 
   /// Unauthorized error'ı sessizce handle et (eski metod - geriye uyumluluk için)

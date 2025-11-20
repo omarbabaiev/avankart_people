@@ -4,6 +4,7 @@ import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:avankart_people/utils/vibration_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -53,7 +54,7 @@ class LoginController extends GetxController {
         // Token'ı storage'a kaydet
         await _storage.write(
             key: SecureStorageConfig.tokenKey, value: response.token);
-        print(
+        debugPrint(
             '[LOGIN TOKEN SAVED FOR OTP] ${response.token.substring(0, 20)}...');
 
         passwordController.clear();
@@ -91,16 +92,16 @@ class LoginController extends GetxController {
       // Remember me durumunu GetStorage ile ayarla
       if (rememberMe.value) {
         GetStorage().write('rememberMe', true);
-        print('[TOKEN SAVED] With remember me: true');
+        debugPrint('[TOKEN SAVED] With remember me: true');
       } else {
         GetStorage().write('rememberMe', false);
-        print('[TOKEN SAVED] Without remember me');
+        debugPrint('[TOKEN SAVED] Without remember me');
       }
 
       // Token'ın gerçekten kaydedildiğini kontrol et
       final savedToken = await _storage.read(key: SecureStorageConfig.tokenKey);
       if (savedToken != token) {
-        print('[TOKEN ERROR] Token could not be saved properly!');
+        debugPrint('[TOKEN ERROR] Token could not be saved properly!');
         SnackbarUtils.showErrorSnackbar('token_save_error'.tr);
         return;
       }
@@ -110,20 +111,21 @@ class LoginController extends GetxController {
 
       // Token'ın gerçekten kaydedildiğini tekrar kontrol et
       final finalToken = await _storage.read(key: SecureStorageConfig.tokenKey);
-      print('[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
-      print('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
-      print('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
+      debugPrint(
+          '[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
+      debugPrint('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
+      debugPrint('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
 
       // Home endpoint'ini çağır - storage'dan token okunacak
-      print('[CALLING HOME ENDPOINT]');
+      debugPrint('[CALLING HOME ENDPOINT]');
       final homeResponse = await _authService.home();
-      print('[HOME RESPONSE] success: ${homeResponse?.success}');
+      debugPrint('[HOME RESPONSE] success: ${homeResponse?.success}');
 
       // Check if logout is required (status 2) - UserModel'den status kontrol et
       if (homeResponse != null &&
           homeResponse.user != null &&
           homeResponse.user!.status == 2) {
-        print(
+        debugPrint(
             '[LOGIN CONTROLLER] Status 2 detected in user model, force logging out user');
         await AuthUtils.forceLogout();
         return;
@@ -139,26 +141,26 @@ class LoginController extends GetxController {
         // Home controller'ı tamamen temizle ve yeniden oluştur
         if (Get.isRegistered<HomeController>()) {
           Get.delete<HomeController>();
-          print('[LOGIN] Deleted existing HomeController');
+          debugPrint('[LOGIN] Deleted existing HomeController');
         }
 
         // Yeni HomeController oluştur ve selectedIndex'i 0'a set et
         final homeController = Get.put(HomeController(), permanent: true);
-        print(
+        debugPrint(
             '[LOGIN] Created new HomeController with selectedIndex: ${homeController.selectedIndex}');
 
         // Verileri yükle
         await homeController.refreshUserData();
 
         // Home'a yönlendir
-        print('[HOME SUCCESS] Navigating to home');
+        debugPrint('[HOME SUCCESS] Navigating to home');
         Get.offAllNamed(AppRoutes.main);
       } else {
-        print('[HOME FAILED] success is not true');
+        debugPrint('[HOME FAILED] success is not true');
         SnackbarUtils.showErrorSnackbar('main_page_could_not_load'.tr);
       }
     } catch (homeError) {
-      print('[HOME ERROR] $homeError');
+      debugPrint('[HOME ERROR] $homeError');
       final errorMessage = ApiResponseParser.parseDioError(homeError);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     }
@@ -187,21 +189,21 @@ class LoginController extends GetxController {
       if (response['token'] != null &&
           (response['success'] == true ||
               response['message'] == 'Password updated')) {
-        print('[NEW PASSWORD SUCCESS] Password updated successfully');
+        debugPrint('[NEW PASSWORD SUCCESS] Password updated successfully');
 
         // Yeni token'ı kaydet
         final newToken = response['token'];
         await _authService.saveToken(newToken);
-        print('[NEW PASSWORD] New token saved: $newToken');
+        debugPrint('[NEW PASSWORD] New token saved: $newToken');
 
         // Şifre güncellendiği için güvenlik nedeniyle login screen'e yönlendir
-        print(
+        debugPrint(
             '[NEW PASSWORD] Password updated, redirecting to login for security');
 
         // Token'ı temizle çünkü yeni login gerekli
         await _storage.delete(key: SecureStorageConfig.tokenKey);
         GetStorage().remove('rememberMe');
-        print('[NEW PASSWORD] Tokens cleared for fresh login');
+        debugPrint('[NEW PASSWORD] Tokens cleared for fresh login');
 
         // Başarılı şifre güncelleme - haptic feedback
         VibrationUtil.mediumVibrate();
@@ -216,7 +218,7 @@ class LoginController extends GetxController {
         Get.deleteAll();
         Get.offAllNamed(AppRoutes.login);
       } else {
-        print('[NEW PASSWORD ERROR] ${response['message']}');
+        debugPrint('[NEW PASSWORD ERROR] ${response['message']}');
         final errorMessage =
             ApiResponseParser.parseApiMessage(response['message']);
         SnackbarUtils.showErrorSnackbar(errorMessage);
@@ -253,7 +255,7 @@ class LoginController extends GetxController {
       newPasswordController.dispose();
       confirmPasswordController.dispose();
     } catch (e) {
-      print('[LOGIN CONTROLLER] Error disposing controllers: $e');
+      debugPrint('[LOGIN CONTROLLER] Error disposing controllers: $e');
     }
     super.onClose();
   }

@@ -72,7 +72,8 @@ class QueryChatController extends GetxController {
       isSending.value = true;
 
       // Debug: Hangi ticket ID kullanılıyor
-      print('[DEBUG] Sending message with ticket ID: ${currentTicketId.value}');
+      debugPrint(
+          '[DEBUG] Sending message with ticket ID: ${currentTicketId.value}');
 
       // Önce mesajı UI'da göster
       final tempMessage = MessageModel(
@@ -190,11 +191,11 @@ class QueryChatController extends GetxController {
         messages.assignAll(allMessages);
         _lastMessageCount = allMessages.length;
 
-        print('[DEBUG] New messages found! Total: ${allMessages.length}');
+        debugPrint('[DEBUG] New messages found! Total: ${allMessages.length}');
       }
     } catch (e) {
       // Hata durumunda sessizce geç, kullanıcıyı rahatsız etme
-      print('[DEBUG] Error checking for new messages: $e');
+      debugPrint('[DEBUG] Error checking for new messages: $e');
     }
   }
 }

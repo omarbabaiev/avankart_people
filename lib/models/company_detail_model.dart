@@ -72,6 +72,8 @@ class CompanyDetail {
   final List<String> website;
   final double? distance;
   final bool isFavorite;
+  final double? averageRating;
+  final int? totalVotes;
 
   CompanyDetail({
     required this.id,
@@ -94,6 +96,8 @@ class CompanyDetail {
     required this.website,
     this.distance,
     required this.isFavorite,
+    this.averageRating,
+    this.totalVotes,
   });
 
   factory CompanyDetail.fromJson(Map<String, dynamic> json) {
@@ -125,6 +129,8 @@ class CompanyDetail {
           json['website'] != null ? List<String>.from(json['website']) : [],
       distance: json['distance']?.toDouble(),
       isFavorite: json['isFavorite'] ?? false,
+      averageRating: json['average_rating']?.toDouble(),
+      totalVotes: json['total_votes']?.toInt(),
     );
   }
 
@@ -150,6 +156,8 @@ class CompanyDetail {
       'website': website,
       'distance': distance,
       'isFavorite': isFavorite,
+      'average_rating': averageRating,
+      'total_votes': totalVotes,
     };
   }
 

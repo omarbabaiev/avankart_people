@@ -72,7 +72,7 @@ class SirketIdModel {
 
   factory SirketIdModel.fromJson(Map<String, dynamic> json) {
     return SirketIdModel(
-      authorizedPerson: json['authorized_person'] != null
+      authorizedPerson: json['authorized_person'] != null && json['authorized_person'] is Map
           ? AuthorizedPersonModel.fromJson(json['authorized_person'])
           : null,
       id: json['_id'],
@@ -87,17 +87,17 @@ class SirketIdModel {
           json['services'] != null ? List<String>.from(json['services']) : null,
       description: json['description'],
       cards: json['cards'] != null ? List<String>.from(json['cards']) : null,
-      schedule: json['schedule'] != null
+      schedule: json['schedule'] != null && json['schedule'] is Map
           ? ScheduleModel.fromJson(json['schedule'])
           : null,
-      phone: json['phone'] != null
+      phone: json['phone'] != null && json['phone'] is List
           ? (json['phone'] as List).map((i) => PhoneModel.fromJson(i)).toList()
           : null,
       email: json['email'] != null ? List<String>.from(json['email']) : null,
       website:
           json['website'] != null ? List<String>.from(json['website']) : null,
       social:
-          json['social'] != null ? SocialModel.fromJson(json['social']) : null,
+          json['social'] != null && json['social'] is Map ? SocialModel.fromJson(json['social']) : null,
       exteriorCoverImage: json['xarici_cover_image'],
       exteriorCoverImagePath: json['xarici_cover_image_path'],
       interiorCoverImage: json['daxili_cover_image'],

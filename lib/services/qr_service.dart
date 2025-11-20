@@ -5,6 +5,7 @@ import 'package:avankart_people/utils/api_response_parser.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:avankart_people/models/qr_check_response_model.dart';
+import 'package:flutter/material.dart';
 
 class QrService {
   final Dio _dio = Dio();
@@ -39,17 +40,17 @@ class QrService {
     required String cardId,
   }) async {
     try {
-      print('[QR SERVICE] ===== CHECK QR CODE DEBUG =====');
-      print('[QR SERVICE] QR Code: $qrCode');
-      print('[QR SERVICE] Card ID: $cardId');
+      debugPrint('[QR SERVICE] ===== CHECK QR CODE DEBUG =====');
+      debugPrint('[QR SERVICE] QR Code: $qrCode');
+      debugPrint('[QR SERVICE] Card ID: $cardId');
 
       final requestData = {
         'qr_code': qrCode,
         'card_id': cardId,
       };
 
-      print('[QR SERVICE] Request data: $requestData');
-      print('[QR SERVICE] ===============================');
+      debugPrint('[QR SERVICE] Request data: $requestData');
+      debugPrint('[QR SERVICE] ===============================');
 
       DebugLogger.apiRequest('/action/checkQr', requestData);
 
@@ -82,17 +83,17 @@ class QrService {
     required String cardId,
   }) async {
     try {
-      print('[QR SERVICE] ===== CHECK QR STATUS DEBUG =====');
-      print('[QR SERVICE] QR Code ID: $qrCodeId');
-      print('[QR SERVICE] Card ID: $cardId');
+      debugPrint('[QR SERVICE] ===== CHECK QR STATUS DEBUG =====');
+      debugPrint('[QR SERVICE] QR Code ID: $qrCodeId');
+      debugPrint('[QR SERVICE] Card ID: $cardId');
 
       final requestData = {
         'qr_code_id': qrCodeId,
         'card_id': cardId,
       };
 
-      print('[QR SERVICE] Request data: $requestData');
-      print('[QR SERVICE] =================================');
+      debugPrint('[QR SERVICE] Request data: $requestData');
+      debugPrint('[QR SERVICE] =================================');
 
       DebugLogger.apiRequest('/action/checkQrStatus', requestData);
 

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import '../utils/api_response_parser.dart';
@@ -58,17 +59,21 @@ class CompaniesService {
     String? filterType,
     String? search,
     String? cardId,
+    List<String>? cards,
     List<String>? muessiseCategory,
     int page = 1,
-    int limit = 10,
+    int limit = 20,
   }) async {
     try {
+      // Collection'a göre cards array olarak gönderilmeli
+      final cardsList = cards ?? (cardId != null ? [cardId] : []);
+      
       DebugLogger.apiRequest('/people/muessise', {
         'lat': lat,
         'lng': lng,
         'filterType': filterType,
         'search': search,
-        'card_id': cardId,
+        'cards': cardsList,
         'muessise_category': muessiseCategory,
         'page': page,
         'limit': limit,
@@ -81,7 +86,7 @@ class CompaniesService {
           'lng': lng,
           'filterType': filterType,
           'search': search,
-          'card_id': cardId,
+          'cards': cardsList,
           'muessise_category': muessiseCategory ?? [],
           'page': page,
           'limit': limit,
@@ -103,7 +108,7 @@ class CompaniesService {
 
       // Unauthorized hata kontrolü
       if (_isUnauthorizedError(e)) {
-        print(
+        debugPrint(
             '[COMPANIES SERVICE] Unauthorized error detected, forcing logout');
         await AuthUtils.forceLogout();
         throw CompaniesException('auth.session_expired'.tr);
@@ -170,6 +175,7 @@ class CompaniesService {
     required String query,
     double? lat,
     double? lng,
+    List<String>? cards,
     int page = 1,
     int limit = 20,
   }) async {
@@ -179,8 +185,7 @@ class CompaniesService {
         'lng': lng,
         'filterType': 'name',
         'search': query,
-        'card_id': null,
-        'cards': [],
+        'cards': cards ?? [],
         'muessise_category': [],
         'page': page,
         'limit': limit,
@@ -213,7 +218,7 @@ class CompaniesService {
 
       // Unauthorized hata kontrolü
       if (_isUnauthorizedError(e)) {
-        print(
+        debugPrint(
             '[COMPANIES SERVICE] Unauthorized error detected in search, forcing logout');
         await AuthUtils.forceLogout();
         throw CompaniesException('auth.session_expired'.tr);
@@ -279,7 +284,7 @@ class CompaniesService {
     List<String>? cards,
     List<String>? muessiseCategory,
     int page = 1,
-    int limit = 10,
+    int limit = 20,
   }) async {
     try {
       DebugLogger.apiRequest('/people/muessise/favorites', {
@@ -332,13 +337,14 @@ class CompaniesService {
     required String muessiseId,
   }) async {
     try {
-      print('═══════════════════════════════════════════════════');
-      print('[FAVORITES SERVICE] 🔄 Toggle Favorite Request');
-      print('═══════════════════════════════════════════════════');
-      print('[FAVORITES SERVICE] 📍 Endpoint: POST /people/favorites/muessise');
-      print('[FAVORITES SERVICE] 📤 Request Body:');
-      print('[FAVORITES SERVICE]   - muessise_id: $muessiseId');
-      print('[FAVORITES SERVICE] ⏱️  Request Time: ${DateTime.now()}');
+      debugPrint('═══════════════════════════════════════════════════');
+      debugPrint('[FAVORITES SERVICE] 🔄 Toggle Favorite Request');
+      debugPrint('═══════════════════════════════════════════════════');
+      debugPrint(
+          '[FAVORITES SERVICE] 📍 Endpoint: POST /people/favorites/muessise');
+      debugPrint('[FAVORITES SERVICE] 📤 Request Body:');
+      debugPrint('[FAVORITES SERVICE]   - muessise_id: $muessiseId');
+      debugPrint('[FAVORITES SERVICE] ⏱️  Request Time: ${DateTime.now()}');
 
       DebugLogger.apiRequest('/people/favorites/muessise', {
         'muessise_id': muessiseId,
@@ -351,40 +357,45 @@ class CompaniesService {
         },
       );
 
-      print('───────────────────────────────────────────────────');
-      print('[FAVORITES SERVICE] 📥 Response Received');
-      print('───────────────────────────────────────────────────');
-      print('[FAVORITES SERVICE] ✅ Status Code: ${response.statusCode}');
-      print('[FAVORITES SERVICE] 📦 Full Response Data:');
-      print('[FAVORITES SERVICE]   RAW: ${response.data}');
-      print('[FAVORITES SERVICE] 📦 Parsed Fields:');
-      print('[FAVORITES SERVICE]   - status: ${response.data['status']}');
-      print('[FAVORITES SERVICE]   - message: ${response.data['message']}');
-      print('[FAVORITES SERVICE] 📋 All Keys: ${response.data.keys.toList()}');
-      print('[FAVORITES SERVICE] ⏱️  Response Time: ${DateTime.now()}');
-      print('═══════════════════════════════════════════════════');
+      debugPrint('───────────────────────────────────────────────────');
+      debugPrint('[FAVORITES SERVICE] 📥 Response Received');
+      debugPrint('───────────────────────────────────────────────────');
+      debugPrint('[FAVORITES SERVICE] ✅ Status Code: ${response.statusCode}');
+      debugPrint('[FAVORITES SERVICE] 📦 Full Response Data:');
+      debugPrint('[FAVORITES SERVICE]   RAW: ${response.data}');
+      debugPrint('[FAVORITES SERVICE] 📦 Parsed Fields:');
+      debugPrint('[FAVORITES SERVICE]   - status: ${response.data['status']}');
+      debugPrint(
+          '[FAVORITES SERVICE]   - message: ${response.data['message']}');
+      debugPrint(
+          '[FAVORITES SERVICE] 📋 All Keys: ${response.data.keys.toList()}');
+      debugPrint('[FAVORITES SERVICE] ⏱️  Response Time: ${DateTime.now()}');
+      debugPrint('═══════════════════════════════════════════════════');
 
       DebugLogger.apiResponse('/people/favorites/muessise', response.data);
 
       final parsedResponse = FavoriteToggleResponse.fromJson(response.data);
-      print('[FAVORITES SERVICE] 🔍 Parsed Response:');
-      print('[FAVORITES SERVICE]   - isAdded: ${parsedResponse.isAdded}');
-      print('[FAVORITES SERVICE]   - isRemoved: ${parsedResponse.isRemoved}');
-      print('[FAVORITES SERVICE]   - isValid: ${parsedResponse.isValid}');
+      debugPrint('[FAVORITES SERVICE] 🔍 Parsed Response:');
+      debugPrint('[FAVORITES SERVICE]   - isAdded: ${parsedResponse.isAdded}');
+      debugPrint(
+          '[FAVORITES SERVICE]   - isRemoved: ${parsedResponse.isRemoved}');
+      debugPrint('[FAVORITES SERVICE]   - isValid: ${parsedResponse.isValid}');
 
       return parsedResponse;
     } on DioException catch (e) {
-      print('═══════════════════════════════════════════════════');
-      print('[FAVORITES SERVICE] ❌ Request Failed');
-      print('═══════════════════════════════════════════════════');
-      print('[FAVORITES SERVICE] 🚫 Error Type: ${e.type}');
-      print('[FAVORITES SERVICE] 💬 Error Message: ${e.message}');
+      debugPrint('═══════════════════════════════════════════════════');
+      debugPrint('[FAVORITES SERVICE] ❌ Request Failed');
+      debugPrint('═══════════════════════════════════════════════════');
+      debugPrint('[FAVORITES SERVICE] 🚫 Error Type: ${e.type}');
+      debugPrint('[FAVORITES SERVICE] 💬 Error Message: ${e.message}');
       if (e.response != null) {
-        print('[FAVORITES SERVICE] 📥 Error Response:');
-        print('[FAVORITES SERVICE]   - Status Code: ${e.response?.statusCode}');
-        print('[FAVORITES SERVICE]   - Response Data: ${e.response?.data}');
+        debugPrint('[FAVORITES SERVICE] 📥 Error Response:');
+        debugPrint(
+            '[FAVORITES SERVICE]   - Status Code: ${e.response?.statusCode}');
+        debugPrint(
+            '[FAVORITES SERVICE]   - Response Data: ${e.response?.data}');
       }
-      print('═══════════════════════════════════════════════════');
+      debugPrint('═══════════════════════════════════════════════════');
 
       DebugLogger.apiError('/people/favorites/muessise', e);
 

@@ -6,6 +6,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'auth_service.dart';
+import 'package:flutter/material.dart';
+
 
 class NotificationsService {
   final Dio _dio = Dio(
@@ -35,20 +37,20 @@ class NotificationsService {
   /// Get notifications
   Future<Map<String, dynamic>> getNotifications() async {
     try {
-      print('[GET NOTIFICATIONS REQUEST]');
+      debugPrint('[GET NOTIFICATIONS REQUEST]');
       final response = await _dio.get(
         '/notifications',
       );
-      print('[GET NOTIFICATIONS RESPONSE] ' + response.data.toString());
+      debugPrint('[GET NOTIFICATIONS RESPONSE] ' + response.data.toString());
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[GET NOTIFICATIONS ERROR RESPONSE] ' +
+        debugPrint('[GET NOTIFICATIONS ERROR RESPONSE] ' +
             e.response!.data.toString());
         throw NotificationsException(
             ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[GET NOTIFICATIONS ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[GET NOTIFICATIONS ERROR] Ağ hatası: ' + e.toString());
         throw NotificationsException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -62,7 +64,7 @@ class NotificationsService {
     required String status, // "read" or "unread"
   }) async {
     try {
-      print(
+      debugPrint(
           '[UPDATE NOTIFICATION STATUS REQUEST] notificationId: $notificationId, status: $status');
       final response = await _dio.post(
         '/notifications/status',
@@ -71,17 +73,18 @@ class NotificationsService {
           'status': status,
         },
       );
-      print(
+      debugPrint(
           '[UPDATE NOTIFICATION STATUS RESPONSE] ' + response.data.toString());
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[UPDATE NOTIFICATION STATUS ERROR] ' +
+        debugPrint('[UPDATE NOTIFICATION STATUS ERROR] ' +
             e.response!.data.toString());
         throw NotificationsException(
             ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[UPDATE NOTIFICATION STATUS ERROR] Ağ hatası: ' + e.toString());
+        debugPrint(
+            '[UPDATE NOTIFICATION STATUS ERROR] Ağ hatası: ' + e.toString());
         throw NotificationsException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -93,7 +96,7 @@ class NotificationsService {
     required String action, // "accept" or "ignore"
   }) async {
     try {
-      print(
+      debugPrint(
           '[INVITE ACTION REQUEST] notificationId: $notificationId, action: $action');
       final response = await _dio.post(
         '/notifications/invite-action',
@@ -102,15 +105,15 @@ class NotificationsService {
           'action': action,
         },
       );
-      print('[INVITE ACTION RESPONSE] ' + response.data.toString());
+      debugPrint('[INVITE ACTION RESPONSE] ' + response.data.toString());
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[INVITE ACTION ERROR] ' + e.response!.data.toString());
+        debugPrint('[INVITE ACTION ERROR] ' + e.response!.data.toString());
         throw NotificationsException(
             ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print('[INVITE ACTION ERROR] Ağ hatası: ' + e.toString());
+        debugPrint('[INVITE ACTION ERROR] Ağ hatası: ' + e.toString());
         throw NotificationsException('network_error'.tr + ': ${e.message}');
       }
     }
@@ -123,7 +126,7 @@ class NotificationsService {
       final notificationEnabled = _storage.read('notification_enabled') ?? true;
       return notificationEnabled;
     } catch (e) {
-      print('[NOTIFICATIONS] Error checking notification status: $e');
+      debugPrint('[NOTIFICATIONS] Error checking notification status: $e');
       return true; // Default true
     }
   }
@@ -134,7 +137,7 @@ class NotificationsService {
     String? token,
   }) async {
     try {
-      print(
+      debugPrint(
           '[UPDATE NOTIFICATION SETTINGS REQUEST] enabled: $enabled, token: ${token != null ? 'present' : 'null'}');
 
       final Map<String, dynamic> data = {
@@ -150,17 +153,17 @@ class NotificationsService {
         data: data,
       );
 
-      print('[UPDATE NOTIFICATION SETTINGS RESPONSE] ' +
+      debugPrint('[UPDATE NOTIFICATION SETTINGS RESPONSE] ' +
           response.data.toString());
       return response.data;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        print('[UPDATE NOTIFICATION SETTINGS ERROR] ' +
+        debugPrint('[UPDATE NOTIFICATION SETTINGS ERROR] ' +
             e.response!.data.toString());
         throw NotificationsException(
             ApiResponseParser.parseApiError(e.response?.data));
       } else {
-        print(
+        debugPrint(
             '[UPDATE NOTIFICATION SETTINGS ERROR] Ağ hatası: ' + e.toString());
         throw NotificationsException('network_error'.tr + ': ${e.message}');
       }
@@ -173,7 +176,7 @@ class NotificationsService {
       // Önce uygulama dahili ayarı kontrol et
       final appNotificationEnabled = await isNotificationEnabled();
       if (!appNotificationEnabled) {
-        print(
+        debugPrint(
             '[NOTIFICATIONS] App notification disabled, not showing notification');
         return false;
       }
@@ -183,14 +186,15 @@ class NotificationsService {
           await FirebaseMessaging.instance.requestPermission();
       if (firebasePermission.authorizationStatus !=
           AuthorizationStatus.authorized) {
-        print(
+        debugPrint(
             '[NOTIFICATIONS] Firebase permission denied, not showing notification');
         return false;
       }
 
       return true;
     } catch (e) {
-      print('[NOTIFICATIONS] Error checking if should show notification: $e');
+      debugPrint(
+          '[NOTIFICATIONS] Error checking if should show notification: $e');
       return false;
     }
   }

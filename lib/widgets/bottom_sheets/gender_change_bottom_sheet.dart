@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
@@ -75,9 +78,6 @@ class GenderChangeBottomSheet {
                                   vertical: 16,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context).colorScheme.secondary,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: isSelected
@@ -94,10 +94,7 @@ class GenderChangeBottomSheet {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: isSelected
-                                              ? Theme.of(context)
-                                                  .scaffoldBackgroundColor
-                                              : Theme.of(context).hintColor,
+                                          color: Theme.of(context).hintColor,
                                           width: 2,
                                         ),
                                         color: isSelected
@@ -127,12 +124,9 @@ class GenderChangeBottomSheet {
                                         fontFamily: "Poppins",
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
-                                        color: isSelected
-                                            ? Theme.of(context)
-                                                .scaffoldBackgroundColor
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onBackground,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
                                       ),
                                     ),
                                   ],
@@ -174,10 +168,15 @@ class GenderChangeBottomSheet {
                                           ? SizedBox(
                                               width: 24,
                                               height: 24,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: Colors.white,
-                                              ),
+                                              child: Platform.isIOS
+                                                  ? CupertinoActivityIndicator(
+                                                      radius: 10,
+                                                      color: Colors.white,
+                                                    )
+                                                  : CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
                                             )
                                           : Text(
                                               'change'.tr,
@@ -223,7 +222,8 @@ class GenderChangeBottomSheet {
       BuildContext context, ProfileController controller) {
     // Context'in geçerli olup olmadığını kontrol et
     if (!context.mounted) {
-      print('[VERIFICATION SHEET] Context is not mounted, using Get.context');
+      debugPrint(
+          '[VERIFICATION SHEET] Context is not mounted, using Get.context');
       // Eğer context geçerli değilse Get.context kullan
       final currentContext = Get.context;
       if (currentContext != null) {
@@ -234,15 +234,16 @@ class GenderChangeBottomSheet {
               .tr
               .replaceAll('{email}', controller.profile.value?.email ?? ''),
           showTimer: true,
+          successMessage: 'profile_updated_successfully'.tr,
           onVerify: (otp) async {
-            await controller.verifyUpdateOTP(otp);
+            return await controller.verifyUpdateOTP(otp);
           },
           onResend: () async {
             await controller.resendOTP();
           },
         );
       } else {
-        print('[VERIFICATION SHEET] Get.context is also null');
+        debugPrint('[VERIFICATION SHEET] Get.context is also null');
       }
       return;
     }
@@ -255,8 +256,9 @@ class GenderChangeBottomSheet {
           .tr
           .replaceAll('{email}', controller.profile.value?.email ?? ''),
       showTimer: true,
+      successMessage: 'profile_updated_successfully'.tr,
       onVerify: (otp) async {
-        await controller.verifyUpdateOTP(otp);
+        return await controller.verifyUpdateOTP(otp);
       },
       onResend: () async {
         await controller.resendOTP();

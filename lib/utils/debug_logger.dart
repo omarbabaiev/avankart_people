@@ -116,7 +116,7 @@ class DebugLogger {
       logMessage += '\nStackTrace: $stackTrace';
     }
 
-    print(logMessage);
+    debugPrint(logMessage);
   }
 
   // Kolay kullanım metodları

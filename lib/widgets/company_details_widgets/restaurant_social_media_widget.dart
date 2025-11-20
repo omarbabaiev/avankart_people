@@ -71,11 +71,11 @@ class CompanySocialMediaWidget extends StatelessWidget {
           isWhatsApp: true));
     }
 
-    // LinkedIn için gelecekteki destek (şu an social model'de yok)
-    // if (social?.linkedin != null && social!.linkedin!.isNotEmpty) {
-    //   icons.add(_buildSocialMediaIcon(
-    //       context, ImageAssets.linkedinIcon, social!.linkedin!, 'LinkedIn'));
-    // }
+    if (social?.linkedin != null && social!.linkedin!.isNotEmpty) {
+      String linkedinUrl = _formatSocialUrl(social!.linkedin!, 'linkedin');
+      icons.add(_buildSocialMediaIcon(
+          context, ImageAssets.linkedinIcon, linkedinUrl, 'LinkedIn'));
+    }
 
     // Eğer hiç sosyal medya yoksa boş widget döndür
     if (icons.isEmpty) {
@@ -119,14 +119,14 @@ class CompanySocialMediaWidget extends StatelessWidget {
     try {
       await UrlUtils.launchWeb(url);
     } catch (e) {
-      print('[RESTAURANT SOCIAL MEDIA] Error launching URL: $e');
+      debugPrint('[RESTAURANT SOCIAL MEDIA] Error launching URL: $e');
     }
   }
 
   Future<void> _openWhatsApp(String phoneNumber) async {
     try {
       if (phoneNumber.isEmpty) {
-        print('[WHATSAPP SOCIAL] No WhatsApp number available');
+        debugPrint('[WHATSAPP SOCIAL] No WhatsApp number available');
         return;
       }
 
@@ -134,20 +134,20 @@ class CompanySocialMediaWidget extends StatelessWidget {
       final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
       final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
 
-      print('[WHATSAPP SOCIAL] Trying to open for: $cleanNumber');
+      debugPrint('[WHATSAPP SOCIAL] Trying to open for: $cleanNumber');
       if (await canLaunchUrl(androidUri)) {
         await launchUrl(androidUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP SOCIAL] Opened via whatsapp://');
+        debugPrint('[WHATSAPP SOCIAL] Opened via whatsapp://');
         return;
       }
       if (await canLaunchUrl(webUri)) {
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP SOCIAL] Opened via wa.me');
+        debugPrint('[WHATSAPP SOCIAL] Opened via wa.me');
         return;
       }
-      print('[WHATSAPP SOCIAL] Cannot launch WhatsApp for: $cleanNumber');
+      debugPrint('[WHATSAPP SOCIAL] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
-      print('[WHATSAPP SOCIAL] Error opening WhatsApp: $e');
+      debugPrint('[WHATSAPP SOCIAL] Error opening WhatsApp: $e');
     }
   }
 

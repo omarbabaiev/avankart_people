@@ -261,9 +261,9 @@ class _QueryDetailScreenState extends State<QueryDetailScreen> {
     // Ticket ID'yi controller'a geç ve mesajları yükle
     // Önce ticket detail'den gelen _id'yi kullan, yoksa string ticket_id kullan
     final String ticketIdToUse = ticketDetails['_id'] ?? query["id"];
-    print('[DEBUG] Chat opened with ticket ID: $ticketIdToUse');
-    print('[DEBUG] Ticket details _id: ${ticketDetails['_id']}');
-    print('[DEBUG] Query id: ${query["id"]}');
+    debugPrint('[DEBUG] Chat opened with ticket ID: $ticketIdToUse');
+    debugPrint('[DEBUG] Ticket details _id: ${ticketDetails['_id']}');
+    debugPrint('[DEBUG] Query id: ${query["id"]}');
     controller.currentTicketId.value = ticketIdToUse;
     controller.loadMessages();
 

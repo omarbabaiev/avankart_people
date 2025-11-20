@@ -19,7 +19,7 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
   final List<TextEditingController> _textControllers =
       List.generate(6, (index) => TextEditingController());
   Timer? _timer;
-  int _remainingTime = 299; // 4:59 dakika
+  int _remainingTime = 300; // 5 dakika
   DateTime? _endTime; // OTP-nin bitmə vaxtı (wall-clock)
 
   @override
@@ -35,6 +35,13 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
         setState(() {}); // Border rengini güncellemek için
       });
     }
+
+    // İlk field'a otomatik focus ver (klavyenin açılması için)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _focusNodes[0].requestFocus();
+      }
+    });
   }
 
   @override
@@ -61,8 +68,8 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
 
   void _startTimer() {
     // Wall-clock time əsasında bitmə vaxtını təyin et
-    _endTime = DateTime.now().add(const Duration(seconds: 299));
-    _remainingTime = 299;
+    _endTime = DateTime.now().add(const Duration(seconds: 300));
+    _remainingTime = 300;
 
     // Hər 100ms-də bir yoxla (daha dəqiq və background-dan qayıdışda düzgün işləyir)
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -234,6 +241,7 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -303,7 +311,7 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
                     style:
                         TextButton.styleFrom(minimumSize: Size.fromHeight(40)),
                     onPressed:
-                        (_remainingTime == 0 && !controller.isResending.value)
+                        (_remainingTime <= 180 && !controller.isResending.value)
                             ? _resendCode
                             : null,
                     child: controller.isResending.value
@@ -320,7 +328,7 @@ class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: _remainingTime == 0
+                              color: _remainingTime <= 180
                                   ? Theme.of(context).colorScheme.primary
                                   : Colors.grey[400],
                             ),

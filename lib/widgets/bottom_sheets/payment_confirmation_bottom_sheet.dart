@@ -93,7 +93,8 @@ class _PaymentConfirmationBottomSheetState
               child: Column(
                 children: [
                   _buildDetailRow(
-                      'amount'.tr, '${widget.paymentData['amount']} ₼',
+                      'amount'.tr,
+                      '${widget.paymentData['amount']} ${AppTheme.currencySymbol}',
                       isAmount: true),
                   const SizedBox(height: 12),
                   _buildDetailRow(

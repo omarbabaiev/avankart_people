@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
@@ -118,7 +121,12 @@ class EmailChangeBottomSheet {
                                         ? SizedBox(
                                             width: 24,
                                             height: 24,
-                                            child: CircularProgressIndicator(
+                                            child: Platform.isIOS
+                                                ? CupertinoActivityIndicator(
+                                                    radius: 10,
+                                                    color: Colors.white,
+                                                  )
+                                                : CircularProgressIndicator(
                                               strokeWidth: 2,
                                               color: Colors.white,
                                             ),
@@ -164,7 +172,8 @@ class EmailChangeBottomSheet {
       BuildContext context, ProfileController controller) {
     // Context'in geçerli olup olmadığını kontrol et
     if (!context.mounted) {
-      print('[VERIFICATION SHEET] Context is not mounted, using Get.context');
+      debugPrint(
+          '[VERIFICATION SHEET] Context is not mounted, using Get.context');
       // Eğer context geçerli değilse Get.context kullan
       final currentContext = Get.context;
       if (currentContext != null) {
@@ -174,15 +183,16 @@ class EmailChangeBottomSheet {
           subtitle:
               '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
+          successMessage: 'profile_updated_successfully'.tr,
           onVerify: (otp) async {
-            await controller.verifyUpdateOTP(otp);
+            return await controller.verifyUpdateOTP(otp);
           },
           onResend: () async {
             await controller.resendOTP();
           },
         );
       } else {
-        print('[VERIFICATION SHEET] Get.context is also null');
+        debugPrint('[VERIFICATION SHEET] Get.context is also null');
       }
       return;
     }
@@ -194,8 +204,9 @@ class EmailChangeBottomSheet {
       subtitle:
           '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
+      successMessage: 'profile_updated_successfully'.tr,
       onVerify: (otp) async {
-        await controller.verifyUpdateOTP(otp);
+        return await controller.verifyUpdateOTP(otp);
       },
       onResend: () async {
         await controller.resendOTP();

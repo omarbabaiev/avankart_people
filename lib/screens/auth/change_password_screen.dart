@@ -63,12 +63,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           .tr
           .replaceAll('{email}', _profileController.profile.value?.email ?? ''),
       showTimer: true,
+      shouldLogoutOnSuccess: true, // Şifre değişikliği için logout yapılacak
       onVerify: (otp) async {
-        final success = await _profileController.verifyPasswordChangeOTP(otp);
-        if (success) {
-          Get.close(2); // OTP bottom sheet ve confirm sheet'i kapat
-          _showSuccessScreen(); // Başarı ekranını göster
-        }
+        return await _profileController.verifyPasswordChangeOTP(otp);
       },
       onResend: () async {
         await _profileController.sendPasswordChangeOTP(
@@ -155,7 +152,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       _confirmPasswordController.text,
                                     );
 
+                                    // Sadece başarılı olursa verification bottom sheet'i göster
+                                    if (success) {
                                     _showVerificationBottomSheet();
+                                    }
                                   },
                             style: AppTheme.primaryButtonStyle(),
                             child: _profileController.isOtpSending.value

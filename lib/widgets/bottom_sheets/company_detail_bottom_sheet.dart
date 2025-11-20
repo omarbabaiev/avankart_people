@@ -24,7 +24,7 @@ class CompanyDetailBottomSheet extends StatelessWidget {
       arguments =
           Get.find<Map<String, dynamic>>(tag: 'company_detail_arguments');
     } catch (e) {
-      print('[Company DETAIL] Error getting arguments: $e');
+      debugPrint('[Company DETAIL] Error getting arguments: $e');
       return Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: BoxDecoration(
@@ -42,9 +42,9 @@ class CompanyDetailBottomSheet extends StatelessWidget {
     final companyId = arguments['company_id'] as String?;
     final companyDetail = companyDetailResponse?.data.responseData;
 
-    print('[Company DETAIL] Company ID: $companyId');
-    print('[Company DETAIL] Company Detail: $companyDetail');
-    print('[Company DETAIL] Arguments found: ${arguments.keys}');
+    debugPrint('[Company DETAIL] Company ID: $companyId');
+    debugPrint('[Company DETAIL] Company Detail: $companyDetail');
+    debugPrint('[Company DETAIL] Arguments found: ${arguments.keys}');
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,

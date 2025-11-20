@@ -10,7 +10,6 @@ import 'routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'screens/main/main_screen.dart';
@@ -30,8 +29,6 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   try {
     await Firebase.initializeApp();
@@ -56,10 +53,10 @@ void main() async {
   Get.put(SecurityController());
 
   // // API konfigürasyon bilgilerini yazdır
-  // ApiConfig.printDebugInfo();
+  // ApiConfig.debugPrintDebugInfo();
 
   // // Network durumunu kontrol et
-  // NetworkUtils.printNetworkDebugInfo();
+  // NetworkUtils.debugPrintNetworkDebugInfo();
 
   runApp(const AvankartPeople());
 }
@@ -100,10 +97,6 @@ class _AvankartPeopleState extends State<AvankartPeople>
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FlutterNativeSplash.remove();
-    });
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: ConstTexts.appName,

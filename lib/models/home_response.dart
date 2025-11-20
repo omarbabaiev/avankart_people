@@ -18,7 +18,7 @@ class HomeResponse {
       success: json['success'],
       message: json['message'],
       token: json['token'],
-      user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
+      user: json['user'] != null && json['user'] is Map ? UserModel.fromJson(json['user']) : null,
     );
   }
 }

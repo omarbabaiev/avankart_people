@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/utils/bottom_sheet_extension.dart';
 import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:avankart_people/utils/app_theme.dart';
@@ -61,32 +64,33 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
   }
 
   void _onPaymentPressed() {
-    print('[MANUAL QR INPUT] ===== PAYMENT PRESSED =====');
+    debugPrint('[MANUAL QR INPUT] ===== PAYMENT PRESSED =====');
 
     // Tüm alanların dolu olup olmadığını kontrol et
     final qrCode = _controllers.map((controller) => controller.text).join();
-    print('[MANUAL QR INPUT] QR Code: $qrCode');
-    print('[MANUAL QR INPUT] QR Code Length: ${qrCode.length}');
+    debugPrint('[MANUAL QR INPUT] QR Code: $qrCode');
+    debugPrint('[MANUAL QR INPUT] QR Code Length: ${qrCode.length}');
 
     if (qrCode.length == 16) {
-      print('[MANUAL QR INPUT] QR Code is valid, starting payment process...');
+      debugPrint(
+          '[MANUAL QR INPUT] QR Code is valid, starting payment process...');
       _isLoading.value = true;
 
       // QR kodunu callback ile gönder
-      print('[MANUAL QR INPUT] Calling onQrCodeEntered callback...');
+      debugPrint('[MANUAL QR INPUT] Calling onQrCodeEntered callback...');
       widget.onQrCodeEntered(qrCode);
 
       // Bottom sheet'i kapat
-      print('[MANUAL QR INPUT] Closing bottom sheet...');
+      debugPrint('[MANUAL QR INPUT] Closing bottom sheet...');
       Get.back();
     } else {
-      print('[MANUAL QR INPUT] QR Code is incomplete, showing error...');
+      debugPrint('[MANUAL QR INPUT] QR Code is incomplete, showing error...');
       SnackbarUtils.showErrorSnackbar(
         'qr_code_incomplete'.tr,
       );
     }
 
-    print('[MANUAL QR INPUT] ===========================');
+    debugPrint('[MANUAL QR INPUT] ===========================');
   }
 
   @override
@@ -214,10 +218,15 @@ class _ManualQrInputBottomSheetState extends State<ManualQrInputBottomSheet> {
                         ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(
+                            child: Platform.isIOS
+                                ? CupertinoActivityIndicator(
+                                    radius: 10,
+                                    color: Colors.white,
+                                  )
+                                : CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
                             ),
                           )
                         : Text(

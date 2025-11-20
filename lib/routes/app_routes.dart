@@ -14,6 +14,7 @@ import 'package:avankart_people/screens/other/filter_search_screen.dart';
 import 'package:avankart_people/screens/other/membership_detail_screen.dart';
 import 'package:avankart_people/screens/other/membership_list_screen.dart';
 import 'package:avankart_people/screens/other/search_company_screen.dart';
+import 'package:avankart_people/screens/other/transaction_detail_screen.dart';
 import 'package:avankart_people/screens/payment/card_select_screen.dart';
 import 'package:avankart_people/screens/initial/intro_screen.dart';
 import 'package:avankart_people/screens/other/benefits_screen.dart';
@@ -47,6 +48,7 @@ import '../controllers/splash_controller.dart';
 class AppRoutes {
   static const String notFound = '/not-found';
   static const String changeEmailAdress = '/change-email-adress';
+  static const String transactionDetail = '/transaction-detail';
   // Ana rotalar
   static const String splash = '/splash';
   static const String cards = '/cards';
@@ -106,6 +108,16 @@ class AppRoutes {
     GetPage(
       name: queryDetail,
       page: () => QueryDetailScreen(),
+      transition: Transition.cupertino,
+    ),
+    GetPage(
+      name: transactionDetail,
+      page: () => TransactionDetailScreen(
+        cardColor: Get.arguments?['cardColor'] ?? Colors.blue,
+        cardTitle: Get.arguments?['cardTitle'],
+        cardIcon: Get.arguments?['cardIcon'],
+        cardDescription: Get.arguments?['cardDescription'],
+      ),
       transition: Transition.cupertino,
     ),
     GetPage(
@@ -280,7 +292,8 @@ class AppRoutes {
       name: main,
       page: () => const MainScreen(),
       middlewares: [AuthMiddleware()],
-      transition: Transition.cupertino,
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 200),
     ),
     GetPage(
       name: cardInfo,

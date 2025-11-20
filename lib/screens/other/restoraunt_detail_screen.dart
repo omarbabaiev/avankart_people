@@ -22,8 +22,8 @@ class CompanyDetailScreen extends StatelessWidget {
     final companyId = arguments?['company_id'] as String?;
     final companyDetail = companyDetailResponse?.data.responseData;
 
-    print('[Company DETAIL] Company ID: $companyId');
-    print('[Company DETAIL] Company Detail: $companyDetail');
+    debugPrint('[Company DETAIL] Company ID: $companyId');
+    debugPrint('[Company DETAIL] Company Detail: $companyDetail');
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onPrimary,

@@ -31,6 +31,7 @@ class UserModel {
   final int? otpEmailStatus;
   final int? otpSmsStatus;
   final int? otpAuthenticatorStatus;
+  final bool? pinBool;
   final int? status;
   final String? token;
   final String? firebaseToken;
@@ -73,6 +74,7 @@ class UserModel {
     this.otpEmailStatus,
     this.otpSmsStatus,
     this.otpAuthenticatorStatus,
+    this.pinBool,
     this.status,
     this.token,
     this.firebaseToken,
@@ -91,7 +93,7 @@ class UserModel {
       id: json['_id'],
       name: json['name'],
       surname: json['surname'],
-      sirketId: json['sirket_id'] != null
+      sirketId: json['sirket_id'] != null && json['sirket_id'] is Map
           ? SirketIdModel.fromJson(json['sirket_id'])
           : null,
       totalBalance: json['totalBalance']?.toDouble(),
@@ -129,6 +131,11 @@ class UserModel {
       otpEmailStatus: json['otp_email_status'],
       otpSmsStatus: json['otp_sms_status'],
       otpAuthenticatorStatus: json['otp_authenticator_status'],
+      pinBool: json['pin_bool'] is bool
+          ? json['pin_bool'] as bool
+          : (json['pin_bool'] == null
+              ? null
+              : json['pin_bool'].toString().toLowerCase() == 'true'),
       status: json['status'],
       token: json['token'],
       firebaseToken: json['firebase_token'],

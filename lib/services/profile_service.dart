@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
 import 'firebase_service.dart';
+import 'package:flutter/material.dart';
+
 
 class ProfileService {
   final Dio _dio = Dio(
@@ -24,6 +26,31 @@ class ProfileService {
     return _firebaseService!;
   }
 
+  /// PIN kodunu backend ile doğrula
+  Future<bool> checkPinCode({required String pinCode}) async {
+    try {
+      debugPrint('[CHECK PIN REQUEST] pin: ****');
+      final response = await _dio.post(
+        '/people/profile/pin/check',
+        data: {
+          'pin_code': pinCode,
+        },
+      );
+      debugPrint('[CHECK PIN RESPONSE] ${response.data}');
+      // Başarılı sayılması için success == true beklenir
+      return response.data is Map &&
+          (response.data['success'] == true ||
+              response.data['message']?.toString().toLowerCase() == 'ok');
+    } on DioException catch (e) {
+      debugPrint('[CHECK PIN ERROR] ${e.response?.data}');
+      // Backend yanlış pin'de 4xx dönebilir; false dönelim
+      if (e.response != null) {
+        return false;
+      }
+      throw ProfileException(ApiResponseParser.parseDioError(e));
+    }
+  }
+
   ProfileService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -39,11 +66,11 @@ class ProfileService {
   /// Kullanıcı bilgilerini getir (raw response ile)
   Future<Map<String, dynamic>?> getProfileRaw() async {
     try {
-      print('[GET PROFILE RAW REQUEST]');
+      debugPrint('[GET PROFILE RAW REQUEST]');
 
       // Firebase token al
       String? firebaseToken = await _firebaseServiceInstance.getStoredToken();
-      print(
+      debugPrint(
           '[GET PROFILE RAW REQUEST] Firebase Token: ${firebaseToken?.substring(0, 20)}...');
 
       final response = await _dio.post(
@@ -52,19 +79,19 @@ class ProfileService {
           'firebase_token': firebaseToken ?? 'token',
         },
       );
-      print('[GET PROFILE RAW RESPONSE] ${response.data}');
+      debugPrint('[GET PROFILE RAW RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
       // Sessiz error'ları handle et
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
           e.response?.statusCode == 401) {
-        print(
+        debugPrint(
             '[GET PROFILE RAW SILENT ERROR] İnternet bağlantısı yok veya unauthorized: ${e.message}');
         return null; // Sessizce null döndür
       }
 
-      print('[GET PROFILE RAW ERROR] ${e.response?.data}');
+      debugPrint('[GET PROFILE RAW ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -72,9 +99,9 @@ class ProfileService {
   /// Kullanıcı bilgilerini getir
   Future<UserModel?> getProfile() async {
     try {
-      print('[GET PROFILE REQUEST]');
+      debugPrint('[GET PROFILE REQUEST]');
       final response = await _dio.post('/people/home');
-      print('[GET PROFILE RESPONSE] ${response.data}');
+      debugPrint('[GET PROFILE RESPONSE] ${response.data}');
 
       if (response.data['user'] != null) {
         return UserModel.fromJson(response.data['user']);
@@ -86,12 +113,12 @@ class ProfileService {
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
           e.response?.statusCode == 401) {
-        print(
+        debugPrint(
             '[GET PROFILE SILENT ERROR] İnternet bağlantısı yok veya unauthorized: ${e.message}');
         return null; // Sessizce null döndür
       }
 
-      print('[GET PROFILE ERROR] ${e.response?.data}');
+      debugPrint('[GET PROFILE ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -110,7 +137,7 @@ class ProfileService {
     String? gender,
   }) async {
     try {
-      print('[REQUEST CHANGE] duty: $duty');
+      debugPrint('[REQUEST CHANGE] duty: $duty');
       final data = {
         'duty': duty,
         if (phoneSuffix != null) 'phone_suffix': phoneSuffix,
@@ -124,16 +151,16 @@ class ProfileService {
           'confirm_new_password': confirmNewPassword,
         if (gender != null) 'gender': gender,
       };
-      print('[REQUEST CHANGE REQUEST] $data');
+      debugPrint('[REQUEST CHANGE REQUEST] $data');
 
       final response = await _dio.post(
         '/people/profile/request-change',
         data: data,
       );
-      print('[REQUEST CHANGE RESPONSE] ${response.data}');
+      debugPrint('[REQUEST CHANGE RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[REQUEST CHANGE ERROR] ${e.response?.data}');
+      debugPrint('[REQUEST CHANGE ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -141,15 +168,15 @@ class ProfileService {
   /// OTP kodunu doğrula
   Future<Map<String, dynamic>> submitOTP({required String otp}) async {
     try {
-      print('[SUBMIT OTP REQUEST] otp: $otp');
+      debugPrint('[SUBMIT OTP REQUEST] otp: $otp');
       final response = await _dio.post(
         '/people/profile/otp-submit',
         data: {'otp': otp},
       );
-      print('[SUBMIT OTP RESPONSE] ${response.data}');
+      debugPrint('[SUBMIT OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[SUBMIT OTP ERROR] ${e.response?.data}');
+      debugPrint('[SUBMIT OTP ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -157,12 +184,12 @@ class ProfileService {
   /// OTP kodunu yeniden gönder
   Future<Map<String, dynamic>> resendOTP() async {
     try {
-      print('[RESEND OTP REQUEST]');
+      debugPrint('[RESEND OTP REQUEST]');
       final response = await _dio.post('/people/profile/otp-resend');
-      print('[RESEND OTP RESPONSE] ${response.data}');
+      debugPrint('[RESEND OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[RESEND OTP ERROR] ${e.response?.data}');
+      debugPrint('[RESEND OTP ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -170,12 +197,12 @@ class ProfileService {
   /// OTP işlemini iptal et
   Future<Map<String, dynamic>> cancelOTP() async {
     try {
-      print('[CANCEL OTP REQUEST]');
+      debugPrint('[CANCEL OTP REQUEST]');
       final response = await _dio.post('/people/profile/otp-cancel');
-      print('[CANCEL OTP RESPONSE] ${response.data}');
+      debugPrint('[CANCEL OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[CANCEL OTP ERROR] ${e.response?.data}');
+      debugPrint('[CANCEL OTP ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -185,7 +212,7 @@ class ProfileService {
     required String password,
   }) async {
     try {
-      print('[INITIATE DELETE ACCOUNT REQUEST]');
+      debugPrint('[INITIATE DELETE ACCOUNT REQUEST]');
       final response = await _dio.post(
         '/people/auth/delete-account',
         data: {
@@ -193,10 +220,10 @@ class ProfileService {
           'password': password,
         },
       );
-      print('[INITIATE DELETE ACCOUNT RESPONSE] ${response.data}');
+      debugPrint('[INITIATE DELETE ACCOUNT RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[INITIATE DELETE ACCOUNT ERROR] ${e.response?.data}');
+      debugPrint('[INITIATE DELETE ACCOUNT ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -206,15 +233,15 @@ class ProfileService {
     required String otp,
   }) async {
     try {
-      print('[SUBMIT DELETE OTP REQUEST] otp: $otp');
+      debugPrint('[SUBMIT DELETE OTP REQUEST] otp: $otp');
       final response = await _dio.post(
         '/people/profile/delete-otp-submit',
         data: {'otp': otp},
       );
-      print('[SUBMIT DELETE OTP RESPONSE] ${response.data}');
+      debugPrint('[SUBMIT DELETE OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[SUBMIT DELETE OTP ERROR] ${e.response?.data}');
+      debugPrint('[SUBMIT DELETE OTP ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -222,15 +249,15 @@ class ProfileService {
   /// Hesap silme işlemini onayla
   Future<Map<String, dynamic>> confirmAccountDeletion() async {
     try {
-      print('[CONFIRM DELETE ACCOUNT REQUEST]');
+      debugPrint('[CONFIRM DELETE ACCOUNT REQUEST]');
       final response = await _dio.post(
         '/people/auth/delete-account',
         data: {'delete': true, 'confirm': true},
       );
-      print('[CONFIRM DELETE ACCOUNT RESPONSE] ${response.data}');
+      debugPrint('[CONFIRM DELETE ACCOUNT RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[CONFIRM DELETE ACCOUNT ERROR] ${e.response?.data}');
+      debugPrint('[CONFIRM DELETE ACCOUNT ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -238,17 +265,17 @@ class ProfileService {
   /// Profil silme için OTP gönder
   Future<Map<String, dynamic>> requestDeleteProfile() async {
     try {
-      print('[REQUEST DELETE PROFILE]');
+      debugPrint('[REQUEST DELETE PROFILE]');
       final response = await _dio.post(
         '/people/profile/request-change',
         data: {
           'duty': 'deleteProfile',
         },
       );
-      print('[REQUEST DELETE PROFILE RESPONSE] ${response.data}');
+      debugPrint('[REQUEST DELETE PROFILE RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[REQUEST DELETE PROFILE ERROR] ${e.response?.data}');
+      debugPrint('[REQUEST DELETE PROFILE ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -258,15 +285,15 @@ class ProfileService {
     required String otp,
   }) async {
     try {
-      print('[SUBMIT DELETE PROFILE OTP REQUEST] otp: $otp');
+      debugPrint('[SUBMIT DELETE PROFILE OTP REQUEST] otp: $otp');
       final response = await _dio.post(
         '/people/profile/delete-otp-submit',
         data: {'otp': otp},
       );
-      print('[SUBMIT DELETE PROFILE OTP RESPONSE] ${response.data}');
+      debugPrint('[SUBMIT DELETE PROFILE OTP RESPONSE] ${response.data}');
       return response.data;
     } on DioException catch (e) {
-      print('[SUBMIT DELETE PROFILE OTP ERROR] ${e.response?.data}');
+      debugPrint('[SUBMIT DELETE PROFILE OTP ERROR] ${e.response?.data}');
       throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
     }
   }
@@ -341,13 +368,31 @@ class ProfileService {
     );
   }
 
-  /// Profil güncelleme OTP doğrulama (submitOTP wrapper)
+  /// Profil değişikliğini uygula (apply-change endpoint)
+  Future<Map<String, dynamic>> applyChange({
+    required String otp,
+  }) async {
+    try {
+      debugPrint('[APPLY CHANGE REQUEST] otp: $otp');
+      final response = await _dio.post(
+        '/people/profile/apply-change',
+        data: {'otp': otp},
+      );
+      debugPrint('[APPLY CHANGE RESPONSE] ${response.data}');
+      return response.data;
+    } on DioException catch (e) {
+      debugPrint('[APPLY CHANGE ERROR] ${e.response?.data}');
+      throw ProfileException(ApiResponseParser.parseApiError(e.response?.data));
+    }
+  }
+
+  /// Profil güncelleme OTP doğrulama (applyChange wrapper)
   Future<Map<String, dynamic>> verifyUpdateOTP({
     required String field,
     required String newValue,
     required String otp,
   }) async {
-    return await submitOTP(otp: otp);
+    return await applyChange(otp: otp);
   }
 }
 

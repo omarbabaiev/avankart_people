@@ -36,6 +36,10 @@ class _MainScreenState extends State<MainScreen> {
     // HomeController'ı sınıf oluşturulduğunda başlat
     // permanent: true parametresi ekleyerek controller'ın kalıcı olmasını sağlayalım
     controller = Get.put(HomeController(), permanent: true);
+    // Main screen açıldığında her zaman ilk sayfaya (index 0) git
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.onItemTapped(0);
+    });
   }
 
   @override

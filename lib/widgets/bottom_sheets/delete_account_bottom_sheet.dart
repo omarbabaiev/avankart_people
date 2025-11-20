@@ -121,7 +121,8 @@ class DeleteAccountBottomSheet {
       BuildContext context, ProfileController controller) {
     // Context'in geçerli olup olmadığını kontrol et
     if (!context.mounted) {
-      print('[VERIFICATION SHEET] Context is not mounted, using Get.context');
+      debugPrint(
+          '[VERIFICATION SHEET] Context is not mounted, using Get.context');
       // Eğer context geçerli değilse Get.context kullan
       final currentContext = Get.context;
       if (currentContext != null) {
@@ -132,17 +133,14 @@ class DeleteAccountBottomSheet {
               '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
           showTimer: true,
           onVerify: (otp) async {
-            final success = await controller.submitDeleteProfileOTP(otp);
-            if (success) {
-              Get.back();
-            }
+            return await controller.submitDeleteProfileOTP(otp);
           },
           onResend: () async {
             await controller.requestDeleteProfile();
           },
         );
       } else {
-        print('[VERIFICATION SHEET] Get.context is also null');
+        debugPrint('[VERIFICATION SHEET] Get.context is also null');
       }
       return;
     }
@@ -155,10 +153,7 @@ class DeleteAccountBottomSheet {
           '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
       onVerify: (otp) async {
-        final success = await controller.submitDeleteProfileOTP(otp);
-        if (success) {
-          Get.back();
-        }
+        return await controller.submitDeleteProfileOTP(otp);
       },
       onResend: () async {
         await controller.requestDeleteProfile();

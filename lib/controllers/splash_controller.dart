@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../routes/app_routes.dart';
@@ -30,12 +31,12 @@ class SplashController extends GetxController {
   Future<void> _clearSecureStorageOnFirstLaunch() async {
     final isFirstLaunch = _getStorage.read('isFirstLaunch') ?? false;
     if (isFirstLaunch == false) {
-      print('[SPLASH] First launch detected, clearing SecureStorage...');
+      debugPrint('[SPLASH] First launch detected, clearing SecureStorage...');
       await _storage.deleteAll();
       await _getStorage.write('isFirstLaunch', true);
-      print('[SPLASH] isFirstLaunch set to true');
+      debugPrint('[SPLASH] isFirstLaunch set to true');
     } else {
-      print('[SPLASH] Not first launch, skipping SecureStorage clear');
+      debugPrint('[SPLASH] Not first launch, skipping SecureStorage clear');
     }
   }
 
@@ -55,37 +56,39 @@ class SplashController extends GetxController {
         final userToken = await _storage.read(key: 'user_token');
 
         if (oldToken != null && oldToken.isNotEmpty) {
-          print('[SPLASH] Found token in old key, migrating to new key');
+          debugPrint('[SPLASH] Found token in old key, migrating to new key');
           await _storage.write(
               key: SecureStorageConfig.tokenKey, value: oldToken);
           token = oldToken;
         } else if (authToken != null && authToken.isNotEmpty) {
-          print('[SPLASH] Found token in auth_token key, migrating to new key');
+          debugPrint(
+              '[SPLASH] Found token in auth_token key, migrating to new key');
           await _storage.write(
               key: SecureStorageConfig.tokenKey, value: authToken);
           token = authToken;
         } else if (userToken != null && userToken.isNotEmpty) {
-          print('[SPLASH] Found token in user_token key, migrating to new key');
+          debugPrint(
+              '[SPLASH] Found token in user_token key, migrating to new key');
           await _storage.write(
               key: SecureStorageConfig.tokenKey, value: userToken);
           token = userToken;
         } else {
-          print('[SPLASH] No token found in any key');
+          debugPrint('[SPLASH] No token found in any key');
         }
       }
 
       // Remember me'yi GetStorage'dan oku
       final rememberMe = GetStorage().read('rememberMe') ?? false;
 
-      print('[SPLASH] Token check - token: ${token?.substring(0, 20)}...');
-      print('[SPLASH] Token is null: ${token == null}');
-      print('[SPLASH] Token is empty: ${token?.isEmpty}');
-      print('[SPLASH] Remember me: $rememberMe');
-      print('[SPLASH] Remember me is true: $rememberMe');
+      debugPrint('[SPLASH] Token check - token: ${token?.substring(0, 20)}...');
+      debugPrint('[SPLASH] Token is null: ${token == null}');
+      debugPrint('[SPLASH] Token is empty: ${token?.isEmpty}');
+      debugPrint('[SPLASH] Remember me: $rememberMe');
+      debugPrint('[SPLASH] Remember me is true: $rememberMe');
 
       // Token yoksa önce intro kontrolü yap
       if (token == null || token.isEmpty) {
-        print('[SPLASH] No token found, checking intro first');
+        debugPrint('[SPLASH] No token found, checking intro first');
         await _checkIntroAndNavigate(rememberMe);
         return; // Intro kontrolünden sonra çık
       }
@@ -95,53 +98,55 @@ class SplashController extends GetxController {
 
       // Token varsa home request at (remember me kontrolü opsiyonel)
       if (token.isNotEmpty) {
-        print('[SPLASH] Token found, calling home endpoint');
+        debugPrint('[SPLASH] Token found, calling home endpoint');
         try {
           final homeResponse = await _authService.home();
-          print('[SPLASH] Home response success: ${homeResponse?.success}');
+          debugPrint(
+              '[SPLASH] Home response success: ${homeResponse?.success}');
 
           if (homeResponse?.success == true) {
-            print('[SPLASH] Home success, checking PIN code requirements');
+            debugPrint('[SPLASH] Home success, checking PIN code requirements');
 
             // Remember me true ise PIN kod kontrolü yap
             if (rememberMe == true) {
-              print('[SPLASH] Remember me is true, checking PIN code');
+              debugPrint('[SPLASH] Remember me is true, checking PIN code');
               await _checkPinCodeAndNavigate();
             } else {
-              print(
+              debugPrint(
                   '[SPLASH] Remember me is false, navigating directly to main');
               Get.offAllNamed(AppRoutes.main);
             }
           } else {
-            print('[SPLASH] Home failed, navigating to login');
+            debugPrint('[SPLASH] Home failed, navigating to login');
             // Token geçersiz, tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
             await _storage.deleteAll();
-            print('[SPLASH] All storage cleared');
+            debugPrint('[SPLASH] All storage cleared');
             _clearPasswordField();
             Get.offAllNamed(AppRoutes.login);
           }
         } catch (e) {
-          print('[SPLASH] Home request error: $e');
+          debugPrint('[SPLASH] Home request error: $e');
 
           // Tüm hatalar için retry butonu göster
-          print('[SPLASH] Showing retry button for error');
+          debugPrint('[SPLASH] Showing retry button for error');
           showRetryButton.value = true;
           retryMessage.value = _extractErrorMessage(e);
         }
       }
     } catch (e) {
-      print('[SPLASH] Error during auth check: $e');
+      debugPrint('[SPLASH] Error during auth check: $e');
 
       // Hata türünü kontrol et
       if (_isRetryableError(e)) {
-        print('[SPLASH] Retryable error detected, showing retry button');
+        debugPrint('[SPLASH] Retryable error detected, showing retry button');
         showRetryButton.value = true;
         // Retry butonu göster, login'e gitme
       } else {
-        print('[SPLASH] Non-retryable error, checking intro and navigating');
+        debugPrint(
+            '[SPLASH] Non-retryable error, checking intro and navigating');
         // Hata durumunda tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
         await _storage.deleteAll();
-        print('[SPLASH] All storage cleared due to error');
+        debugPrint('[SPLASH] All storage cleared due to error');
         _clearPasswordField();
         // Hata durumunda da intro kontrolü yap
         await _checkIntroAndNavigate(false);
@@ -162,7 +167,7 @@ class SplashController extends GetxController {
     try {
       await _checkAuth();
     } catch (e) {
-      print('[SPLASH] Retry failed: $e');
+      debugPrint('[SPLASH] Retry failed: $e');
       showRetryButton.value = true;
       retryMessage.value = _extractErrorMessage(e);
     } finally {
@@ -201,16 +206,16 @@ class SplashController extends GetxController {
   /// Animasyonu bir kez oynat ve 4 saniye sonra dur
   Future<void> _playAnimationOnce() async {
     try {
-      print('[SPLASH] Starting animation...');
+      debugPrint('[SPLASH] Starting animation...');
 
       // 4 saniye bekle (animasyon oynatılacak)
       await Future.delayed(const Duration(seconds: 4));
 
       // Animasyon tamamlandı olarak işaretle
       isAnimationCompleted.value = true;
-      print('[SPLASH] Animation completed');
+      debugPrint('[SPLASH] Animation completed');
     } catch (e) {
-      print('[SPLASH] Error during animation: $e');
+      debugPrint('[SPLASH] Error during animation: $e');
       // Hata durumunda da animasyon tamamlandı olarak işaretle
       isAnimationCompleted.value = true;
     }
@@ -219,22 +224,22 @@ class SplashController extends GetxController {
   /// Splash işlemlerini yap (home endpoint çağrısı)
   Future<void> performSplashOperations() async {
     try {
-      print('[SPLASH] Performing splash operations...');
+      debugPrint('[SPLASH] Performing splash operations...');
 
       // Home endpoint'ini çağır
       final homeResponse = await _authService.home();
-      print('[SPLASH] Home response success: ${homeResponse?.success}');
+      debugPrint('[SPLASH] Home response success: ${homeResponse?.success}');
 
       if (homeResponse?.success != true) {
-        print('[SPLASH] Home failed during splash operations');
+        debugPrint('[SPLASH] Home failed during splash operations');
         // Home başarısız olursa force logout yap
         await AuthUtils.forceLogout();
         return;
       }
 
-      print('[SPLASH] Splash operations completed successfully');
+      debugPrint('[SPLASH] Splash operations completed successfully');
     } catch (e) {
-      print('[SPLASH] Error during splash operations: $e');
+      debugPrint('[SPLASH] Error during splash operations: $e');
       // Hata durumunda force logout yap
       await AuthUtils.forceLogout();
     }
@@ -246,21 +251,32 @@ class SplashController extends GetxController {
       // SecurityController'ı başlat
       final securityController = Get.put(SecurityController());
 
-      // PIN kod enabled mi kontrol et
-      final isPinEnabled = await securityController.isPinEnabled.value;
-      print('[SPLASH] PIN code enabled: $isPinEnabled');
+      // Ayarları yükle
+      await securityController.refreshSettings();
 
-      if (isPinEnabled) {
-        print('[SPLASH] PIN code is enabled, navigating to PIN code screen');
-        // PIN kod ekranına git
+      // PIN kod veya biometric enabled mi kontrol et
+      final isPinEnabled = securityController.isPinEnabled.value;
+      final isBiometricEnabled = securityController.isBiometricEnabled.value;
+      final isBiometricAvailable =
+          securityController.isBiometricAvailable.value;
+
+      debugPrint('[SPLASH] Security status:');
+      debugPrint('[SPLASH]   - PIN enabled: $isPinEnabled');
+      debugPrint('[SPLASH]   - Biometric enabled: $isBiometricEnabled');
+      debugPrint('[SPLASH]   - Biometric available: $isBiometricAvailable');
+
+      if (isPinEnabled || isBiometricEnabled) {
+        debugPrint('[SPLASH] Security enabled, navigating to PIN code screen');
+
+        // PIN ekranına git (biometric otomatik olarak PIN ekranında gösterilecek)
         Get.offAllNamed(AppRoutes.enterPinCode);
       } else {
-        print('[SPLASH] PIN code is not enabled, navigating directly to main');
+        debugPrint('[SPLASH] No security enabled, navigating directly to main');
         // PIN kod yoksa direkt main'e git
         Get.offAllNamed(AppRoutes.main);
       }
     } catch (e) {
-      print('[SPLASH] Error checking PIN code: $e');
+      debugPrint('[SPLASH] Error checking PIN code: $e');
       // Hata durumunda direkt main'e git
       Get.offAllNamed(AppRoutes.main);
     }
@@ -271,22 +287,22 @@ class SplashController extends GetxController {
     try {
       // Intro görülmüş mü kontrol et
       final hasSeenIntro = _getStorage.read('hasSeenIntro') ?? false;
-      print('[SPLASH] Has seen intro: $hasSeenIntro');
+      debugPrint('[SPLASH] Has seen intro: $hasSeenIntro');
 
       if (!hasSeenIntro) {
-        print('[SPLASH] First time user, navigating to intro');
+        debugPrint('[SPLASH] First time user, navigating to intro');
         // İlk kez açılıyor, intro'ya git
         Get.offAllNamed(AppRoutes.intro);
       } else {
-        print('[SPLASH] Returning user, navigating to login');
+        debugPrint('[SPLASH] Returning user, navigating to login');
         // Daha önce intro görülmüş, login'e git
         if (rememberMe == true) {
-          print(
+          debugPrint(
               '[SPLASH] No token found but remember me is true, clearing remember me and navigating to login');
           // Remember me'yi temizle çünkü token yok - GÜVENLİK
           GetStorage().remove('rememberMe');
         } else {
-          print(
+          debugPrint(
               '[SPLASH] No token found and remember me is false, clearing data and navigating to login');
           // Remember me false ise sadece storage'ı temizle, logout API çağırma
           await AuthUtils.clearDataWhenRememberMeFalse();
@@ -295,7 +311,7 @@ class SplashController extends GetxController {
         Get.offAllNamed(AppRoutes.login);
       }
     } catch (e) {
-      print('[SPLASH] Error checking intro: $e');
+      debugPrint('[SPLASH] Error checking intro: $e');
       // Hata durumunda login'e git
       _clearPasswordField();
       Get.offAllNamed(AppRoutes.login);
@@ -306,17 +322,17 @@ class SplashController extends GetxController {
   Future<void> _debugAllKeys() async {
     try {
       final allKeys = await _storage.readAll();
-      print('[SPLASH DEBUG] All stored keys: ${allKeys.keys.toList()}');
+      debugPrint('[SPLASH DEBUG] All stored keys: ${allKeys.keys.toList()}');
 
       // Tüm key'lerin değerlerini kontrol et
       for (final key in allKeys.keys) {
         final value = allKeys[key];
         if (value != null && value.isNotEmpty) {
           if (value.length > 50) {
-            print(
+            debugPrint(
                 '[SPLASH DEBUG] $key: ${value.substring(0, 20)}... (${value.length} chars)');
           } else {
-            print('[SPLASH DEBUG] $key: $value');
+            debugPrint('[SPLASH DEBUG] $key: $value');
           }
         }
       }
@@ -331,21 +347,24 @@ class SplashController extends GetxController {
       final userToken = await _storage.read(key: 'user_token');
       final oldRememberMe = await _storage.read(key: 'rememberMe');
 
-      print('[SPLASH DEBUG] auth_token key: ${token?.substring(0, 20)}...');
-      print('[SPLASH DEBUG] rememberMe (GetStorage): $rememberMe');
-      print('[SPLASH DEBUG] old token key: ${oldToken?.substring(0, 20)}...');
-      print(
+      debugPrint(
+          '[SPLASH DEBUG] auth_token key: ${token?.substring(0, 20)}...');
+      debugPrint('[SPLASH DEBUG] rememberMe (GetStorage): $rememberMe');
+      debugPrint(
+          '[SPLASH DEBUG] old token key: ${oldToken?.substring(0, 20)}...');
+      debugPrint(
           '[SPLASH DEBUG] auth_token key (direct): ${authToken?.substring(0, 20)}...');
-      print('[SPLASH DEBUG] user_token key: ${userToken?.substring(0, 20)}...');
-      print('[SPLASH DEBUG] old rememberMe key: $oldRememberMe');
+      debugPrint(
+          '[SPLASH DEBUG] user_token key: ${userToken?.substring(0, 20)}...');
+      debugPrint('[SPLASH DEBUG] old rememberMe key: $oldRememberMe');
 
       // Eğer readAll() boş ama read() token buluyorsa, bu Flutter Secure Storage bug'ı
       if (allKeys.isEmpty && token != null) {
-        print(
+        debugPrint(
             '[SPLASH DEBUG] ⚠️ Flutter Secure Storage bug detected! readAll() empty but read() finds token');
       }
     } catch (e) {
-      print('[SPLASH DEBUG] Error reading keys: $e');
+      debugPrint('[SPLASH DEBUG] Error reading keys: $e');
     }
   }
 }

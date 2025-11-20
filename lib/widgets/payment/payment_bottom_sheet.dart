@@ -70,7 +70,6 @@ class PaymentBottomSheet {
                           Image.asset(
                             ImageAssets.walletEmpty,
                             height: 80,
-                            color: Theme.of(context).colorScheme.onBackground,
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -132,13 +131,13 @@ class PaymentBottomSheet {
                           return Obx(() {
                             final isSelected =
                                 controller.selectedPaymentIndex.value == index;
-                            print(
+                            debugPrint(
                                 '[PAYMENT BOTTOM SHEET] Card $index isSelected: $isSelected');
                             return InkWell(
                                 onTap: () {
-                                  print(
+                                  debugPrint(
                                       '[PAYMENT BOTTOM SHEET] Card selected: $index');
-                                  print(
+                                  debugPrint(
                                       '[PAYMENT BOTTOM SHEET] Card title: ${card['title']}');
                                   controller.selectedPaymentIndex.value = index;
                                 },
@@ -176,14 +175,15 @@ class PaymentBottomSheet {
                 final canProceed =
                     hasCards && isCardSelected && !controller.isLoading.value;
 
-                print('[PAYMENT BOTTOM SHEET] Button state check:');
-                print('[PAYMENT BOTTOM SHEET] hasCards: $hasCards');
-                print(
+                debugPrint('[PAYMENT BOTTOM SHEET] Button state check:');
+                debugPrint('[PAYMENT BOTTOM SHEET] hasCards: $hasCards');
+                debugPrint(
                     '[PAYMENT BOTTOM SHEET] selectedPaymentIndex: ${controller.selectedPaymentIndex.value}');
-                print('[PAYMENT BOTTOM SHEET] isCardSelected: $isCardSelected');
-                print(
+                debugPrint(
+                    '[PAYMENT BOTTOM SHEET] isCardSelected: $isCardSelected');
+                debugPrint(
                     '[PAYMENT BOTTOM SHEET] isLoading: ${controller.isLoading.value}');
-                print('[PAYMENT BOTTOM SHEET] canProceed: $canProceed');
+                debugPrint('[PAYMENT BOTTOM SHEET] canProceed: $canProceed');
 
                 return Obx(() {
                   if (!controller.cards.isEmpty &&
@@ -196,7 +196,7 @@ class PaymentBottomSheet {
                                 // Seçili kartı QR payment controller'a gönder
                                 final selectedCard = controller.cards[
                                     controller.selectedPaymentIndex.value];
-                                print(
+                                debugPrint(
                                     '[PAYMENT BOTTOM SHEET] Selected card: ${selectedCard['title']}');
 
                                 // QR payment screen'e git
@@ -263,16 +263,17 @@ class PaymentBottomSheet {
       // Geçici test için statik sirket_id
       if (sirketId == null || sirketId.isEmpty) {
         sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
-        print(
+        debugPrint(
             '[PAYMENT BOTTOM SHEET] Using static sirketId for test: $sirketId');
       }
 
-      print('[PAYMENT BOTTOM SHEET] Loading cards with sirketId: $sirketId');
+      debugPrint(
+          '[PAYMENT BOTTOM SHEET] Loading cards with sirketId: $sirketId');
 
       // Kartları sirketId ile yükle
       controller.loadMyCards(sirketId: sirketId);
     } catch (e) {
-      print('[PAYMENT BOTTOM SHEET] Error loading cards: $e');
+      debugPrint('[PAYMENT BOTTOM SHEET] Error loading cards: $e');
       // Hata durumunda fallback olarak kartları yükle
       controller.loadMyCards();
     }

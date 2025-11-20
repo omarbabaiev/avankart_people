@@ -1,4 +1,5 @@
 import 'package:avankart_people/utils/secure_storage_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../services/auth_service.dart';
 import '../models/register_response.dart';
@@ -68,7 +69,7 @@ class RegisterController extends GetxController {
 
   void updatePhoneSuffix(String value) {
     phoneSuffix.value = value;
-    print('[REGISTER CONTROLLER] Phone suffix updated to: $value');
+    debugPrint('[REGISTER CONTROLLER] Phone suffix updated to: $value');
   }
 
   void updateAgreeToTerms(bool value) {
@@ -130,10 +131,10 @@ class RegisterController extends GetxController {
         // Token'ı kaydet
         await _storage.write(
             key: SecureStorageConfig.tokenKey, value: response.token);
-        print('[REGISTER SUCCESS] Token saved: ${response.token}');
+        debugPrint('[REGISTER SUCCESS] Token saved: ${response.token}');
 
         // OTP ekranına yönlendir (register'dan geldiğini belirt)
-        print('[REGISTER SUCCESS] Navigating to OTP');
+        debugPrint('[REGISTER SUCCESS] Navigating to OTP');
         Get.toNamed(AppRoutes.otp, arguments: {
           'email': email.value,
           'token': response.token,
@@ -144,7 +145,7 @@ class RegisterController extends GetxController {
             'registration_successful_but_no_token'.tr);
       }
     } catch (e) {
-      print('[REGISTER ERROR] $e');
+      debugPrint('[REGISTER ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     } finally {

@@ -1,10 +1,10 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
-import 'package:avankart_people/utils/snackbar_utils.dart';
 import 'package:avankart_people/widgets/bottom_sheets/delete_account_bottom_sheet.dart';
 import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/controllers/security_controller.dart';
+import 'package:avankart_people/widgets/bottom_sheets/freeze_account_bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -114,6 +114,16 @@ class SecurityScreen extends StatelessWidget {
                         title: "freeze_account".tr,
                         context: context,
                         isSwitch: false,
+                        onTap: () {
+                          // Hesabı dondur bottom sheet
+                          // Lazy load controller if not ready
+                          if (!Get.isRegistered<ProfileController>()) {
+                            Get.put(ProfileController());
+                          }
+                          // Show bottom sheet
+                          // ignore: use_build_context_synchronously
+                          FreezeAccountBottomSheet.show(context);
+                        },
                       ),
                     ),
                     SizedBox(height: 4),
@@ -127,7 +137,14 @@ class SecurityScreen extends StatelessWidget {
                       ),
                       child: _buildSecureTile(
                         onTap: () async {
-                          await securityController.togglePinCode();
+                          // Switch değerine göre toggle yap
+                          if (securityController.isPinEnabled.value) {
+                            // Disable edilecek - PIN doğrulaması gerekli (togglePinCode içinde yapılıyor)
+                            await securityController.togglePinCode();
+                          } else {
+                            // Enable edilecek - setup ekranına git
+                            await securityController.togglePinCode();
+                          }
                           // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
                           await securityController.refreshSettings();
                         },
@@ -137,6 +154,8 @@ class SecurityScreen extends StatelessWidget {
                         isSwitch: true,
                         switchValue: securityController.isPinEnabled.value,
                         onSwitchChanged: (value) async {
+                          // Switch değiştiğinde toggle yap
+                          // togglePinCode içinde PIN doğrulaması yapılıyor
                           await securityController.togglePinCode();
                           // PIN kod ayarlama ekranından döndükten sonra ayarları yenile
                           await securityController.refreshSettings();
@@ -161,23 +180,46 @@ class SecurityScreen extends StatelessWidget {
                           switchValue:
                               securityController.isBiometricEnabled.value,
                           onSwitchChanged: (value) async {
-                            if (!securityController.isPinEnabled.value) {
-                              SnackbarUtils.showErrorSnackbar(
-                                  'pin_code_warning'.tr);
-                              return;
-                            }
-                            // PIN doğrulama ekranına yönlendir
-                            final result = await Get.toNamed(
-                              AppRoutes.enterPinCode,
-                              arguments: {
-                                'verifyOnly': true,
-                                'allowBack': true,
-                              },
-                            );
+                            if (value) {
+                              // Enable edilecek
+                              if (!securityController.isPinEnabled.value) {
+                                // PIN yoksa setup PIN ekranına git (biometric için)
+                                final result = await Get.toNamed(
+                                  AppRoutes.setPinCode,
+                                  arguments: {
+                                    'allowBack': true,
+                                    'forBiometric': true,
+                                    'platform': 'ios',
+                                  },
+                                );
 
-                            if (result == true) {
-                              // Doğrulama başarılıysa biyometriyi togglela
-                              await securityController.toggleBiometric(true);
+                                if (result == true) {
+                                  // PIN kaydedildi, biometric'i aktif et
+                                  await securityController.toggleBiometric(
+                                      true, true);
+                                  await securityController.refreshSettings();
+                                }
+                                return;
+                              }
+                              // PIN doğrulama ekranına yönlendir
+                              final result = await Get.toNamed(
+                                AppRoutes.enterPinCode,
+                                arguments: {
+                                  'verifyOnly': true,
+                                  'allowBack': true,
+                                },
+                              );
+
+                              if (result == true) {
+                                // PIN doğrulandı, biometric auth testini atla
+                                await securityController.toggleBiometric(
+                                    true, true);
+                                await securityController.refreshSettings();
+                              }
+                            } else {
+                              // Disable edilecek - toggleBiometric içinde PIN doğrulaması yapılıyor
+                              await securityController.toggleBiometric(false);
+                              await securityController.refreshSettings();
                             }
                           },
                           enabled: securityController.isPinEnabled.value,
@@ -193,28 +235,52 @@ class SecurityScreen extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
                         child: _buildSecureTile(
-                          iconLeading: ImageAssets.fingerprintSimple,
-                          title: "finger_print".tr,
+                          iconLeading: ImageAssets.fingerdebugPrintSimple,
+                          title: "finger_debugPrint".tr,
                           context: context,
                           isSwitch: true,
                           switchValue:
                               securityController.isBiometricEnabled.value,
                           onSwitchChanged: (value) async {
-                            if (!securityController.isPinEnabled.value) {
-                              SnackbarUtils.showErrorSnackbar(
-                                  'pin_code_warning'.tr);
-                              return;
-                            }
-                            final result = await Get.toNamed(
-                              AppRoutes.enterPinCode,
-                              arguments: {
-                                'verifyOnly': true,
-                                'allowBack': true,
-                              },
-                            );
+                            if (value) {
+                              // Enable edilecek
+                              if (!securityController.isPinEnabled.value) {
+                                // PIN yoksa setup PIN ekranına git (biometric için)
+                                final result = await Get.toNamed(
+                                  AppRoutes.setPinCode,
+                                  arguments: {
+                                    'allowBack': true,
+                                    'forBiometric': true,
+                                    'platform': 'android',
+                                  },
+                                );
 
-                            if (result == true) {
-                              await securityController.toggleBiometric(true);
+                                if (result == true) {
+                                  // PIN kaydedildi, biometric'i aktif et
+                                  await securityController.toggleBiometric(
+                                      true, true);
+                                  await securityController.refreshSettings();
+                                }
+                                return;
+                              }
+                              final result = await Get.toNamed(
+                                AppRoutes.enterPinCode,
+                                arguments: {
+                                  'verifyOnly': true,
+                                  'allowBack': true,
+                                },
+                              );
+
+                              if (result == true) {
+                                // PIN doğrulandı, biometric auth testini atla
+                                await securityController.toggleBiometric(
+                                    true, true);
+                                await securityController.refreshSettings();
+                              }
+                            } else {
+                              // Disable edilecek - toggleBiometric içinde PIN doğrulaması yapılıyor
+                              await securityController.toggleBiometric(false);
+                              await securityController.refreshSettings();
                             }
                           },
                           enabled: securityController.isPinEnabled.value,

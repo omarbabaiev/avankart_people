@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app_settings/app_settings.dart';
@@ -33,7 +34,7 @@ class NotificationSettingsController extends GetxController {
       // Sonra permission kontrolü yap
       await checkNotificationPermission();
     } catch (e) {
-      print('[NOTIFICATION] Error initializing settings: $e');
+      debugPrint('[NOTIFICATION] Error initializing settings: $e');
     } finally {
       isLoading.value = false;
     }
@@ -49,15 +50,16 @@ class NotificationSettingsController extends GetxController {
         // İlk kez açılıyorsa default olarak true yap
         _storage.write('notification_enabled', true);
         isNotificationEnabled.value = true;
-        print('[NOTIFICATION] First login - notifications enabled by default');
+        debugPrint(
+            '[NOTIFICATION] First login - notifications enabled by default');
       } else {
         // Daha önce ayarlanmışsa o değeri kullan
         isNotificationEnabled.value = notificationEnabled;
-        print(
+        debugPrint(
             '[NOTIFICATION] Notification setting loaded: $notificationEnabled');
       }
     } catch (e) {
-      print('[NOTIFICATION] Error checking notification enabled flag: $e');
+      debugPrint('[NOTIFICATION] Error checking notification enabled flag: $e');
       isNotificationEnabled.value = true; // Default olarak true
     }
   }
@@ -71,10 +73,10 @@ class NotificationSettingsController extends GetxController {
 
       // Permission durumu notification ayarını etkilemez
       // Sadece bilgilendirme amaçlı tutulur
-      print(
+      debugPrint(
           '[NOTIFICATION] Permission status: ${status.isGranted ? 'granted' : 'denied'}');
     } catch (e) {
-      print('[NOTIFICATION] Error checking permission: $e');
+      debugPrint('[NOTIFICATION] Error checking permission: $e');
     }
   }
 
@@ -98,7 +100,7 @@ class NotificationSettingsController extends GetxController {
         value ? 'notification_enabled'.tr : 'notification_disabled'.tr,
       );
     } catch (e) {
-      print('[NOTIFICATION] Error toggling notification: $e');
+      debugPrint('[NOTIFICATION] Error toggling notification: $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     } finally {
@@ -122,13 +124,13 @@ class NotificationSettingsController extends GetxController {
         // Home API'ye notification enabled request'i gönder
         await _notificationsService.updateNotificationSettings(
             enabled: true, token: token);
-        print(
+        debugPrint(
             '[NOTIFICATION] App notification enabled successfully and sent to API');
       } else {
         throw Exception('Failed to get Firebase token');
       }
     } catch (e) {
-      print('[NOTIFICATION] Error enabling app notification: $e');
+      debugPrint('[NOTIFICATION] Error enabling app notification: $e');
       throw e;
     }
   }
@@ -145,10 +147,10 @@ class NotificationSettingsController extends GetxController {
       // Home API'ye notification disabled request'i gönder (token null)
       await _notificationsService.updateNotificationSettings(
           enabled: false, token: null);
-      print(
+      debugPrint(
           '[NOTIFICATION] App notification disabled successfully and sent to API');
     } catch (e) {
-      print('[NOTIFICATION] Error disabling app notification: $e');
+      debugPrint('[NOTIFICATION] Error disabling app notification: $e');
       throw e;
     }
   }
@@ -162,11 +164,11 @@ class NotificationSettingsController extends GetxController {
   /// Cihazın uygulama bildirim ayarlarını aç
   Future<void> openAppNotificationSettings() async {
     try {
-      print('[NOTIFICATION] Opening app notification settings...');
+      debugPrint('[NOTIFICATION] Opening app notification settings...');
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
-      print('[NOTIFICATION] App notification settings opened');
+      debugPrint('[NOTIFICATION] App notification settings opened');
     } catch (e) {
-      print('[NOTIFICATION] Error opening app notification settings: $e');
+      debugPrint('[NOTIFICATION] Error opening app notification settings: $e');
       SnackbarUtils.showErrorSnackbar('notification_settings_error'.tr);
     }
   }
@@ -174,7 +176,7 @@ class NotificationSettingsController extends GetxController {
   /// Uygulama açıldığında notification durumunu API'ye gönder
   Future<void> syncNotificationStatusOnAppStart() async {
     try {
-      print('[NOTIFICATION] Syncing notification status on app start...');
+      debugPrint('[NOTIFICATION] Syncing notification status on app start...');
 
       // GetStorage'dan notification durumunu kontrol et
       bool notificationEnabled = _storage.read('notification_enabled') ?? true;
@@ -185,7 +187,7 @@ class NotificationSettingsController extends GetxController {
         if (firebaseToken != null && firebaseToken.isNotEmpty) {
           await _notificationsService.updateNotificationSettings(
               enabled: true, token: firebaseToken);
-          print(
+          debugPrint(
               '[NOTIFICATION] App start: Notification enabled, token sent to API');
         } else {
           // Token yoksa yeni token almayı dene
@@ -193,23 +195,25 @@ class NotificationSettingsController extends GetxController {
           if (firebaseToken != null) {
             await _notificationsService.updateNotificationSettings(
                 enabled: true, token: firebaseToken);
-            print('[NOTIFICATION] New token generated and sent to API');
+            debugPrint('[NOTIFICATION] New token generated and sent to API');
           } else {
             // Token alınamazsa notification'ı kapat
             _storage.write('notification_enabled', false);
             await _notificationsService.updateNotificationSettings(
                 enabled: false, token: null);
-            print('[NOTIFICATION] Failed to get token, notifications disabled');
+            debugPrint(
+                '[NOTIFICATION] Failed to get token, notifications disabled');
           }
         }
       } else {
         // Notification kapalıysa, API'ye disabled gönder
         await _notificationsService.updateNotificationSettings(
             enabled: false, token: null);
-        print('[NOTIFICATION] App start: Notification disabled, sent to API');
+        debugPrint(
+            '[NOTIFICATION] App start: Notification disabled, sent to API');
       }
     } catch (e) {
-      print(
+      debugPrint(
           '[NOTIFICATION] Error syncing notification status on app start: $e');
     }
   }

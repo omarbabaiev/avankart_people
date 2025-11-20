@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/auth_utils.dart';
 import '../../utils/bottom_sheet_extension.dart';
+import '../../utils/snackbar_utils.dart';
 import '../../controllers/profile_controller.dart';
 
 class VerificationBottomSheet {
@@ -10,10 +15,12 @@ class VerificationBottomSheet {
     BuildContext context, {
     required String title,
     required String subtitle,
-    required Function(String) onVerify,
+    required Future<bool> Function(String) onVerify,
     String? buttonText,
     bool showTimer = false,
     VoidCallback? onResend,
+    String? successMessage,
+    bool shouldLogoutOnSuccess = false,
   }) {
     final List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
     final List<TextEditingController> textControllers =
@@ -23,7 +30,7 @@ class VerificationBottomSheet {
     context.showPerformantBottomSheet(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (bottomSheetContext) {
         return StatefulBuilder(
           builder: (context, setState) {
             bool isCodeComplete = _checkCodeComplete(textControllers);
@@ -95,7 +102,7 @@ class VerificationBottomSheet {
                           builder: (controller) {
                             return Obx(() => TextButton(
                                   onPressed:
-                                      controller.otpRemainingTime.value == 0
+                                      controller.otpRemainingTime.value <= 180
                                           ? onResend
                                           : null,
                                   child: Text(
@@ -105,7 +112,7 @@ class VerificationBottomSheet {
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
                                       color:
-                                          controller.otpRemainingTime.value == 0
+                                          controller.otpRemainingTime.value <= 180
                                               ? Theme.of(context)
                                                   .colorScheme
                                                   .primary
@@ -142,9 +149,35 @@ class VerificationBottomSheet {
                                 onPressed: (controller.isOtpVerifying.value ||
                                         !isCodeComplete)
                                     ? null
-                                    : () {
+                                    : () async {
+                                        // Önce işlemi yap, başarılı olursa bottom sheet'i kapat
+                                        final success = await onVerify(otpController.text);
+                                        if (success) {
+                                          // Önce bottom sheet'i kapat
+                                          if (bottomSheetContext.mounted) {
+                                            Navigator.of(bottomSheetContext).pop();
+                                          } else {
                                         Get.back();
-                                        onVerify(otpController.text);
+                                          }
+                                          
+                                          // Bottom sheet kapandıktan sonra işlemleri yap
+                                          await Future.delayed(const Duration(milliseconds: 300));
+                                          
+                                          // Şifre değişikliği için logout yapılacaksa önce snackbar göster, sonra logout
+                                          if (shouldLogoutOnSuccess) {
+                                            // Önce snackbar göster
+                                            SnackbarUtils.showSuccessSnackbar('profile_updated_redirect_login'.tr);
+                                            // Snackbar'ın görünmesi için kısa bir bekleme
+                                            await Future.delayed(const Duration(milliseconds: 1500));
+                                            // Sonra logout işlemi (login ekranına yönlendirecek)
+                                            await AuthUtils.logout();
+                                          } else {
+                                            // Diğer işlemler için snackbar göster
+                                            if (successMessage != null && successMessage.isNotEmpty) {
+                                              SnackbarUtils.showSuccessSnackbar(successMessage);
+                                            }
+                                          }
+                                        }
                                       },
                                 style: AppTheme.primaryButtonStyle().copyWith(
                                   backgroundColor: WidgetStateProperty.all(
@@ -158,7 +191,12 @@ class VerificationBottomSheet {
                                     ? SizedBox(
                                         width: 24,
                                         height: 24,
-                                        child: CircularProgressIndicator(
+                                        child: Platform.isIOS
+                                            ? CupertinoActivityIndicator(
+                                                radius: 10,
+                                                color: Colors.white,
+                                              )
+                                            : CircularProgressIndicator(
                                           strokeWidth: 2,
                                           color: Colors.white,
                                         ),

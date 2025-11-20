@@ -276,7 +276,7 @@ class UrlUtils {
 
   /// Platforma uygun store'a yönlendirme (App Store veya Google Play Store)
   static Future<void> launchStore() async {
-    debugPrint('Store launch requested');
+      debugPrint('Store launch requested');
 
     if (Platform.isIOS) {
       try {

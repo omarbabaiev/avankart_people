@@ -50,6 +50,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       appBar: AppBar(
         toolbarHeight: 68,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        centerTitle: false,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Obx(() => Text(
@@ -78,54 +79,54 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           //   ),
           // ),
           // SizedBox(width: 4),
-          Obx(() {
-            final notificationsController = Get.find<NotificationsController>();
-            final unreadCount = notificationsController.unreadCount;
+          // Obx(() {
+          //   final notificationsController = Get.find<NotificationsController>();
+          //   final unreadCount = notificationsController.unreadCount;
 
-            return Stack(
-              children: [
-                IconButton.filledTonal(
-                  icon: Image.asset(
-                    ImageAssets.bellInactive,
-                    width: 24,
-                    height: 24,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.notifications);
-                  },
-                  style: IconButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    fixedSize: Size(44, 44),
-                  ),
-                ),
-                if (unreadCount > 0)
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Container(
-                      padding: EdgeInsets.all(1),
-                      alignment: Alignment.center,
-                      child: Text(
-                        unreadCount.toString(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      width: 15,
-                      height: 15,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          }),
-          SizedBox(width: 15),
+          //   return Stack(
+          //     children: [
+          //       IconButton.filledTonal(
+          //         icon: Image.asset(
+          //           ImageAssets.bellInactive,
+          //           width: 24,
+          //           height: 24,
+          //           color: Theme.of(context).colorScheme.onBackground,
+          //         ),
+          //         onPressed: () {
+          //           Get.toNamed(AppRoutes.notifications);
+          //         },
+          //         style: IconButton.styleFrom(
+          //           backgroundColor: Theme.of(context).colorScheme.secondary,
+          //           fixedSize: Size(44, 44),
+          //         ),
+          //       ),
+          //       if (unreadCount > 0)
+          //         Positioned(
+          //           right: 4,
+          //           top: 4,
+          //           child: Container(
+          //             padding: EdgeInsets.all(1),
+          //             alignment: Alignment.center,
+          //             child: Text(
+          //               unreadCount.toString(),
+          //               style: TextStyle(
+          //                 fontSize: 10,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //             width: 15,
+          //             height: 15,
+          //             decoration: BoxDecoration(
+          //               color: Colors.red,
+          //               shape: BoxShape.circle,
+          //             ),
+          //           ),
+          //         ),
+          //     ],
+          //   );
+          // }),
+          // SizedBox(width: 15),
         ],
       ),
       body: Platform.isIOS

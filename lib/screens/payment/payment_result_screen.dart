@@ -1,11 +1,18 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
+import 'package:avankart_people/utils/conts_texts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:ticket_widget/ticket_widget.dart';
 
-class PaymentResultScreen extends StatelessWidget {
+class PaymentResultScreen extends StatefulWidget {
   final bool isSuccess;
   final Map<String, dynamic> paymentData;
   final String? errorMessage;
@@ -16,6 +23,24 @@ class PaymentResultScreen extends StatelessWidget {
     required this.paymentData,
     this.errorMessage,
   });
+
+  @override
+  State<PaymentResultScreen> createState() => _PaymentResultScreenState();
+}
+
+class _PaymentResultScreenState extends State<PaymentResultScreen> {
+  String get transactionId =>
+      widget.paymentData['transaction_id'] ?? 'TRX-XXXXXXXXXXXXXX';
+  String get amountText => widget.paymentData['amount'] ?? '0.00';
+  String get currency => AppTheme.currencySymbol;
+  String get cardType => widget.paymentData['card_type'] ?? 'Yemək';
+  String get formattedDate =>
+      widget.paymentData['payment_date'] ?? '31.12.2024, 13:22:16';
+  String get receivingInstitution =>
+      widget.paymentData['receiving_institution'] ?? 'Özsüt Restoran';
+  String get payerId => widget.paymentData['payer_id'] ?? 'RO-321';
+  String get merchantId => widget.paymentData['merchant_id'] ?? '-';
+  bool get isSuccess => widget.isSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +134,7 @@ class PaymentResultScreen extends StatelessWidget {
             Text(
               isSuccess
                   ? 'payment_success_description'.tr
-                  : (errorMessage ?? 'payment_failed_description'.tr),
+                  : (widget.errorMessage ?? 'payment_failed_description'.tr),
               style: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context).unselectedWidgetColor, // Medium gray
@@ -124,17 +149,21 @@ class PaymentResultScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Color(0xFFF9FAFB), // Very light gray
+                color:
+                    Theme.of(context).colorScheme.secondary, // Very light gray
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Color(0xFFE5E7EB), // Light border
+                  color: Theme.of(context).dividerColor, // Light border
                   width: 1,
                 ),
               ),
               child: Column(
                 children: [
                   _buildDetailRow(
-                      'amount'.tr, '${paymentData['amount']} ₼', true, context),
+                      'amount'.tr,
+                      '${widget.paymentData['amount']} ${AppTheme.currencySymbol}',
+                      true,
+                      context),
                   SizedBox(height: 12),
                   _buildStatusRow(),
                   SizedBox(height: 12),
@@ -145,23 +174,32 @@ class PaymentResultScreen extends StatelessWidget {
                   SizedBox(height: 12),
                   _buildDetailRow(
                       'transaction_id'.tr,
-                      paymentData['transaction_id'] ?? 'TRX-XXXXXXXXXXXXXX',
+                      widget.paymentData['transaction_id'] ??
+                          'TRX-XXXXXXXXXXXXXX',
                       false,
                       context),
-                  _buildDetailRow('card_type'.tr,
-                      paymentData['card_type'] ?? 'Yemək', false, context),
+                  _buildDetailRow(
+                      'card_type'.tr,
+                      widget.paymentData['card_type'] ?? 'Yemək',
+                      false,
+                      context),
                   _buildDetailRow(
                       'payment_date'.tr,
-                      paymentData['payment_date'] ?? '31.12.2024, 13:22:16',
+                      widget.paymentData['payment_date'] ??
+                          '31.12.2024, 13:22:16',
                       false,
                       context),
                   _buildDetailRow(
                       'receiving_institution'.tr,
-                      paymentData['receiving_institution'] ?? 'Özsüt Restoran',
+                      widget.paymentData['receiving_institution'] ??
+                          'Özsüt Restoran',
                       false,
                       context),
-                  _buildDetailRow('payer_id'.tr,
-                      paymentData['payer_id'] ?? 'RO-321', false, context),
+                  _buildDetailRow(
+                      'payer_id'.tr,
+                      widget.paymentData['payer_id'] ?? 'RO-321',
+                      false,
+                      context),
                 ],
               ),
             ),
@@ -197,7 +235,7 @@ class PaymentResultScreen extends StatelessWidget {
             Center(
               child: TextButton(
                 onPressed: () {
-                  // Share functionality
+                  _shareTransaction(context);
                 },
                 child: Text(
                   'share'.tr,
@@ -214,6 +252,300 @@ class PaymentResultScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Ticket widget - Share üçün istifadə olunur
+  Widget _buildTicketWidget(BuildContext context) {
+    // Static LIGHT theme palette - Şəklə uyğun
+    const Color bgLight = Colors.white; // Arxa plan ağ
+    const Color ticketColor =
+        Color(0xFFE8EAED); // Ticket-in özü boz/mavi-boz (şəkildəki kimi)
+    const Color cardLight = Color(0xFFF5F6F7); // Ticket içi açıq boz
+    const Color textPrimary = Color(0xFF1D222B);
+    const Color textSecondary = Color(0xFF6B7280);
+    const Color successBg = Color(0xFF10B981); // Yaşıl status
+    const Color successFg = Colors.white;
+    const Color errorBg = Color(0xFFEF4444);
+    const Color errorFg = Colors.white;
+    final bool ok = isSuccess;
+
+    return Container(
+      color: bgLight, // Arxa plan ağ
+      child: Center(
+        child: TicketWidget(
+          color: ticketColor, // Ticket-in özü boz/mavi-boz
+          width: 340,
+          height: 600,
+          isCornerRounded: false, // Border radius 0 (şəkildəki kimi)
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header - Şəkildəki kimi üst hissə
+              Container(
+                color: cardLight, // Ticket içi açıq boz
+                padding: const EdgeInsets.all(20),
+                child: Stack(
+                  children: [
+                    // Sol tərəfdə logo və amount
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Logo
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Image.asset(
+                              ImageAssets.png_logo,
+                              height: 24,
+                              width: 24,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Logo altında mühür
+
+                        // Amount (böyüdülmüş)
+                        Material(
+                          child: Text(
+                            '$amountText $currency',
+                            style: const TextStyle(
+                              color: textPrimary,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 32, // Böyüdüldü 28-dən 32-yə
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Merchant adı (şəkildəki kimi)
+                        Material(
+                          child: Text(
+                            receivingInstitution.isNotEmpty
+                                ? receivingInstitution.toUpperCase()
+                                : 'AVANKART',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: textSecondary,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Status chip (şəkildəki kimi yaşıl)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: ok ? successBg : errorBg,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              ok ? 'successful'.tr : 'failed'.tr,
+                              style: TextStyle(
+                                color: ok ? successFg : errorFg,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Yuxarı sağda mühür
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Image.asset(
+                        ImageAssets.stamp,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Body - Detallar (şəkildəki kimi)
+              Container(
+                color: cardLight, // Ticket içi açıq boz
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Dashed line separator (şəkildəki kimi)
+                    CustomPaint(
+                      size: const Size(double.infinity, 1),
+                      painter: DashedLinePainter(
+                        color: const Color(0xFFD1D5DB),
+                        strokeWidth: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Detallar (şəkildəki kimi sütunlar)
+                    _ticketRowStatic('payment_date'.tr,
+                        formattedDate.isNotEmpty ? formattedDate : '-'),
+                    _ticketRowStatic('card_type'.tr, cardType),
+                    _ticketRowStatic('transaction_id'.tr, transactionId),
+                    _ticketRowStatic('merchant_id'.tr,
+                        merchantId.isNotEmpty ? merchantId : '-'),
+                    _ticketRowStatic(
+                        'payer_id'.tr, payerId.isNotEmpty ? payerId : '-'),
+                    _ticketRowStatic('paying_company'.tr, 'Avankart'),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              // Footer - Mavi bar və bank logosu (şəkildəki kimi)
+              Container(
+                color: AppTheme.primaryColor, // Mavi bar (şəkildəki kimi)
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Sol tərəfdə logo və bank adı (şəkildəki kimi)
+                    Image.asset(
+                      ImageAssets.fullLogo,
+                      height: 25,
+                    ),
+                    // Sağ tərəfdə telefon iconu (şəkildəki kimi)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.headset_mic,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            ConstTexts.supportPhone,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _ticketRowStatic(String label, String value) {
+    const Color textPrimary = Color(0xFF1D222B);
+    const Color textSecondary = Color(0xFF6B7280);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label (sol tərəf - şəkildəki kimi)
+          Material(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                color: textSecondary,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          // Value (sağ tərəf - şəkildəki kimi)
+          Flexible(
+            child: Material(
+              child: Text(
+                value,
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: textPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Share üçün ticket widget-i şəkil kimi paylaşır
+  Future<void> _shareTransaction(BuildContext context) async {
+    try {
+      // 1) Ticket'i geçici overlay'de görünməz render et
+      final GlobalKey ticketKey = GlobalKey();
+      final overlay = Overlay.of(context);
+      final entry = OverlayEntry(
+        builder: (_) => Container(
+          color: Colors.white, // Arxa plan ağ (şəkildəki kimi)
+          child: Center(
+            child: RepaintBoundary(
+              key: ticketKey,
+              child: _buildTicketWidget(context), // Share üçün eyni widget
+            ),
+          ),
+        ),
+      );
+      overlay.insert(entry);
+
+      // 2) Frame tamamlanmasını gözlə
+      await Future.delayed(const Duration(milliseconds: 50));
+      await WidgetsBinding.instance.endOfFrame;
+
+      // 3) RenderRepaintBoundary-dən şəkil çək
+      final boundary = ticketKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        entry.remove();
+        return;
+      }
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      entry.remove();
+      if (byteData == null) return;
+      final pngBytes = byteData.buffer.asUint8List();
+
+      final tempDir = await getTemporaryDirectory();
+      final file =
+          await File('${tempDir.path}/qr_payment_ticket_${transactionId}.png')
+              .create();
+      await file.writeAsBytes(pngBytes);
+      await Share.shareXFiles([XFile(file.path)],
+          text: 'transaction_detail'.tr);
+    } catch (e) {
+      // Fallback: yalnız mətn paylaş
+      await Share.share(
+          '${'transaction_detail'.tr}\n${'transaction_id'.tr}: $transactionId');
+    }
   }
 
   Widget _buildDetailRow(
@@ -281,4 +613,39 @@ class PaymentResultScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// Dashed line painter for separator
+class DashedLinePainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  DashedLinePainter({
+    required this.color,
+    this.strokeWidth = 1.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    const dashWidth = 5.0;
+    const dashSpace = 3.0;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, 0),
+        Offset(startX + dashWidth, 0),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

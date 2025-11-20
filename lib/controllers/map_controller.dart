@@ -77,7 +77,7 @@ class MapController extends GetxController {
       _getLocationInBackground();
     } catch (e) {
       if (!_isDisposed) {
-        print('Harita başlatma hatası: $e');
+        debugPrint('Harita başlatma hatası: $e');
         hasError.value = true;
         errorMessage.value = 'Harita başlatılamadı: $e';
       }
@@ -96,7 +96,7 @@ class MapController extends GetxController {
       // Harita hazır olduğunu işaretle
       isMapReady.value = true;
     } catch (e) {
-      print('Harita hazırlama hatası: $e');
+      debugPrint('Harita hazırlama hatası: $e');
     }
   }
 
@@ -150,16 +150,16 @@ class MapController extends GetxController {
         if (position != null) {
           currentPosition.value = position;
           _updateMapLocation();
-          print(
+          debugPrint(
               '[MAP CONTROLLER] Konum alındı: ${position.latitude}, ${position.longitude}');
         } else {
           currentPosition.value = null;
-          print('[MAP CONTROLLER] Konum alınamadı');
+          debugPrint('[MAP CONTROLLER] Konum alınamadı');
         }
       }
     } catch (e) {
       if (!_isDisposed) {
-        print('[MAP CONTROLLER] Konum alma hatası: $e');
+        debugPrint('[MAP CONTROLLER] Konum alma hatası: $e');
         currentPosition.value = null;
       }
     }
@@ -183,7 +183,7 @@ class MapController extends GetxController {
       // Harita hazır olduğunda ekrandaki karenin koordinatlarını al ve company'leri yükle
       _loadCompaniesForVisibleArea();
     } catch (e) {
-      print('Harita controller oluşturma hatası: $e');
+      debugPrint('Harita controller oluşturma hatası: $e');
     }
   }
 
@@ -196,7 +196,7 @@ class MapController extends GetxController {
         CameraUpdate.newLatLng(position),
       );
     } catch (e) {
-      print('Kamera animasyon hatası: $e');
+      debugPrint('Kamera animasyon hatası: $e');
       // Hata durumunda controller'ı null yap
       mapController = null;
     }
@@ -215,7 +215,7 @@ class MapController extends GetxController {
       // Ekranda görünen alanın bounds'larını al
       final visibleRegion = await mapController!.getVisibleRegion();
 
-      print(
+      debugPrint(
           '[MAP CONTROLLER] Visible region: ${visibleRegion.northeast}, ${visibleRegion.southwest}');
 
       // Bounds'ları kullanarak company'leri yükle
@@ -226,7 +226,7 @@ class MapController extends GetxController {
         southWestLng: visibleRegion.southwest.longitude,
       );
     } catch (e) {
-      print('[MAP CONTROLLER] Visible area company yükleme hatası: $e');
+      debugPrint('[MAP CONTROLLER] Visible area company yükleme hatası: $e');
     }
   }
 
@@ -242,9 +242,9 @@ class MapController extends GetxController {
     try {
       isLoadingCompanies.value = true;
 
-      print('[MAP CONTROLLER] Bounds ile company yükleme:');
-      print('  NorthEast: $northEastLat, $northEastLng');
-      print('  SouthWest: $southWestLat, $southWestLng');
+      debugPrint('[MAP CONTROLLER] Bounds ile company yükleme:');
+      debugPrint('  NorthEast: $northEastLat, $northEastLng');
+      debugPrint('  SouthWest: $southWestLat, $southWestLng');
 
       // get-on-map API'sini kullan
       final response = await _companiesService.getCompaniesOnMap(
@@ -256,14 +256,14 @@ class MapController extends GetxController {
 
       if (response != null && !_isDisposed) {
         companies.value = response.data;
-        print(
+        debugPrint(
             '[MAP CONTROLLER] ${response.data.length} şirket bounds ile yüklendi');
 
         // Şirket marker'larını ekle
         await _addCompanyMarkers();
       }
     } catch (e) {
-      print('[MAP CONTROLLER] Bounds ile şirket yükleme hatası: $e');
+      debugPrint('[MAP CONTROLLER] Bounds ile şirket yükleme hatası: $e');
     } finally {
       if (!_isDisposed) {
         isLoadingCompanies.value = false;
@@ -304,7 +304,7 @@ class MapController extends GetxController {
       markers.refresh(); // RxSet'i yenile
       update(); // UI'yı güncelle
     } catch (e) {
-      print('Marker ekleme hatası: $e');
+      debugPrint('Marker ekleme hatası: $e');
     }
   }
 
@@ -317,7 +317,7 @@ class MapController extends GetxController {
       markers.refresh(); // RxSet'i yenile
       update(); // UI'yı güncelle
     } catch (e) {
-      print('Marker temizleme hatası: $e');
+      debugPrint('Marker temizleme hatası: $e');
     }
   }
 
@@ -330,27 +330,27 @@ class MapController extends GetxController {
         CameraUpdate.newLatLng(location),
       );
     } catch (e) {
-      print('Harita taşıma hatası: $e');
+      debugPrint('Harita taşıma hatası: $e');
     }
   }
 
   // Harita kamerası hareket ettiğinde çağrılır
   void onCameraMove(CameraPosition position) {
     // Kamera hareket ederken hiçbir şey yapma, sadece log
-    print('[MAP CONTROLLER] Kamera hareket ediyor: ${position.target}');
+    debugPrint('[MAP CONTROLLER] Kamera hareket ediyor: ${position.target}');
   }
 
   // Harita kamerası hareket durduğunda çağrılır
   void onCameraIdle() {
     if (_isDisposed) return;
 
-    print('[MAP CONTROLLER] Kamera durdu, company\'leri yeniliyor...');
+    debugPrint('[MAP CONTROLLER] Kamera durdu, company\'leri yeniliyor...');
 
     // Debounce ile company'leri yeniden yükle
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 800), () {
       if (!_isDisposed) {
-        print(
+        debugPrint(
             '[MAP CONTROLLER] Debounce timer tamamlandı, company yükleme başlıyor...');
         _loadCompaniesForVisibleArea();
       }
@@ -366,7 +366,7 @@ class MapController extends GetxController {
         CameraUpdate.zoomIn(),
       );
     } catch (e) {
-      print('Yakınlaştırma hatası: $e');
+      debugPrint('Yakınlaştırma hatası: $e');
     }
   }
 
@@ -379,14 +379,14 @@ class MapController extends GetxController {
         CameraUpdate.zoomOut(),
       );
     } catch (e) {
-      print('Uzaklaştırma hatası: $e');
+      debugPrint('Uzaklaştırma hatası: $e');
     }
   }
 
   // Örnek işletme marker'ları ekle (legacy) - Artık kullanılmıyor
   void addSampleMarkers() {
     // Artık örnek marker'lar kullanılmıyor, gerçek şirket verileri kullanılıyor
-    print(
+    debugPrint(
         'Örnek marker\'lar artık kullanılmıyor, gerçek şirket verileri kullanılıyor');
   }
 
@@ -424,7 +424,7 @@ class MapController extends GetxController {
             );
 
             newMarkers.add(marker);
-            print(
+            debugPrint(
                 '[MAP CONTROLLER] Marker oluşturuldu: ${company.id} at $lat, $lng');
           }
         }
@@ -432,14 +432,15 @@ class MapController extends GetxController {
 
       // Toplu güncelleme - RxSet'i yeniden ata
       if (!_isDisposed && mapController != null) {
-        print(
+        debugPrint(
             '[MAP CONTROLLER] Marker\'lar atanıyor: ${newMarkers.length} adet');
         markers.assignAll(newMarkers); // Tüm set'i değiştir
-        print('[MAP CONTROLLER] ${markers.length} şirket marker\'ı eklendi');
-        print('[MAP CONTROLLER] Marker set güncellendi, UI yenilenmeli');
+        debugPrint(
+            '[MAP CONTROLLER] ${markers.length} şirket marker\'ı eklendi');
+        debugPrint('[MAP CONTROLLER] Marker set güncellendi, UI yenilenmeli');
       }
     } catch (e) {
-      print('Şirket marker\'ları eklenirken hata: $e');
+      debugPrint('Şirket marker\'ları eklenirken hata: $e');
     }
   }
 
@@ -460,7 +461,7 @@ class MapController extends GetxController {
       _customMarkerCache[cacheKey] = markerIcon;
       return markerIcon;
     } catch (e) {
-      print('Circle avatar marker oluşturulurken hata: $e');
+      debugPrint('Circle avatar marker oluşturulurken hata: $e');
       // Hata durumunda default marker döndür
       return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
     }
@@ -470,7 +471,7 @@ class MapController extends GetxController {
   Future<BitmapDescriptor> _createCircleAvatarMarker(
       CompanyOnMapModel company) async {
     try {
-      print(
+      debugPrint(
           '[MAP CONTROLLER] Circle avatar marker oluşturuluyor: ${company.id}');
 
       // Circle avatar boyutları (2.4 kat küçültülmüş)
@@ -561,10 +562,11 @@ class MapController extends GetxController {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final uint8List = byteData!.buffer.asUint8List();
 
-      print('[MAP CONTROLLER] Circle avatar marker başarıyla oluşturuldu');
+      debugPrint('[MAP CONTROLLER] Circle avatar marker başarıyla oluşturuldu');
       return BitmapDescriptor.bytes(uint8List);
     } catch (e) {
-      print('[MAP CONTROLLER] Circle avatar marker oluşturulurken hata: $e');
+      debugPrint(
+          '[MAP CONTROLLER] Circle avatar marker oluşturulurken hata: $e');
       // Hata durumunda default marker döndür
       return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
     }
@@ -578,7 +580,8 @@ class MapController extends GetxController {
           company.profileImagePath!.isNotEmpty) {
         final imageUrl =
             'https://merchant.avankart.com/${company.profileImagePath}';
-        print('[MAP CONTROLLER] Network profile image yükleniyor: $imageUrl');
+        debugPrint(
+            '[MAP CONTROLLER] Network profile image yükleniyor: $imageUrl');
 
         final networkImage = await _loadNetworkImage(imageUrl);
         if (networkImage != null) {
@@ -587,10 +590,10 @@ class MapController extends GetxController {
       }
 
       // Network image yüklenemezse default logo kullan
-      print('[MAP CONTROLLER] Default logo kullanılıyor');
+      debugPrint('[MAP CONTROLLER] Default logo kullanılıyor');
       return await _loadDefaultLogo();
     } catch (e) {
-      print('[MAP CONTROLLER] Profile image yüklenirken hata: $e');
+      debugPrint('[MAP CONTROLLER] Profile image yüklenirken hata: $e');
       return null;
     }
   }
@@ -602,17 +605,17 @@ class MapController extends GetxController {
       final file = await DefaultCacheManager().getSingleFile(imageUrl);
 
       if (await file.exists()) {
-        print(
+        debugPrint(
             '[MAP CONTROLLER] Network image cache\'den yüklendi: ${file.path}');
         final bytes = await file.readAsBytes();
         final codec = await ui.instantiateImageCodec(bytes);
         final frame = await codec.getNextFrame();
         return frame.image;
       } else {
-        print('[MAP CONTROLLER] Network image dosyası bulunamadı');
+        debugPrint('[MAP CONTROLLER] Network image dosyası bulunamadı');
       }
     } catch (e) {
-      print('[MAP CONTROLLER] Network image yüklenirken hata: $e');
+      debugPrint('[MAP CONTROLLER] Network image yüklenirken hata: $e');
     }
     return null;
   }
@@ -620,15 +623,15 @@ class MapController extends GetxController {
   // Default logo yükle
   Future<ui.Image?> _loadDefaultLogo() async {
     try {
-      print('[MAP CONTROLLER] Default logo yükleniyor...');
+      debugPrint('[MAP CONTROLLER] Default logo yükleniyor...');
       final ByteData data = await rootBundle.load(ImageAssets.png_logo);
       final Uint8List bytes = data.buffer.asUint8List();
       final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
-      print('[MAP CONTROLLER] Default logo başarıyla yüklendi');
+      debugPrint('[MAP CONTROLLER] Default logo başarıyla yüklendi');
       return frame.image;
     } catch (e) {
-      print('[MAP CONTROLLER] Default logo yüklenirken hata: $e');
+      debugPrint('[MAP CONTROLLER] Default logo yüklenirken hata: $e');
       return null;
     }
   }
@@ -639,12 +642,12 @@ class MapController extends GetxController {
 
     try {
       // Tüm marker'ları temizle (artık sadece company marker'ları var)
-      print(
+      debugPrint(
           '[MAP CONTROLLER] Marker\'lar temizleniyor, önceki sayı: ${markers.length}');
       markers.clear();
       markers.refresh(); // RxSet'i yenile
       update(); // UI'yı güncelle
-      print(
+      debugPrint(
           '[MAP CONTROLLER] Marker\'lar temizlendi, yeni sayı: ${markers.length}');
 
       // Cache'i optimize et - sadece son 50 marker'ı tut
@@ -654,11 +657,11 @@ class MapController extends GetxController {
         for (final key in keysToRemove) {
           _customMarkerCache.remove(key);
         }
-        print(
+        debugPrint(
             '[MAP CONTROLLER] Marker cache optimize edildi: ${_customMarkerCache.length} marker kaldı');
       }
     } catch (e) {
-      print('Company marker\'ları temizlenirken hata: $e');
+      debugPrint('Company marker\'ları temizlenirken hata: $e');
     }
   }
 
@@ -670,7 +673,7 @@ class MapController extends GetxController {
       // Önce company card request'i at
       _handleCompanyCardRequest(company);
     } catch (e) {
-      print('Şirket marker tıklama hatası: $e');
+      debugPrint('Şirket marker tıklama hatası: $e');
     }
   }
 
@@ -680,7 +683,7 @@ class MapController extends GetxController {
       // Şirket kartı seçimi - haptic feedback
       VibrationUtil.lightVibrate();
 
-      print(
+      debugPrint(
           '[MAP CONTROLLER] Company card request başlatılıyor: ${company.id}');
 
       // Company detail API request'i at
@@ -688,16 +691,16 @@ class MapController extends GetxController {
           await _companiesService.getCompanyDetails(muessiseId: company.id);
 
       if (companyDetailResponse != null && companyDetailResponse.success) {
-        print('[MAP CONTROLLER] Company detail başarıyla alındı');
+        debugPrint('[MAP CONTROLLER] Company detail başarıyla alındı');
         // CompanyDetailScreen'i bottom sheet olarak aç
         _showCompanyDetailBottomSheet(company, companyDetailResponse);
       } else {
-        print('[MAP CONTROLLER] Company detail alınamadı');
+        debugPrint('[MAP CONTROLLER] Company detail alınamadı');
         // Hata durumunda sadece company bilgisi ile aç
         _showCompanyDetailBottomSheet(company, null);
       }
     } catch (e) {
-      print('[MAP CONTROLLER] Company card request hatası: $e');
+      debugPrint('[MAP CONTROLLER] Company card request hatası: $e');
       // Hata durumunda sadece company bilgisi ile aç
       _showCompanyDetailBottomSheet(company, null);
     }
@@ -733,7 +736,7 @@ class MapController extends GetxController {
       'company_detail': companyDetailResponse,
     };
 
-    print('[MAP CONTROLLER] Setting global arguments: $arguments');
+    debugPrint('[MAP CONTROLLER] Setting global arguments: $arguments');
     Get.put(arguments, tag: 'company_detail_arguments');
   }
 
@@ -756,7 +759,7 @@ class MapController extends GetxController {
         mapController!.dispose();
       }
     } catch (e) {
-      print('Map controller dispose hatası: $e');
+      debugPrint('Map controller dispose hatası: $e');
     } finally {
       mapController = null;
     }

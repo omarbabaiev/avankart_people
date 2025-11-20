@@ -23,7 +23,7 @@ class LocationService {
       if (_cachedPosition != null && _lastLocationUpdate != null) {
         final timeDiff = DateTime.now().difference(_lastLocationUpdate!);
         if (timeDiff < _locationCacheDuration) {
-          print(
+          debugPrint(
               '[LOCATION SERVICE] Using cached location: ${_cachedPosition!.latitude}, ${_cachedPosition!.longitude}');
           return _cachedPosition;
         }
@@ -31,15 +31,16 @@ class LocationService {
 
       // Location permission kontrolü
       final permissionStatus = await _checkLocationPermission();
-      if (permissionStatus != LocationPermission.whileInUse) {
-        print('[LOCATION SERVICE] Location permission denied');
+      if (permissionStatus != LocationPermission.whileInUse &&
+          permissionStatus != LocationPermission.always) {
+        debugPrint('[LOCATION SERVICE] Location permission denied');
         return null;
       }
 
       // GPS servis kontrolü
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('[LOCATION SERVICE] GPS service disabled');
+        debugPrint('[LOCATION SERVICE] GPS service disabled');
         return null;
       }
 
@@ -55,41 +56,62 @@ class LocationService {
       _cachedPosition = position;
       _lastLocationUpdate = DateTime.now();
 
-      print(
+      debugPrint(
           '[LOCATION SERVICE] Location obtained: ${position.latitude}, ${position.longitude}');
       return position;
     } catch (e) {
-      print('[LOCATION SERVICE] Error getting location: $e');
+      debugPrint('[LOCATION SERVICE] Error getting location: $e');
       return null;
     }
   }
 
   /// Location permission kontrolü
   Future<LocationPermission> _checkLocationPermission() async {
-    // Önce permission durumunu kontrol et
+    // Önce Geolocator ile izin durumunu kontrol et (daha güvenilir)
+    LocationPermission geolocatorPermission =
+        await Geolocator.checkPermission();
+
+    // Eğer izin zaten verilmişse, diyalog gösterme ve direkt döndür
+    if (geolocatorPermission == LocationPermission.whileInUse ||
+        geolocatorPermission == LocationPermission.always) {
+      debugPrint('[LOCATION SERVICE] Location permission already granted: $geolocatorPermission');
+      return geolocatorPermission;
+    }
+
+    // İzin verilmemişse, permission_handler ile kontrol et
     PermissionStatus permission = await Permission.location.status;
 
     if (permission.isDenied) {
       // İzin verilmemişse izin iste
-      print('[LOCATION SERVICE] Requesting location permission...');
+      debugPrint('[LOCATION SERVICE] Requesting location permission...');
       permission = await Permission.location.request();
 
       if (permission.isDenied) {
-        print('[LOCATION SERVICE] Location permission denied by user');
+        debugPrint('[LOCATION SERVICE] Location permission denied by user');
         return LocationPermission.denied;
       }
     }
 
+    // Permission_handler ile kalıcı red kontrolü
     if (permission.isPermanentlyDenied) {
-      print('[LOCATION SERVICE] Location permission permanently denied');
-      // Settings'e yönlendir
+      // Önce Geolocator ile tekrar kontrol et (iOS'ta bazen yanlış algılanabiliyor)
+      geolocatorPermission = await Geolocator.checkPermission();
+      
+      // Eğer Geolocator izin verilmiş diyorsa, diyalog gösterme
+      if (geolocatorPermission == LocationPermission.whileInUse ||
+          geolocatorPermission == LocationPermission.always) {
+        debugPrint('[LOCATION SERVICE] Location permission granted by Geolocator, ignoring permanently denied status');
+        return geolocatorPermission;
+      }
+      
+      // Gerçekten kalıcı olarak reddedilmişse, diyalog göster
+      debugPrint('[LOCATION SERVICE] Location permission permanently denied');
       await _showLocationPermissionDialog();
       return LocationPermission.deniedForever;
     }
 
-    // Geolocator permission kontrolü
-    LocationPermission geolocatorPermission =
-        await Geolocator.checkPermission();
+    // Son kontrol: Geolocator permission'ı tekrar al
+    geolocatorPermission = await Geolocator.checkPermission();
 
     if (geolocatorPermission == LocationPermission.denied) {
       geolocatorPermission = await Geolocator.requestPermission();
@@ -148,6 +170,9 @@ class LocationService {
           actions: [
             TextButton(
               onPressed: () => Get.back(),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(Get.context!).unselectedWidgetColor,
+              ),
               child: Text('cancel'.tr),
             ),
             SizedBox(
@@ -172,7 +197,7 @@ class LocationService {
   void clearCache() {
     _cachedPosition = null;
     _lastLocationUpdate = null;
-    print('[LOCATION SERVICE] Location cache cleared');
+    debugPrint('[LOCATION SERVICE] Location cache cleared');
   }
 
   /// Konum bilgisi var mı kontrol et

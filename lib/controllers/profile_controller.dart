@@ -234,30 +234,31 @@ class ProfileController extends GetxController {
         otp: otp,
       );
 
-      // Profili yeniden yükle
+      // Başarılı olursa profili yeniden yükle
       await getProfile();
 
       _stopOtpTimer();
       isVerificationRequired.value = false;
       _clearPendingUpdate();
 
-      SnackbarUtils.showSuccessSnackbar('Profil uğurla yeniləndi');
+      // Snackbar verification bottom sheet'te bottom sheet kapandıktan sonra gösterilecek
       return true;
     } catch (e) {
-      SnackbarUtils.showErrorSnackbar(e.toString());
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
       return false;
     } finally {
       isOtpVerifying.value = false;
     }
   }
 
-  /// OTP timer'ını başlat (4 dakika 59 saniye) - Wall-clock time əsasında
+  /// OTP timer'ını başlat (5 dakika) - Wall-clock time əsasında
   void _startOtpTimer() {
     _stopOtpTimer(); // Mevcut timer'ı durdur
 
     // Wall-clock time əsasında bitmə vaxtını təyin et
-    _otpEndTime = DateTime.now().add(const Duration(seconds: 299));
-    otpRemainingTime.value = 299; // 4:59
+    _otpEndTime = DateTime.now().add(const Duration(seconds: 300));
+    otpRemainingTime.value = 300; // 5 dakika
 
     // Hər 100ms-də bir yoxla (daha dəqiq və background-dan qayıdışda düzgün işləyir)
     _otpTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -284,7 +285,7 @@ class ProfileController extends GetxController {
     final now = DateTime.now();
     final difference = _otpEndTime!.difference(now);
 
-    otpRemainingTime.value = difference.inSeconds.clamp(0, 299);
+    otpRemainingTime.value = difference.inSeconds.clamp(0, 300);
   }
 
   /// Bekleyen güncelleme verilerini temizle
@@ -360,7 +361,8 @@ class ProfileController extends GetxController {
       isVerificationRequired.value = false;
       _clearPendingUpdate();
 
-      SnackbarUtils.showSuccessSnackbar('password_changed_successfully'.tr);
+      // Logout işlemi bottom sheet kapatıldıktan sonra yapılacak
+      // Bu yüzden burada sadece true dönüyoruz
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -385,6 +387,28 @@ class ProfileController extends GetxController {
       isVerificationRequired.value = true;
 
       SnackbarUtils.showSuccessSnackbar('delete_account_otp_sent'.tr);
+      return true;
+    } catch (e) {
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isOtpSending.value = false;
+    }
+  }
+
+  /// Hesabı dondurmak için OTP iste
+  Future<bool> requestFreezeAccount() async {
+    try {
+      isOtpSending.value = true;
+      _pendingUpdateField = 'freezeAccount';
+      _pendingUpdateValue = '';
+
+      await _profileService.requestChange(duty: 'freezeAccount');
+
+      _startOtpTimer();
+      isVerificationRequired.value = true;
+      SnackbarUtils.showSuccessSnackbar('update_otp_sent'.tr);
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);
@@ -466,7 +490,7 @@ class ProfileController extends GetxController {
       isVerificationRequired.value = false;
       _clearPendingUpdate();
 
-      SnackbarUtils.showSuccessSnackbar('email_change_success'.tr);
+      // Snackbar verification bottom sheet'te bottom sheet kapandıktan sonra gösterilecek
       return true;
     } catch (e) {
       final errorMessage = ApiResponseParser.parseDioError(e);

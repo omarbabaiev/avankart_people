@@ -1,8 +1,9 @@
 import 'package:avankart_people/models/companies_response.dart';
 import 'package:avankart_people/services/companies_service.dart';
 import 'package:avankart_people/utils/api_response_parser.dart';
-import 'package:avankart_people/utils/snackbar_utils.dart';
+import 'package:avankart_people/utils/toast_utils.dart';
 import 'package:avankart_people/utils/vibration_util.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FavoritesController extends GetxController {
@@ -41,28 +42,39 @@ class FavoritesController extends GetxController {
     List<String>? cards,
     List<String>? muessiseCategory,
     int page = 1,
-    int limit = 10,
+    int limit = 20,
     bool isRefresh = false,
   }) async {
     if (isRefresh) {
       _currentPage.value = 1;
       _hasMoreData.value = true;
+      _favorites.value = []; // Refresh'te listeyi temizle
     }
 
-    if (!_hasMoreData.value && !isRefresh) return;
+    if (!_hasMoreData.value && !isRefresh) {
+      debugPrint('[FAVORITES CONTROLLER] No more data to load');
+      return;
+    }
+
+    if (_isLoading.value) {
+      debugPrint('[FAVORITES CONTROLLER] Already loading, skipping');
+      return;
+    }
 
     try {
       _isLoading.value = true;
       _error.value = '';
 
-      print(
-          '[FAVORITES CONTROLLER] Loading favorites... Page: ${_currentPage.value}');
+      debugPrint(
+          '[FAVORITES CONTROLLER] Loading favorites... Page: ${_currentPage.value}, Limit: $limit');
 
       final response = await _companiesService.getFavoriteCompanies(
-        filterType: filterType,
+        lat: null, // Collection'da null olarak gönderiliyor
+        lng: null, // Collection'da null olarak gönderiliyor
+        filterType: filterType ?? 'name',
         search: search,
-        cards: cards,
-        muessiseCategory: muessiseCategory,
+        cards: cards ?? [],
+        muessiseCategory: muessiseCategory ?? [],
         page: _currentPage.value,
         limit: limit,
       );
@@ -77,23 +89,38 @@ class FavoritesController extends GetxController {
         // Pagination bilgilerini güncelle
         _totalPages.value = response.totalPages;
         _totalItems.value = response.total;
-        _hasMoreData.value = _currentPage.value < _totalPages.value;
+        
+        // Daha fazla veri var mı kontrolü
+        // API'den gelen item sayısı limit'e eşitse, muhtemelen daha fazla veri var
+        // Eğer gelen item sayısı limit'ten azsa, son sayfadayız demektir
+        final receivedItemsCount = response.muessises.length;
+        final hasMore = receivedItemsCount >= limit; // Gelen item sayısı limit'e eşit veya fazlaysa, daha fazla veri var
+        
+        _hasMoreData.value = hasMore;
 
         if (_hasMoreData.value) {
           _currentPage.value++;
         }
 
-        print(
-            '[FAVORITES CONTROLLER] Favorites loaded successfully: ${response.muessises.length} items, Total: ${_totalItems.value}');
+        debugPrint(
+            '[FAVORITES CONTROLLER] Favorites loaded successfully: $receivedItemsCount items');
+        debugPrint(
+            '[FAVORITES CONTROLLER] Current page: ${_currentPage.value}, Total pages: ${_totalPages.value}');
+        debugPrint(
+            '[FAVORITES CONTROLLER] Current loaded: ${_favorites.length}, Response total: ${response.total}');
+        debugPrint(
+            '[FAVORITES CONTROLLER] Received items: $receivedItemsCount, Limit: $limit');
+        debugPrint(
+            '[FAVORITES CONTROLLER] Has more data: $_hasMoreData (based on received items >= limit)');
         update();
       } else {
         _error.value = 'failed_to_load_favorites'.tr;
-        print(
+        debugPrint(
             '[FAVORITES CONTROLLER] Failed to load favorites - response is null');
       }
     } catch (e) {
       _error.value = _extractErrorMessage(e);
-      print('[FAVORITES CONTROLLER] Error loading favorites: $e');
+      debugPrint('[FAVORITES CONTROLLER] Error loading favorites: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -127,42 +154,45 @@ class FavoritesController extends GetxController {
       // Favori toggle - haptic feedback
       VibrationUtil.selectionVibrate();
 
-      print('\n╔═══════════════════════════════════════════════════╗');
-      print('║ [FAVORITES CONTROLLER] 🎯 Toggle Favorite Started ║');
-      print('╚═══════════════════════════════════════════════════╝');
-      print('[FAVORITES CONTROLLER] 📋 Input Parameters:');
-      print('[FAVORITES CONTROLLER]   - Company ID: $muessiseId');
+      debugPrint('\n╔═══════════════════════════════════════════════════╗');
+      debugPrint('║ [FAVORITES CONTROLLER] 🎯 Toggle Favorite Started ║');
+      debugPrint('╚═══════════════════════════════════════════════════╝');
+      debugPrint('[FAVORITES CONTROLLER] 📋 Input Parameters:');
+      debugPrint('[FAVORITES CONTROLLER]   - Company ID: $muessiseId');
 
       // Mevcut durumu kontrol et (toggle öncesi)
       final wasInFavorites = _favorites.any((c) => c.id == muessiseId);
 
-      print('[FAVORITES CONTROLLER] 📊 Current State:');
-      print('[FAVORITES CONTROLLER]   - Total Favorites: ${_favorites.length}');
-      print('[FAVORITES CONTROLLER]   - Was in favorites: $wasInFavorites');
-      print('[FAVORITES CONTROLLER] ⏱️  Start Time: ${DateTime.now()}');
-      print('─────────────────────────────────────────────────────');
+      debugPrint('[FAVORITES CONTROLLER] 📊 Current State:');
+      debugPrint(
+          '[FAVORITES CONTROLLER]   - Total Favorites: ${_favorites.length}');
+      debugPrint(
+          '[FAVORITES CONTROLLER]   - Was in favorites: $wasInFavorites');
+      debugPrint('[FAVORITES CONTROLLER] ⏱️  Start Time: ${DateTime.now()}');
+      debugPrint('─────────────────────────────────────────────────────');
 
       final response = await _companiesService.toggleFavorite(
         muessiseId: muessiseId,
       );
 
-      print('─────────────────────────────────────────────────────');
-      print('[FAVORITES CONTROLLER] 📥 Service Response Received:');
-      print(
+      debugPrint('─────────────────────────────────────────────────────');
+      debugPrint('[FAVORITES CONTROLLER] 📥 Service Response Received:');
+      debugPrint(
           '[FAVORITES CONTROLLER]   - Response: ${response != null ? "Not Null" : "NULL"}');
 
       if (response != null) {
-        print('[FAVORITES CONTROLLER]   - Status: ${response.status}');
-        print('[FAVORITES CONTROLLER]   - Message: ${response.message}');
-        print('[FAVORITES CONTROLLER]   - Is Valid: ${response.isValid}');
-        print('[FAVORITES CONTROLLER]   - Is Added: ${response.isAdded}');
-        print('[FAVORITES CONTROLLER]   - Is Removed: ${response.isRemoved}');
+        debugPrint('[FAVORITES CONTROLLER]   - Status: ${response.status}');
+        debugPrint('[FAVORITES CONTROLLER]   - Message: ${response.message}');
+        debugPrint('[FAVORITES CONTROLLER]   - Is Valid: ${response.isValid}');
+        debugPrint('[FAVORITES CONTROLLER]   - Is Added: ${response.isAdded}');
+        debugPrint(
+            '[FAVORITES CONTROLLER]   - Is Removed: ${response.isRemoved}');
       }
 
       // Message field'ına göre karar ver (message: "added" veya "removed")
       if (response != null && response.isValid) {
-        print('[FAVORITES CONTROLLER] ✅ Valid response received');
-        print('[FAVORITES CONTROLLER] 📝 Message: "${response.message}"');
+        debugPrint('[FAVORITES CONTROLLER] ✅ Valid response received');
+        debugPrint('[FAVORITES CONTROLLER] 📝 Message: "${response.message}"');
 
         if (response.isRemoved) {
           // Message: "removed" → Favoriden çıkarıldı
@@ -171,83 +201,85 @@ class FavoritesController extends GetxController {
           final newCount = _favorites.length;
           _totalItems.value--;
 
-          print('┌─────────────────────────────────────────────────┐');
-          print('│ [FAVORITES CONTROLLER] ✅ Favorite REMOVED      │');
-          print('└─────────────────────────────────────────────────┘');
-          print('[FAVORITES CONTROLLER] 📊 State Updated:');
-          print('[FAVORITES CONTROLLER]   - Old Count: $oldCount');
-          print('[FAVORITES CONTROLLER]   - New Count: $newCount');
-          print(
+          debugPrint('┌─────────────────────────────────────────────────┐');
+          debugPrint('│ [FAVORITES CONTROLLER] ✅ Favorite REMOVED      │');
+          debugPrint('└─────────────────────────────────────────────────┘');
+          debugPrint('[FAVORITES CONTROLLER] 📊 State Updated:');
+          debugPrint('[FAVORITES CONTROLLER]   - Old Count: $oldCount');
+          debugPrint('[FAVORITES CONTROLLER]   - New Count: $newCount');
+          debugPrint(
               '[FAVORITES CONTROLLER]   - Removed: ${oldCount - newCount} item(s)');
-          print('[FAVORITES CONTROLLER]   - Total Items: ${_totalItems.value}');
-          print(
-              '[FAVORITES CONTROLLER] 💬 Showing Snackbar: removed_from_favorites');
+          debugPrint(
+              '[FAVORITES CONTROLLER]   - Total Items: ${_totalItems.value}');
+          debugPrint(
+              '[FAVORITES CONTROLLER] 💬 Showing Toast: removed_from_favorites');
 
-          SnackbarUtils.showSuccessSnackbar('removed_from_favorites'.tr);
+          ToastUtils.showSuccessToast('removed_from_favorites'.tr);
           update();
 
-          print('╔═══════════════════════════════════════════════════╗');
-          print('║ [FAVORITES CONTROLLER] ✅ Toggle Complete: REMOVED║');
-          print('╚═══════════════════════════════════════════════════╝\n');
+          debugPrint('╔═══════════════════════════════════════════════════╗');
+          debugPrint('║ [FAVORITES CONTROLLER] ✅ Toggle Complete: REMOVED║');
+          debugPrint('╚═══════════════════════════════════════════════════╝\n');
           return false; // Artık favoride değil
         } else if (response.isAdded) {
           // Message: "added" → Favoriye eklendi
-          print('┌─────────────────────────────────────────────────┐');
-          print('│ [FAVORITES CONTROLLER] ✅ Favorite ADDED        │');
-          print('└─────────────────────────────────────────────────┘');
-          print('[FAVORITES CONTROLLER] 📊 Current State:');
-          print(
+          debugPrint('┌─────────────────────────────────────────────────┐');
+          debugPrint('│ [FAVORITES CONTROLLER] ✅ Favorite ADDED        │');
+          debugPrint('└─────────────────────────────────────────────────┘');
+          debugPrint('[FAVORITES CONTROLLER] 📊 Current State:');
+          debugPrint(
               '[FAVORITES CONTROLLER]   - Total Favorites: ${_favorites.length}');
-          print(
+          debugPrint(
               '[FAVORITES CONTROLLER]   - Note: Item will appear after refresh');
-          print(
-              '[FAVORITES CONTROLLER] 💬 Showing Snackbar: added_to_favorites');
+          debugPrint(
+              '[FAVORITES CONTROLLER] 💬 Showing Toast: added_to_favorites');
 
-          SnackbarUtils.showSuccessSnackbar('added_to_favorites'.tr);
+          ToastUtils.showSuccessToast('added_to_favorites'.tr);
           update();
 
-          print('╔═══════════════════════════════════════════════════╗');
-          print('║ [FAVORITES CONTROLLER] ✅ Toggle Complete: ADDED  ║');
-          print('╚═══════════════════════════════════════════════════╝\n');
+          debugPrint('╔═══════════════════════════════════════════════════╗');
+          debugPrint('║ [FAVORITES CONTROLLER] ✅ Toggle Complete: ADDED  ║');
+          debugPrint('╚═══════════════════════════════════════════════════╝\n');
           return true; // Artık favoride
         }
       } else {
         // Geçersiz response
-        print('┌─────────────────────────────────────────────────┐');
-        print('│ [FAVORITES CONTROLLER] ⚠️  Invalid Response      │');
-        print('└─────────────────────────────────────────────────┘');
-        print('[FAVORITES CONTROLLER] ❌ Response Details:');
-        print('[FAVORITES CONTROLLER]   - Status: ${response?.status}');
-        print('[FAVORITES CONTROLLER]   - Message: ${response?.message}');
-        print('[FAVORITES CONTROLLER] 💬 Showing Error Snackbar');
+        debugPrint('┌─────────────────────────────────────────────────┐');
+        debugPrint('│ [FAVORITES CONTROLLER] ⚠️  Invalid Response      │');
+        debugPrint('└─────────────────────────────────────────────────┘');
+        debugPrint('[FAVORITES CONTROLLER] ❌ Response Details:');
+        debugPrint('[FAVORITES CONTROLLER]   - Status: ${response?.status}');
+        debugPrint('[FAVORITES CONTROLLER]   - Message: ${response?.message}');
+        debugPrint('[FAVORITES CONTROLLER] 💬 Showing Error Toast');
 
-        SnackbarUtils.showErrorSnackbar(
+        ToastUtils.showErrorToast(
           response?.message ?? 'unexpected_response'.tr,
         );
 
-        print('╔═══════════════════════════════════════════════════╗');
-        print('║ [FAVORITES CONTROLLER] ⚠️  Toggle Failed: Invalid ║');
-        print('╚═══════════════════════════════════════════════════╝\n');
+        debugPrint('╔═══════════════════════════════════════════════════╗');
+        debugPrint('║ [FAVORITES CONTROLLER] ⚠️  Toggle Failed: Invalid ║');
+        debugPrint('╚═══════════════════════════════════════════════════╝\n');
       }
 
       return false;
     } catch (e) {
-      print('┌─────────────────────────────────────────────────┐');
-      print('│ [FAVORITES CONTROLLER] ❌ Exception Caught       │');
-      print('└─────────────────────────────────────────────────┘');
-      print('[FAVORITES CONTROLLER] 🚫 Error Details:');
-      print('[FAVORITES CONTROLLER]   - Type: ${e.runtimeType}');
-      print('[FAVORITES CONTROLLER]   - Message: $e');
+      debugPrint('┌─────────────────────────────────────────────────┐');
+      debugPrint('│ [FAVORITES CONTROLLER] ❌ Exception Caught       │');
+      debugPrint('└─────────────────────────────────────────────────┘');
+      debugPrint('[FAVORITES CONTROLLER] 🚫 Error Details:');
+      debugPrint('[FAVORITES CONTROLLER]   - Type: ${e.runtimeType}');
+      debugPrint('[FAVORITES CONTROLLER]   - Message: $e');
 
       final errorMessage = _extractErrorMessage(e);
-      print('[FAVORITES CONTROLLER] 📝 Parsed Error Message: $errorMessage');
-      print('[FAVORITES CONTROLLER] 💬 Showing Error Snackbar');
+      debugPrint(
+          '[FAVORITES CONTROLLER] 📝 Parsed Error Message: $errorMessage');
+      debugPrint('[FAVORITES CONTROLLER] 💬 Showing Error Toast');
 
-      SnackbarUtils.showErrorSnackbar(errorMessage);
+      ToastUtils.showErrorToast(errorMessage);
 
-      print('╔═══════════════════════════════════════════════════╗');
-      print('║ [FAVORITES CONTROLLER] ❌ Toggle Failed: Exception║');
-      print('╚═══════════════════════════════════════════════════╝\n');
+      debugPrint('╔═══════════════════════════════════════════════════╗');
+      debugPrint('║ [FAVORITES CONTROLLER] ❌ Toggle Failed: Exception║');
+      debugPrint('╚═══════════════════════════════════════════════════╝\n');
       return false;
     }
   }

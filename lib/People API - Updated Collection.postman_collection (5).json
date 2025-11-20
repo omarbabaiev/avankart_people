@@ -1,11 +1,10 @@
 {
 	"info": {
-		"_postman_id": "adcf594e-f860-47ab-9fd4-bb8bb6735140",
+		"_postman_id": "345d87b7-77c5-43ce-b9ac-455346548c76",
 		"name": "People API - Updated Collection",
 		"description": "Updated API endpoints for People application with correct field names and missing endpoints",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "42783670",
-		"_collection_link": "https://avankart-backend.postman.co/workspace/Avankart-backend-Workspace~6c6e45b1-348f-43a8-8acf-c97dd604840b/collection/42783670-adcf594e-f860-47ab-9fd4-bb8bb6735140?action=share&source=collection_link&creator=42783670"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38654703"
 	},
 	"item": [
 		{
@@ -16,7 +15,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{base_url}}/auth/login"
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
 					},
 					"response": [
 						{
@@ -24,7 +32,16 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"url": "{{base_url}}/auth/login"
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -53,7 +70,8 @@
 									"}"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -67,9 +85,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"ms@example.com\",\n  \"password\": \"StrongPass123!\",\n  \"remember_me\": false,\n  \"device_info\": \"Postman, API Testing\",\n  \"firebase_token\": null\n}"
+							"raw": "{\n  \"email\": \"vasimm.dev@gmail.com\",\n  \"password\": \"12345678\",\n  \"remember_me\": false,\n  \"device_info\": \"Postman, API Testing\",\n  \"firebase_token\": null\n}"
 						},
-						"url": "{{base_url}}/auth/login"
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
 					},
 					"response": [
 						{
@@ -84,9 +111,18 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"remember_me\": false,\n  \"device_info\": \"Postman, API Testing\",\n  \"firebase_token\": null\n}"
+									"raw": "{\n  \"email\": \"ms@example.com\",\n  \"password\": \"StrongPass123\",\n  \"remember_me\": false,\n  \"device_info\": \"Postman, API Testing\",\n  \"firebase_token\": null\n}"
 								},
-								"url": "{{base_url}}/auth/login"
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -109,7 +145,16 @@
 							"mode": "raw",
 							"raw": "{\n    \"username\": \"test123\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_again\": \"password123\",\n  \"name\": \"Ali\",\n  \"surname\": \"Aghayev\",\n  \"phone_number\": \"705755245\",\n  \"phone_suffix\": \"994\",\n  \"birth_date\": \"2005-12-28\",\n  \"gender\": \"male\",\n  \"terms\": true\n}"
 						},
-						"url": "{{base_url}}/auth/register"
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
 					},
 					"response": [
 						{
@@ -126,7 +171,16 @@
 									"mode": "raw",
 									"raw": "{\n    \"username\": \"test123\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_again\": \"password123\",\n  \"name\": \"Ali\",\n  \"surname\": \"Aghayev\",\n  \"phone_number\": \"705755245\",\n  \"phone_suffix\": \"994\",\n  \"birth_date\": \"2005-12-28\",\n  \"gender\": \"male\",\n  \"terms\": true\n}"
 								},
-								"url": "{{base_url}}/auth/register"
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -140,9 +194,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6ZmFsc2UsImp0aSI6ImRlZmU5ODJhLTkxNWYtNDM3Yy1iOTY3LTY3NzkzZmIwMTYzYSIsImlhdCI6MTc1NjQ2NzkyNX0.R0z1PgozMyMPHzQ4Wm6-7xjhwSxD5OsksMMc-PkRwUs"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6ZmFsc2UsImp0aSI6ImM1ZDNkYjVhLWYxMzctNDI1ZC05MGQ5LWY2YzVhZWM5ZDM3ZiIsImlhdCI6MTc2MjkwMzYyOH0.omCVAZn0lksV7PZI28VXpVLq0RceoqZOmBvYTLqQA0w",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -157,9 +215,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"otp\": \"731117\",\n  \"email\": \"ms@example.com\",\n  \"device_info\": \"Postman, API Testing\"\n}"
+							"raw": "{\n  \"otp\": \"589083\",\n  \"email\": \"vasimm.dev@gmail.com\",\n  \"device_info\": \"Postman, API Testing\"\n}"
 						},
-						"url": "{{base_url}}/auth/submit-otp"
+						"url": {
+							"raw": "{{base_url}}/auth/submit-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"submit-otp"
+							]
+						}
 					},
 					"response": [
 						{
@@ -180,7 +247,16 @@
 									"mode": "raw",
 									"raw": "{\n  \"otp\": \"107401\",\n  \"email\": \"ms@example.com\",\n  \"device_info\": \"Postman, API Testing\"\n}"
 								},
-								"url": "{{base_url}}/auth/submit-otp"
+								"url": {
+									"raw": "{{base_url}}/auth/submit-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"submit-otp"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -208,7 +284,16 @@
 								}
 							}
 						},
-						"url": "{{base_url}}/auth/cancel-otp"
+						"url": {
+							"raw": "{{base_url}}/auth/cancel-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"cancel-otp"
+							]
+						}
 					},
 					"response": [
 						{
@@ -221,13 +306,24 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/auth/cancel-otp"
+								"url": {
+									"raw": "{{base_url}}/auth/cancel-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"cancel-otp"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"success\": true,\n    \"message\": \"OTP cancelled\"\n}"
@@ -253,7 +349,16 @@
 								}
 							}
 						},
-						"url": "{{base_url}}/auth/retry-otp"
+						"url": {
+							"raw": "{{base_url}}/auth/retry-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"retry-otp"
+							]
+						}
 					},
 					"response": []
 				},
@@ -269,9 +374,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"otp\": \"381256\",\n  \"email\": \"test@example.com\"}"
+							"raw": "{\n  \"email\": \"test@example.com\"\n}"
 						},
-						"url": "{{base_url}}/auth/forgot-password"
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
 					},
 					"response": [
 						{
@@ -288,13 +402,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"email\": \"user@example.com\"\n}"
 								},
-								"url": "{{base_url}}/auth/forgot-password"
+								"url": {
+									"raw": "{{base_url}}/auth/forgot-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"forgot-password"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"OTP sent successfully\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTk3NWY5ZjgwOWUwNjQzZGJmOTFmNSIsIm90cF92ZXJpZmllZCI6ZmFsc2UsImp0aSI6ImE4NTQxNzEyLWYzMTQtNGJlOS04YTM2LTljODRjZTQ1ZWFkZSIsImlhdCI6MTc1NTkzNzU5MH0.N8m2ijLPmUicflztgrhHUv1tzMQFzdZYBs-U_-RtYrY\"\n}"
@@ -304,6 +429,16 @@
 				{
 					"name": "Submit Forgotten Password",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZWMxODcyZWMtYTE2Yi00YWRlLTk5YzctZTE0MjRlNmYwOGE5IiwiaWF0IjoxNzYyODIzNjgxfQ.dQcLQoMbQEDJqfpN0uKDWtf5VvlHxXTQnz3oWdsEsiw",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -319,7 +454,16 @@
 							"mode": "raw",
 							"raw": "{\n  \"password_again\": \"newpassword123\",\n  \"new_password\": \"newpassword123\"\n}"
 						},
-						"url": "{{base_url}}/auth/submit-forgotten-password"
+						"url": {
+							"raw": "{{base_url}}/auth/submit-forgotten-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"submit-forgotten-password"
+							]
+						}
 					},
 					"response": [
 						{
@@ -340,13 +484,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"new_password\": \"newpassword123\",\n  \"confirm_password\": \"newpassword123\"\n}"
 								},
-								"url": "{{base_url}}/auth/submit-forgotten-password"
+								"url": {
+									"raw": "{{base_url}}/auth/submit-forgotten-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"submit-forgotten-password"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Password updated\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTk3NWY5ZjgwOWUwNjQzZGJmOTFmNSIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiODRiMzVjZDAtOTU2NC00YjkzLWI2ODctMzQ5ODk5YzdmYzIxIiwiaWF0IjoxNzU1OTM3NjQ2fQ.NafEQsb-Cu1aadI1PtE8-rLrLOdLR_feAxdOW5CENTY\",\n    \"user\": {\n        \"_id\": \"68a975f9f809e0643dbf91f5\",\n        \"name\": \"Ali\",\n        \"surname\": \"Aghayev\",\n        \"sirket_id\": null,\n        \"totalBalance\": 0,\n        \"lastPaymentDate\": null,\n        \"lastPaymentLocation\": null,\n        \"email\": \"test@example.com\",\n        \"password\": \"$argon2id$v=19$m=65536,t=3,p=4$9KZBo/6R7yeNyr3ikbi8vA$9u+MSn6Z+vGMGLt1AJdLmfQnHIfskEwdl4xVjn7273E\",\n        \"last_password_update\": \"2025-08-23T08:28:05.787Z\",\n        \"phone_suffix\": 994,\n        \"phone\": \"705755245\",\n        \"birth_date\": \"2005-12-28T00:00:00.000Z\",\n        \"total_qr_codes\": 0,\n        \"today_qr_codes\": 0,\n        \"duty\": null,\n        \"perm\": null,\n        \"last_login_ip\": \"::1\",\n        \"last_user_agent\": \"Unknown, Unknown\",\n        \"language\": \"az\",\n        \"theme\": \"light\",\n        \"gender\": \"male\",\n        \"otp_code\": null,\n        \"hire_date\": null,\n        \"dismissal_date\": null,\n        \"otp_destination\": \"email\",\n        \"otp_email_status\": 2,\n        \"otp_sms_status\": 0,\n        \"otp_authenticator_status\": 0,\n        \"status\": 0,\n        \"token\": null,\n        \"firebase_token\": null,\n        \"deleted\": false,\n        \"last_qr_code\": \"2025-08-23T08:04:09.152Z\",\n        \"otp_send_time\": null,\n        \"createdAt\": \"2025-08-23T08:04:09.154Z\",\n        \"updatedAt\": \"2025-08-23T08:28:05.787Z\",\n        \"people_id\": \"AP-2319681639\",\n        \"__v\": 0\n    }\n}"
@@ -363,7 +518,16 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/auth/check-session"
+						"url": {
+							"raw": "{{base_url}}/auth/check-session",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"check-session"
+							]
+						}
 					},
 					"response": [
 						{
@@ -376,13 +540,24 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/auth/check-session"
+								"url": {
+									"raw": "{{base_url}}/auth/check-session",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"check-session"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"status\": \"ok\"\n}"
@@ -413,7 +588,16 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/auth/logout"
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
 					},
 					"response": [
 						{
@@ -426,13 +610,24 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/auth/logout"
+								"url": {
+									"raw": "{{base_url}}/auth/logout",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Logged out\",\n    \"token\": null,\n    \"user\": null\n}"
@@ -449,9 +644,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6ZmFsc2UsImp0aSI6IjEzMTEzZTNiLWY4ZDUtNGQxMy1iZDFlLTNkZTNmY2EzMGNlZSIsImlhdCI6MTc1NjQ2NzYxOH0.XmrtTUhhQSS8a_u6xIu9BryuXRW4OwCJPtmz9lH57xc"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IxNGNlNDYtODcxNy00ZTkzLTljNjEtZWYwYmMzYmY3ZTQxIiwiaWF0IjoxNzU5NTkyMzI4fQ.o2z3DGLOOH3EjxNYoEALwnwI41igRhcuef6JBF8RXUM",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -468,7 +667,15 @@
 							"mode": "raw",
 							"raw": "{\n  \"firebase_token\": null,\n  \"lat\": null,\n  \"lng\": null\n}"
 						},
-						"url": "{{base_url}}/home"
+						"url": {
+							"raw": "{{base_url}}/home",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"home"
+							]
+						}
 					},
 					"response": [
 						{
@@ -489,13 +696,23 @@
 									"mode": "raw",
 									"raw": "{\n  \"firebase_token\": null,\n  \"lat\": null,\n  \"lng\": null\n}"
 								},
-								"url": "{{base_url}}/home"
+								"url": {
+									"raw": "{{base_url}}/home",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"home"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"success\": true,\n    \"message\": \"ok\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTk3NWY5ZjgwOWUwNjQzZGJmOTFmNSIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2E3ZWVlNDEtZjYxOS00YzFhLWI5NzYtZWExZTc2OWI5MjE0IiwiaWF0IjoxNzU1OTM3OTYwfQ.r3XnKwCN5zqhf0-dYEiwcXLsM-qHP-cLjr42BpehRVg\",\n    \"user\": {\n        \"_id\": \"68a975f9f809e0643dbf91f5\",\n        \"name\": \"Ali\",\n        \"surname\": \"Aghayev\",\n        \"sirket_id\": null,\n        \"totalBalance\": 0,\n        \"lastPaymentDate\": null,\n        \"lastPaymentLocation\": null,\n        \"email\": \"test@example.com\",\n        \"password\": \"$argon2id$v=19$m=65536,t=3,p=4$9KZBo/6R7yeNyr3ikbi8vA$9u+MSn6Z+vGMGLt1AJdLmfQnHIfskEwdl4xVjn7273E\",\n        \"last_password_update\": \"2025-08-23T08:28:05.787Z\",\n        \"phone_suffix\": 994,\n        \"phone\": \"705755245\",\n        \"birth_date\": \"2005-12-28T00:00:00.000Z\",\n        \"total_qr_codes\": 0,\n        \"today_qr_codes\": 0,\n        \"duty\": null,\n        \"perm\": null,\n        \"last_login_ip\": \"::1\",\n        \"last_user_agent\": \"Unknown, Unknown\",\n        \"language\": \"az\",\n        \"theme\": \"light\",\n        \"gender\": \"male\",\n        \"otp_code\": null,\n        \"hire_date\": null,\n        \"dismissal_date\": null,\n        \"otp_destination\": \"email\",\n        \"otp_email_status\": 2,\n        \"otp_sms_status\": 0,\n        \"otp_authenticator_status\": 0,\n        \"status\": 0,\n        \"token\": null,\n        \"firebase_token\": null,\n        \"deleted\": false,\n        \"last_qr_code\": \"2025-08-23T08:04:09.152Z\",\n        \"otp_send_time\": null,\n        \"createdAt\": \"2025-08-23T08:04:09.154Z\",\n        \"updatedAt\": \"2025-08-23T08:32:40.932Z\",\n        \"people_id\": \"AP-2319681639\",\n        \"__v\": 0\n    }\n}"
@@ -520,7 +737,16 @@
 							"mode": "raw",
 							"raw": "{\n  \"muessise_id\": \"{{muessise_id}}\"\n}"
 						},
-						"url": "{{base_url}}/favorites/muessise"
+						"url": {
+							"raw": "{{base_url}}/favorites/muessise",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"favorites",
+								"muessise"
+							]
+						}
 					},
 					"response": [
 						{
@@ -541,13 +767,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"muessise_id\": \"{{muessise_id}}\"\n}"
 								},
-								"url": "{{base_url}}/favorites/muessise"
+								"url": {
+									"raw": "{{base_url}}/favorites/muessise",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"favorites",
+										"muessise"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"status\": \"added\",\n    \"message\": \"Müəssisə favorilərə əlavə olundu\"\n}"
@@ -557,6 +794,16 @@
 				{
 					"name": "Request Change Card Status",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -570,9 +817,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"card_id\": \"64f2a19d8f3a4d9b2e32cabc\", //card id\n  \"reason_id\": [ \n    \"64f2a1b38f3a4d9b2e32cabd\", \n    \"64f2a1c28f3a4d9b2e32cabe\",\n    \"64f2a1d08f3a4d9b2e32cabf\"\n  ],\n  \"status\": \"waiting\"\n}"
+							"raw": "{\n  \"card_id\": \"6874defeb51862145dbb1e3a\", //card id\n  \"reason_id\": [ \n    \n  ],\n  \"status\": \"active\"\n}"
 						},
-						"url": "{{base_url}}/mycards/request-change-status"
+						"url": {
+							"raw": "{{base_url}}/mycards/request-change-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mycards",
+								"request-change-status"
+							]
+						}
 					},
 					"response": [
 						{
@@ -593,13 +849,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"card_id\": \"{{card_id}}\",\n  \"status\": \"active\",\n  \"reason\": \"Need to activate card\"\n}"
 								},
-								"url": "{{base_url}}/mycards/request-change-status"
+								"url": {
+									"raw": "{{base_url}}/mycards/request-change-status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"mycards",
+										"request-change-status"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Yeni sorğu yaradıldı (waiting).\"\n}"
@@ -616,9 +883,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTg0NzIzMDA1NDU5ZDFjZTA5MWJiMyIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZTA2MDQyODgtMzI2YS00NDBkLWFiZmQtODFjNzlhZDc1MTZjIiwiaWF0IjoxNzU2Mzc3MzE2fQ.klcWmyHdI0sQvojQoX5_JGFQALYiQSsGVF5Zd3YA_yw"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNzQ0MjM3NWUtMmEwMy00OWY4LTlhMTUtMDA5MzAxM2I1ODU3IiwiaWF0IjoxNzU5MTUxOTI5fQ.y5KHfjoK68wtL6Vj4zpC13OFs9f64xLTgcnra9P0h_o",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -635,7 +906,16 @@
 							"mode": "raw",
 							"raw": "{\n \"sirket_id\": \"68a1f8fdecf9649c26454a66\"   \n}"
 						},
-						"url": "{{base_url}}/cards/my-cards"
+						"url": {
+							"raw": "{{base_url}}/cards/my-cards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"my-cards"
+							]
+						}
 					},
 					"response": [
 						{
@@ -656,13 +936,108 @@
 									"mode": "raw",
 									"raw": "{\n \"sirket_id\": \"[sirket_id]\"   \n}"
 								},
-								"url": "{{base_url}}/cards/my-cards"
+								"url": {
+									"raw": "{{base_url}}/cards/my-cards",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"cards",
+										"my-cards"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"success\": true,\n    \"data\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Stats",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cards/get-stats?year=2025",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"get-stats"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2025"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"sirket_id\": \"[sirket_id]\"   \n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/cards/my-cards",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"cards",
+										"my-cards"
+									]
+								}
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"success\": true,\n    \"data\": []\n}"
@@ -674,9 +1049,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -693,7 +1072,16 @@
 							"mode": "raw",
 							"raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}"
 						},
-						"url": "{{base_url}}/cards/get-all-cards"
+						"url": {
+							"raw": "{{base_url}}/cards/get-all-cards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"get-all-cards"
+							]
+						}
 					},
 					"response": [
 						{
@@ -714,7 +1102,16 @@
 									"mode": "raw",
 									"raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}"
 								},
-								"url": "{{base_url}}/cards/get-all-cards"
+								"url": {
+									"raw": "{{base_url}}/cards/get-all-cards",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"cards",
+										"get-all-cards"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -726,6 +1123,16 @@
 				{
 					"name": "Card Transactions",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNzQ0MjM3NWUtMmEwMy00OWY4LTlhMTUtMDA5MzAxM2I1ODU3IiwiaWF0IjoxNzU5MTUxOTI5fQ.y5KHfjoK68wtL6Vj4zpC13OFs9f64xLTgcnra9P0h_o",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -739,9 +1146,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"card_id\": \"{{card_id}}\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+							"raw": "{\n  \"card_id\": \"68b00af19b2550c083ed4f7f\",\n  \"page\": 1,\n  \"limit\": 10\n}"
 						},
-						"url": "{{base_url}}/cards/transactions"
+						"url": {
+							"raw": "{{base_url}}/cards/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"transactions"
+							]
+						}
 					},
 					"response": [
 						{
@@ -762,13 +1178,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"card_id\": \"{{card_id}}\",\n  \"page\": 1,\n  \"limit\": 10\n}"
 								},
-								"url": "{{base_url}}/cards/transactions"
+								"url": {
+									"raw": "{{base_url}}/cards/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"cards",
+										"transactions"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"success\": true,\n    \"page\": 1,\n    \"skip\": 0,\n    \"limit\": 10,\n    \"data\": []\n}"
@@ -778,6 +1205,16 @@
 				{
 					"name": "Card Transaction Details",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNzQ0MjM3NWUtMmEwMy00OWY4LTlhMTUtMDA5MzAxM2I1ODU3IiwiaWF0IjoxNzU5MTUxOTI5fQ.y5KHfjoK68wtL6Vj4zpC13OFs9f64xLTgcnra9P0h_o",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -791,9 +1228,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"category\": \"transaction\"\n}"
+							"raw": "{\n  \"transaction_id\": \"68c5989477ea145e96e2fce4\",\n  \"category\": \"transaction\"\n}"
 						},
-						"url": "{{base_url}}/cards/transaction-details"
+						"url": {
+							"raw": "{{base_url}}/cards/transaction-details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"transaction-details"
+							]
+						}
 					},
 					"response": []
 				}
@@ -820,7 +1266,16 @@
 							"mode": "raw",
 							"raw": "{\n    \"card_id\": \"6874defeb51862145dbb1e3a\",\n  \"page\": 1,\n  \"limit\": 20\n}"
 						},
-						"url": "{{base_url}}/transactions"
+						"url": {
+							"raw": "{{base_url}}/cards/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"transactions"
+							]
+						}
 					},
 					"response": [
 						{
@@ -841,7 +1296,15 @@
 									"mode": "raw",
 									"raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}"
 								},
-								"url": "{{base_url}}/transactions"
+								"url": {
+									"raw": "{{base_url}}/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"transactions"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -853,6 +1316,16 @@
 				{
 					"name": "Get Transaction Details",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOWQwOGZjYjctNDRlZi00MGI0LWIwM2YtMjE5MDI2ZGU3YjZkIiwiaWF0IjoxNzU5MDQ4MjE2fQ.iYtATdDB6jzbBPlqiqRdue1yCpLTzT7-_5IafcGazpw",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -866,9 +1339,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"transaction_id\": \"68a986e71ca3ac03df248e88\",\n  \"category\": \"transaction\" // transaction or cashback (TYPES)\n\n}"
+							"raw": "{\n  \"transaction_id\": \"687b9713d8e2732c57433a94\",\n  \"category\": \"transaction\" // transaction or cashback (TYPES)\n\n}"
 						},
-						"url": "{{base_url}}/transactions/inside"
+						"url": {
+							"raw": "{{base_url}}/cards/transaction-details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cards",
+								"transaction-details"
+							]
+						}
 					},
 					"response": []
 				},
@@ -893,7 +1375,15 @@
 							"mode": "raw",
 							"raw": "{\n    \"card_id\": \"6874defeb51862145dbb1e3a\",\n  \"page\": 1,\n  \"limit\": 20\n}"
 						},
-						"url": "{{base_url}}/transactions"
+						"url": {
+							"raw": "{{base_url}}/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
 					},
 					"response": []
 				}
@@ -907,9 +1397,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2EwYmY1MGYtNDBmNC00YmEyLWEzMzAtNzRlZDY5ZjU4ZDNkIiwiaWF0IjoxNzU3Nzc5OTc0fQ.Z9vEzG3Ht27i4WQtHj6eTj9J0z4RFvy-6E7wcmEH7T4"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNzQ0MjM3NWUtMmEwMy00OWY4LTlhMTUtMDA5MzAxM2I1ODU3IiwiaWF0IjoxNzU5MTUxOTI5fQ.y5KHfjoK68wtL6Vj4zpC13OFs9f64xLTgcnra9P0h_o",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -924,9 +1418,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"qr_code\": \"ZKHHR6K3XFR3YZA3\",\n  \"card_id\": \"68b00a789b2550c083ed4f7a\"\n}"
+							"raw": "{\n  \"qr_code\": \"66ULFF5ST68EXZ29\",\n  \"card_id\": \"68da86a863dc39c3ae67b54e\"\n}"
 						},
-						"url": "{{base_url}}/action/checkQr"
+						"url": {
+							"raw": "{{base_url}}/action/checkQr",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action",
+								"checkQr"
+							]
+						}
 					},
 					"response": []
 				},
@@ -935,9 +1438,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2EwYmY1MGYtNDBmNC00YmEyLWEzMzAtNzRlZDY5ZjU4ZDNkIiwiaWF0IjoxNzU3Nzc5OTc0fQ.Z9vEzG3Ht27i4WQtHj6eTj9J0z4RFvy-6E7wcmEH7T4"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNzQ0MjM3NWUtMmEwMy00OWY4LTlhMTUtMDA5MzAxM2I1ODU3IiwiaWF0IjoxNzU5MTUxOTI5fQ.y5KHfjoK68wtL6Vj4zpC13OFs9f64xLTgcnra9P0h_o",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -952,9 +1459,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"qr_code_id\": \"68c597e677ea145e96e2fc9b\",\n  \"card_id\": \"68b00a789b2550c083ed4f7a\"\n}"
+							"raw": "{\n  \"qr_code_id\": \"68da84c4e02a8bd8d89db4db\",\n  \"card_id\": \"68da86a863dc39c3ae67b54e\"\n}"
 						},
-						"url": "{{base_url}}/action/checkQrStatus"
+						"url": {
+							"raw": "{{base_url}}/action/checkQrStatus",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action",
+								"checkQrStatus"
+							]
+						}
 					},
 					"response": []
 				}
@@ -966,6 +1482,16 @@
 				{
 					"name": "Get Notifications",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IwMzRiNjctNTExOS00MjY1LTg4NGUtMTllMjQxMWUxMDlkIiwiaWF0IjoxNzU5NjY5MTg1fQ.YKWNYoZV5-unhKyARHJlx65atuC_iTWTf9BhlBqRrfs",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -973,7 +1499,15 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/notifications"
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						}
 					},
 					"response": [
 						{
@@ -986,13 +1520,23 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/notifications"
+								"url": {
+									"raw": "{{base_url}}/notifications",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notifications"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"all\": 0,\n    \"read\": 0,\n    \"unread\": 0,\n    \"notification\": []\n}"
@@ -1017,7 +1561,16 @@
 							"mode": "raw",
 							"raw": "{\n  \"notification_id\": \"650a1b2c3d4e5f6789013001\",\n  \"status\": \"read\"\n}"
 						},
-						"url": "{{base_url}}/notifications/status"
+						"url": {
+							"raw": "{{base_url}}/notifications/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"status"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1038,13 +1591,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"notification_id\": \"{{notification_id}}\",\n  \"status\": \"read\"\n}"
 								},
-								"url": "{{base_url}}/notifications/status"
+								"url": {
+									"raw": "{{base_url}}/notifications/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notifications",
+										"status"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Notification status updated\",\n    \"result\": {\n        \"acknowledged\": true,\n        \"modifiedCount\": 1,\n        \"upsertedId\": null,\n        \"upsertedCount\": 0,\n        \"matchedCount\": 1\n    }\n}"
@@ -1054,6 +1618,16 @@
 				{
 					"name": "Handle Invite Action",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IwMzRiNjctNTExOS00MjY1LTg4NGUtMTllMjQxMWUxMDlkIiwiaWF0IjoxNzU5NjY5MTg1fQ.YKWNYoZV5-unhKyARHJlx65atuC_iTWTf9BhlBqRrfs",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -1067,9 +1641,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"notification_id\": \"650a1b2c3d4e5f6789013004\",\n  \"action\": \"accept\"\n}"
+							"raw": "{\n  \"notification_id\": \"68e270e79f80e8818a5a5dee\",\n  \"action\": \"accept\"\n}"
 						},
-						"url": "{{base_url}}/notifications/invite-action"
+						"url": {
+							"raw": "{{base_url}}/notifications/invite-action",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"invite-action"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1079,8 +1662,242 @@
 			"name": "Profile",
 			"item": [
 				{
+					"name": "Pin",
+					"item": [
+						{
+							"name": "Create & Update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"new_pin\": \"1010\",\r\n    \"old_pin\": \"0000\" // required only for update.\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/pin/create-update",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"create-update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Check",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pin_code\": \"1606\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/pin/check",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"check"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": true, \r\n    \"new_pin\": \"0000\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/pin/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 1. Forgot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/profile/pin/forgot",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"forgot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2. Submit Otp",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"otp\": \"995488\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/pin/submit-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"submit-otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 3. Change",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTliNjBkZGMtNDNkZi00ZDA1LTk4YzctNjMwZDcxODI4MzMxIiwiaWF0IjoxNzYyOTAzNjc2fQ.HMOILPLePNqgK44D_JC1dDfeyJYDRHrla77Ufl4h2Fs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"new_pin\": \"1606\",\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsInR5cGUiOiJwaW5fcmVzZXQiLCJqdGkiOiIwNzdkMWM5MS04ZWU0LTQ1ZWItODMwNC1kZWE4MGNlOGVkZDMiLCJpYXQiOjE3NjI5MDQ2NDAsImV4cCI6MTc2MjkwNTI0MH0.dvY0mLfMzQ8SSVnbbAR9OyqI5KWpnqmMJRSDjxlnMTk\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/pin/change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"pin",
+										"change"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Request Name Change",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNGU4MzBjNzgtYjhlZS00MmNlLTkyZjktNjNhYmQ5YzM1MDgzIiwiaWF0IjoxNzYyOTAwMTAwfQ.8r0dhsdro7CY6jfUGW0VVU8Ldgs2yohIj2Ry3jLK-vQ",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -1094,9 +1911,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"duty\": \"updateName\",\n  \"name_surname\": \"John\"\n}"
+							"raw": "{\n    \"duty\": \"updateName\",\n  \"name_surname\": \"Vasim\"\n}"
 						},
-						"url": "{{base_url}}/profile/request-change"
+						"url": {
+							"raw": "{{base_url}}/profile/request-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"request-change"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1117,13 +1943,106 @@
 									"mode": "raw",
 									"raw": "{\n  \"name\": \"John\",\n  \"surname\": \"Doe\"\n}"
 								},
-								"url": "{{base_url}}/profile/request-change"
+								"url": {
+									"raw": "{{base_url}}/profile/request-change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"request-change"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"message\": \"Change request received. OTP sent.\",\n    \"duty\": \"updateName\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Request Freeze Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZWMxODcyZWMtYTE2Yi00YWRlLTk5YzctZTE0MjRlNmYwOGE5IiwiaWF0IjoxNzYyODIzNjgxfQ.dQcLQoMbQEDJqfpN0uKDWtf5VvlHxXTQnz3oWdsEsiw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duty\": \"freezeAccount\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/request-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"request-change"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Request Name Change",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"John\",\n  \"surname\": \"Doe\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/request-change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"request-change"
+									]
+								}
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Change request received. OTP sent.\",\n    \"duty\": \"updateName\"\n}"
@@ -1148,7 +2067,16 @@
 							"mode": "raw",
 							"raw": "{\n    \"duty\": \"updateEmail\",\n  \"email\": \"newemail@example.com\"\n}"
 						},
-						"url": "{{base_url}}/profile/request-change"
+						"url": {
+							"raw": "{{base_url}}/profile/request-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"request-change"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1169,13 +2097,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"email\": \"newemail@example.com\"\n}"
 								},
-								"url": "{{base_url}}/profile/request-change"
+								"url": {
+									"raw": "{{base_url}}/profile/request-change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"request-change"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Change request received. OTP sent.\",\n    \"duty\": \"updateEmail\"\n}"
@@ -1200,7 +2139,16 @@
 							"mode": "raw",
 							"raw": "{\n    \"duty\": \"updateNumber\",\n  \"phone\": \"551234567\",\n  \"phone_suffix\": \"994\"\n}"
 						},
-						"url": "{{base_url}}/profile/request-change"
+						"url": {
+							"raw": "{{base_url}}/profile/request-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"request-change"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1221,13 +2169,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"phone\": \"551234567\",\n  \"phone_suffix\": \"994\"\n}"
 								},
-								"url": "{{base_url}}/profile/request-change"
+								"url": {
+									"raw": "{{base_url}}/profile/request-change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"request-change"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Change request received. OTP sent.\",\n    \"duty\": \"updateNumber\"\n}"
@@ -1235,8 +2194,18 @@
 					]
 				},
 				{
-					"name": "Submit Profile OTP",
+					"name": "Submit OTP and Apply Changes",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiNGU4MzBjNzgtYjhlZS00MmNlLTkyZjktNjNhYmQ5YzM1MDgzIiwiaWF0IjoxNzYyOTAwMTAwfQ.8r0dhsdro7CY6jfUGW0VVU8Ldgs2yohIj2Ry3jLK-vQ",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -1250,9 +2219,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"otp\": \"474621\"\n}"
+							"raw": "{\n  \"otp\": \"357638\"\n}"
 						},
-						"url": "{{base_url}}/profile/otp-submit"
+						"url": {
+							"raw": "{{base_url}}/profile/apply-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"apply-change"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1273,13 +2251,24 @@
 									"mode": "raw",
 									"raw": "{\n  \"otp\": \"123456\"\n}"
 								},
-								"url": "{{base_url}}/profile/otp-submit"
+								"url": {
+									"raw": "{{base_url}}/profile/otp-submit",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"otp-submit"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
 							"cookie": [
 								{
-									"expires": "Invalid Date"
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
 								}
 							],
 							"body": "{\n    \"message\": \"Profile updated successfully\"\n}"
@@ -1304,7 +2293,16 @@
 							"mode": "raw",
 							"raw": "{\n  \"otp\": \"190425\"\n}"
 						},
-						"url": "{{base_url}}/profile/delete-otp-submit"
+						"url": {
+							"raw": "{{base_url}}/profile/delete-otp-submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"delete-otp-submit"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1327,7 +2325,16 @@
 								}
 							}
 						},
-						"url": "{{base_url}}/profile/otp-resend"
+						"url": {
+							"raw": "{{base_url}}/profile/otp-resend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"otp-resend"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1340,7 +2347,16 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/profile/otp-resend"
+								"url": {
+									"raw": "{{base_url}}/profile/otp-resend",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"otp-resend"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -1359,7 +2375,16 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/profile/otp-cancel"
+						"url": {
+							"raw": "{{base_url}}/profile/otp-cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"otp-cancel"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1372,7 +2397,16 @@
 										"value": "Bearer {{auth_token}}"
 									}
 								],
-								"url": "{{base_url}}/profile/otp-cancel"
+								"url": {
+									"raw": "{{base_url}}/profile/otp-cancel",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"otp-cancel"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -1391,7 +2425,16 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/profile/accept-delete-user"
+						"url": {
+							"raw": "{{base_url}}/profile/accept-delete-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"accept-delete-user"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1400,9 +2443,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTk3NWY5ZjgwOWUwNjQzZGJmOTFmNSIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYzViYmRlNjktMWZkNC00NjU2LWI0MjgtNzRmZmI3N2NkMThmIiwiaWF0IjoxNzU1OTQyMjc3fQ.RutCwmvbNIc9rWFCSmEisIMC0cvvsFpUmjc9eMKs9HU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTk3NWY5ZjgwOWUwNjQzZGJmOTFmNSIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYzViYmRlNjktMWZkNC00NjU2LWI0MjgtNzRmZmI3N2NkMThmIiwiaWF0IjoxNzU1OTQyMjc3fQ.RutCwmvbNIc9rWFCSmEisIMC0cvvsFpUmjc9eMKs9HU",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -1415,7 +2462,16 @@
 								}
 							}
 						},
-						"url": "{{base_url}}/profile/request-change"
+						"url": {
+							"raw": "{{base_url}}/profile/request-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"request-change"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1423,7 +2479,16 @@
 							"originalRequest": {
 								"method": "POST",
 								"header": [],
-								"url": "{{base_url}}/profile/request-change"
+								"url": {
+									"raw": "{{base_url}}/profile/request-change",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"request-change"
+									]
+								}
 							},
 							"_postman_previewlanguage": "Text",
 							"header": [],
@@ -1431,6 +2496,42 @@
 							"body": "{\n    \"message\": \"Change request received. OTP sent.\",\n    \"duty\": \"updateGender\"\n}"
 						}
 					]
+				},
+				{
+					"name": "Apply Change",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZWMxODcyZWMtYTE2Yi00YWRlLTk5YzctZTE0MjRlNmYwOGE5IiwiaWF0IjoxNzYyODIzNjgxfQ.dQcLQoMbQEDJqfpN0uKDWtf5VvlHxXTQnz3oWdsEsiw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/apply-change",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"apply-change"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		},
@@ -1442,9 +2543,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IxNGNlNDYtODcxNy00ZTkzLTljNjEtZWYwYmMzYmY3ZTQxIiwiaWF0IjoxNzU5NTkyMzI4fQ.o2z3DGLOOH3EjxNYoEALwnwI41igRhcuef6JBF8RXUM",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -1459,15 +2564,33 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"page\": 1,\n  \"limit\": 10\n}"
+							"raw": "{\n  \"page\": 1,\n  \"limit\": 1\n}"
 						},
-						"url": "{{base_url}}/sorgu"
+						"url": {
+							"raw": "{{base_url}}/sorgu",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sorgu"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Get Ticket Details",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IxNGNlNDYtODcxNy00ZTkzLTljNjEtZWYwYmMzYmY3ZTQxIiwiaWF0IjoxNzU5NTkyMzI4fQ.o2z3DGLOOH3EjxNYoEALwnwI41igRhcuef6JBF8RXUM",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -1481,15 +2604,34 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"ticket_id\": \"66f1a2b3c4d5e6f7a8b9c012\"\n}"
+							"raw": "{\n  \"ticket_id\": \"S-123456792\"\n}"
 						},
-						"url": "{{base_url}}/sorgu/inside"
+						"url": {
+							"raw": "{{base_url}}/sorgu/inside",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sorgu",
+								"inside"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Create New Ticket",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGY3YTAyZmMyYTRiZDZjYWIzZjk1YiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiM2IxNGNlNDYtODcxNy00ZTkzLTljNjEtZWYwYmMzYmY3ZTQxIiwiaWF0IjoxNzU5NTkyMzI4fQ.o2z3DGLOOH3EjxNYoEALwnwI41igRhcuef6JBF8RXUM",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -1527,12 +2669,21 @@
 								},
 								{
 									"key": "purpose",
-									"value": "Test",
+									"value": "68be6c6a82d67d2006671fea",
 									"type": "text"
 								}
 							]
 						},
-						"url": "{{base_url}}/sorgu/add"
+						"url": {
+							"raw": "{{base_url}}/sorgu/add",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sorgu",
+								"add"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1556,7 +2707,18 @@
 								}
 							]
 						},
-						"url": "{{base_url}}/sorgu/tickets/{{ticket_id}}/files"
+						"url": {
+							"raw": "{{base_url}}/sorgu/tickets/{{ticket_id}}/files",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sorgu",
+								"tickets",
+								"{{ticket_id}}",
+								"files"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1570,7 +2732,20 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/sorgu/tickets/{{ticket_id}}/files/{{file_id}}/delete"
+						"url": {
+							"raw": "{{base_url}}/sorgu/tickets/{{ticket_id}}/files/{{file_id}}/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sorgu",
+								"tickets",
+								"{{ticket_id}}",
+								"files",
+								"{{file_id}}",
+								"delete"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1584,9 +2759,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOWQwOGZjYjctNDRlZi00MGI0LWIwM2YtMjE5MDI2ZGU3YjZkIiwiaWF0IjoxNzU5MDQ4MjE2fQ.iYtATdDB6jzbBPlqiqRdue1yCpLTzT7-_5IafcGazpw",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -1601,9 +2780,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": null,\n  \"card_id\": null,\n  \"cards\": [],\n  \"muessise_category\": [],\n  \"page\": 1,\n  \"limit\": 10\n}"
+							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": \"Coffee\",\n  \"cards\": [],\n  \"page\": 1,\n  \"limit\": 1\n}"
 						},
-						"url": "{{base_url}}/muessise"
+						"url": {
+							"raw": "{{base_url}}/muessise",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"muessise"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1612,9 +2799,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOWQwOGZjYjctNDRlZi00MGI0LWIwM2YtMjE5MDI2ZGU3YjZkIiwiaWF0IjoxNzU5MDQ4MjE2fQ.iYtATdDB6jzbBPlqiqRdue1yCpLTzT7-_5IafcGazpw",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -1629,9 +2820,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"muessise_id\": \"object_id\"\n}"
+							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"muessise_id\": \"68b1995a3b5e30a7471bf6f5\"\n}"
 						},
-						"url": "{{base_url}}/muessise/details"
+						"url": {
+							"raw": "{{base_url}}/muessise/details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"muessise",
+								"details"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1640,9 +2840,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOWQwOGZjYjctNDRlZi00MGI0LWIwM2YtMjE5MDI2ZGU3YjZkIiwiaWF0IjoxNzU5MDQ4MjE2fQ.iYtATdDB6jzbBPlqiqRdue1yCpLTzT7-_5IafcGazpw",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -1659,7 +2863,81 @@
 							"mode": "raw",
 							"raw": "{\n  \"lat\": null,\n  \"lng\": null,\n  \"filterType\": \"name\",\n  \"search\": null,\n  \"cards\": [],\n  \"muessise_category\": [],\n  \"page\": 1,\n  \"limit\": 10\n}"
 						},
-						"url": "{{base_url}}/muessise/favorites"
+						"url": {
+							"raw": "{{base_url}}/muessise/favorites",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"muessise",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Give Rate To Muessise",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZWMxODcyZWMtYTE2Yi00YWRlLTk5YzctZTE0MjRlNmYwOGE5IiwiaWF0IjoxNzYyODIzNjgxfQ.dQcLQoMbQEDJqfpN0uKDWtf5VvlHxXTQnz3oWdsEsiw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"muessise_id\":\"68b1995a3b5e30a7471bf6f4\",\r\n    \"rating\":\"5\", // min:1, max:5\r\n    \"transaction_id\":\"68cd827aa010f770f2df278f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/muessise/rate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"muessise",
+								"rate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cards For Filter",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiZWMxODcyZWMtYTE2Yi00YWRlLTk5YzctZTE0MjRlNmYwOGE5IiwiaWF0IjoxNzYyODIzNjgxfQ.dQcLQoMbQEDJqfpN0uKDWtf5VvlHxXTQnz3oWdsEsiw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/muessise/cards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"muessise",
+								"cards"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1686,7 +2964,15 @@
 							"mode": "raw",
 							"raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}"
 						},
-						"url": "{{base_url}}/uzvluk"
+						"url": {
+							"raw": "{{base_url}}/uzvluk",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"uzvluk"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1695,9 +2981,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiYmY4Yzc4MGUtN2U3ZS00ZjZkLWExMmItZTJkYmQwMDBjMTRlIiwiaWF0IjoxNzU2NDY3OTQ1fQ.7bR8Eq_XEqBYbh1o2qdCZ50bBHx69j8CB-2x2h4sSpU",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [
@@ -1706,7 +2996,17 @@
 								"value": "Bearer {{auth_token}}"
 							}
 						],
-						"url": "{{base_url}}/uzvluk/{{sirket_id}}/details"
+						"url": {
+							"raw": "{{base_url}}/uzvluk/{{sirket_id}}/details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"uzvluk",
+								"{{sirket_id}}",
+								"details"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1733,7 +3033,15 @@
 							"mode": "raw",
 							"raw": "{\n  \"northEast\": {\n    \"lat\": 40.425,\n    \"lng\": 49.995\n  },\n  \"southWest\": {\n    \"lat\": 40.370,\n    \"lng\": 49.870\n  }\n}"
 						},
-						"url": "{{base_url}}/get-on-map"
+						"url": {
+							"raw": "{{base_url}}/get-on-map",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"get-on-map"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1746,17 +3054,40 @@
 					"name": "STEP 1 - Check 2fa settings",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": [
 						{
 							"name": "STEP 1 - Check 2fa settings",
 							"originalRequest": {
 								"method": "GET",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/2fa/?Content-Type=application/json&Authorization=Bearer {{auth_token}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"2fa",
+										""
+									],
+									"query": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Authorization",
+											"value": "Bearer {{auth_token}}"
+										}
+									]
+								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
+							"_postman_previewlanguage": "Text",
+							"header": [],
 							"cookie": [],
 							"body": "{\r\n    \"success\": true,\r\n    \"data\": {\r\n        \"email\": {\r\n            \"enabled\": true,\r\n            \"value\": \"xson.msc@mail.ru\",\r\n            \"status\": 1\r\n        },\r\n        \"sms\": {\r\n            \"enabled\": false,\r\n            \"value\": \"994 702525252\",\r\n            \"status\": 0\r\n        }\r\n    }\r\n}"
 						}
@@ -1767,9 +3098,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -1782,7 +3117,16 @@
 								}
 							}
 						},
-						"url": "{{base_url}}/2fa/initiate"
+						"url": {
+							"raw": "{{base_url}}/2fa/initiate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"2fa",
+								"initiate"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1805,10 +3149,19 @@
 										}
 									}
 								},
-								"url": "{{base_url}}/2fa/initiate"
+								"url": {
+									"raw": "{{base_url}}/2fa/initiate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"2fa",
+										"initiate"
+									]
+								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
+							"_postman_previewlanguage": "Text",
+							"header": [],
 							"cookie": [],
 							"body": "{\r\n    \"success\": true,\r\n    \"message\": \"OTP sent successfully\",\r\n    \"data\": {\r\n        \"type\": \"email\",\r\n        \"status\": \"active\",\r\n        \"tempId\": \"68c2940ecada1da8b2f1db86\"\r\n    }\r\n}"
 						}
@@ -1819,9 +3172,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTJjMGZiMDQ5YTkwZjFkZGFkMGJiMiIsIm90cF92ZXJpZmllZCI6dHJ1ZSwianRpIjoiOTM2YzNmYTctYzJlNC00ZmZlLWE5YjYtMDk2MzBmOTdjNWE0IiwiaWF0IjoxNzU3MTc2NDcyfQ.qdRDzZTDUWmDo0RHoGJzKB7CqxsySOV2P-pPqii8PeI",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -1833,6 +3190,9 @@
 									"language": "json"
 								}
 							}
+						},
+						"url": {
+							"raw": ""
 						}
 					},
 					"response": [
@@ -1849,10 +3209,13 @@
 											"language": "json"
 										}
 									}
+								},
+								"url": {
+									"raw": ""
 								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
+							"_postman_previewlanguage": "Text",
+							"header": [],
 							"cookie": [],
 							"body": "{\r\n    \"success\": true,\r\n    \"message\": \"Email 2FA has been enabled\",\r\n    \"data\": {\r\n        \"type\": \"email\",\r\n        \"status\": \"active\",\r\n        \"destination\": \"xson.msc@mail.ru\"\r\n    }\r\n}"
 						}

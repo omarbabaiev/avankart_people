@@ -76,13 +76,13 @@ class CompanyHeaderWidget extends StatelessWidget {
           left: 16,
           child: Container(
             child: FadeInImage(
-              placeholder: AssetImage(ImageAssets.notFound),
+              placeholder: AssetImage(ImageAssets.png_logo),
               image: CachedNetworkImageProvider(
                 "https://merchant.avankart.com/$profileImageUrl",
               ),
               imageErrorBuilder: (context, error, stackTrace) =>
-                  Image.asset(ImageAssets.notFound),
-              fit: BoxFit.cover,
+                  Image.asset(ImageAssets.png_logo),
+              fit: BoxFit.fill,
             ),
             height: 70,
             width: 70,
@@ -92,7 +92,10 @@ class CompanyHeaderWidget extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.1),
                   blurRadius: 8,
                   offset: Offset(0, 2),
                 ),

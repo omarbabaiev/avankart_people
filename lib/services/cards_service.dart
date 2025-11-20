@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import '../utils/api_response_parser.dart';
@@ -33,19 +34,20 @@ class CardsService {
   // Get user's cards
   Future<CardsResponse?> getMyCards({String? sirketId}) async {
     try {
-      print('[CARDS SERVICE] ===== GET MY CARDS DEBUG =====');
-      print('[CARDS SERVICE] Received sirketId: $sirketId');
+      debugPrint('[CARDS SERVICE] ===== GET MY CARDS DEBUG =====');
+      debugPrint('[CARDS SERVICE] Received sirketId: $sirketId');
 
       final requestData = <String, dynamic>{};
       if (sirketId != null && sirketId.isNotEmpty) {
         requestData['sirket_id'] = sirketId;
-        print('[CARDS SERVICE] Added sirket_id to request: $sirketId');
+        debugPrint('[CARDS SERVICE] Added sirket_id to request: $sirketId');
       } else {
-        print('[CARDS SERVICE] No sirket_id provided, sending empty request');
+        debugPrint(
+            '[CARDS SERVICE] No sirket_id provided, sending empty request');
       }
 
-      print('[CARDS SERVICE] Final request data: $requestData');
-      print('[CARDS SERVICE] ===============================');
+      debugPrint('[CARDS SERVICE] Final request data: $requestData');
+      debugPrint('[CARDS SERVICE] ===============================');
 
       DebugLogger.apiRequest('/people/cards/my-cards', requestData);
 
@@ -121,10 +123,10 @@ class CardsService {
     int limit = 10,
   }) async {
     try {
-      print('[CARDS SERVICE] ===== GET CARD TRANSACTIONS DEBUG =====');
-      print('[CARDS SERVICE] Card ID: $cardId');
-      print('[CARDS SERVICE] Page: $page, Limit: $limit');
-      print('[CARDS SERVICE] ======================================');
+      debugPrint('[CARDS SERVICE] ===== GET CARD TRANSACTIONS DEBUG =====');
+      debugPrint('[CARDS SERVICE] Card ID: $cardId');
+      debugPrint('[CARDS SERVICE] Page: $page, Limit: $limit');
+      debugPrint('[CARDS SERVICE] ======================================');
 
       DebugLogger.apiRequest('/people/cards/transactions', {
         'card_id': cardId,
@@ -188,6 +190,34 @@ class CardsService {
       }
     } on DioException catch (e) {
       DebugLogger.apiError('/people/cards/transaction-details', e);
+
+      if (e.response != null && e.response?.data != null) {
+        throw CardsException(ApiResponseParser.parseApiError(e.response?.data));
+      } else {
+        throw CardsException('network_error'.tr + ': ${e.message}');
+      }
+    }
+  }
+
+  // Get cards for filter
+  Future<CardFilterResponse?> getCardsForFilter() async {
+    try {
+      DebugLogger.apiRequest('people/muessise/cards', {});
+
+      final response = await _dio.get(
+        '/people/muessise/cards',
+      );
+
+      DebugLogger.apiResponse('people/muessise/cards', response.data);
+
+      // API {success: true, data: [...]} formatında dönüyor
+      if (response.data['success'] == true) {
+        return CardFilterResponse.fromJson(response.data);
+      } else {
+        throw CardsException(ApiResponseParser.parseApiError(response.data));
+      }
+    } on DioException catch (e) {
+      DebugLogger.apiError('people/muessise/cards', e);
 
       if (e.response != null && e.response?.data != null) {
         throw CardsException(ApiResponseParser.parseApiError(e.response?.data));

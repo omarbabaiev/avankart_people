@@ -27,6 +27,40 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
       Get.put<FavoritesController>(FavoritesController());
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize _isFavorite from company detail and FavoritesController
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final arguments = Get.arguments as Map<String, dynamic>?;
+      final companyDetailResponse =
+          arguments?['company_detail'] as CompanyDetailResponse?;
+      final companyDetail = companyDetailResponse?.data.responseData;
+      final companyId = arguments?['company_id'] as String?;
+
+      // Check both companyDetail.isFavorite and FavoritesController
+      final fromDetail = companyDetail?.isFavorite ?? false;
+      final fromController =
+          companyId != null ? favoritesController.isFavorite(companyId) : false;
+
+      // Use controller check first (more reliable), fallback to detail
+      final isFavoriteValue = fromController || fromDetail;
+
+      debugPrint('[Company DETAIL] initState - Company ID: $companyId');
+      debugPrint('[Company DETAIL] initState - From Detail: $fromDetail');
+      debugPrint(
+          '[Company DETAIL] initState - From Controller: $fromController');
+      debugPrint(
+          '[Company DETAIL] initState - Setting _isFavorite to: $isFavoriteValue');
+
+      if (mounted) {
+        setState(() {
+          _isFavorite = isFavoriteValue;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Get arguments from navigation
     final arguments = Get.arguments as Map<String, dynamic>?;
@@ -35,10 +69,27 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     final companyId = arguments?['company_id'] as String?;
     final companyDetail = companyDetailResponse?.data.responseData;
 
-    print('[Company DETAIL] Company ID: $companyId');
-    print('[Company DETAIL] Company Detail: ${companyDetail?.toJson()}');
-    print(
+    // Check favorite status from controller
+    final isFavoriteFromController =
+        companyId != null ? favoritesController.isFavorite(companyId) : false;
+
+    debugPrint('[Company DETAIL] Company ID: $companyId');
+    debugPrint('[Company DETAIL] Company Detail: ${companyDetail?.toJson()}');
+    debugPrint(
         '[Company DETAIL] Company Detail isFavorite: ${companyDetail?.isFavorite}');
+    debugPrint(
+        '[Company DETAIL] FavoritesController isFavorite: $isFavoriteFromController');
+    debugPrint('[Company DETAIL] State _isFavorite: $_isFavorite');
+    debugPrint(
+        '[Company DETAIL] Average Rating: ${companyDetail?.averageRating}');
+    debugPrint('[Company DETAIL] Total Votes: ${companyDetail?.totalVotes}');
+
+    // Calculate rating string
+    final ratingString = companyDetail?.averageRating != null &&
+            companyDetail!.averageRating! > 0
+        ? companyDetail.averageRating!.toStringAsFixed(1)
+        : null;
+    debugPrint('[Company DETAIL] Rating String: $ratingString');
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -80,13 +131,23 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : Icon(
-                    companyDetail?.isFavorite == true
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                : Obx(() {
+                    // Check favorite status from controller (most reliable)
+                    final isFavoriteFromController = companyId != null
+                        ? favoritesController.isFavorite(companyId)
+                        : false;
+
+                    // Use controller check first, then state, then detail
+                    final finalIsFavorite = isFavoriteFromController ||
+                        (_isFavorite ?? false) ||
+                        (companyDetail?.isFavorite ?? false);
+
+                    return Icon(
+                      finalIsFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.white,
+                      size: 24,
+                    );
+                  }),
           ),
           SizedBox(width: 15),
         ],
@@ -106,6 +167,10 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
               description:
                   companyDetail?.description ?? "no_description_available".tr,
               schedule: companyDetail?.schedule,
+              rating: companyDetail?.averageRating != null
+                  ? companyDetail!.averageRating!.toStringAsFixed(1)
+                  : "0",
+              totalVotes: companyDetail?.totalVotes,
             ),
             Container(
               height: 4,
@@ -236,7 +301,8 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     return (social.facebook != null && social.facebook!.isNotEmpty) ||
         (social.instagram != null && social.instagram!.isNotEmpty) ||
         (social.telegram != null && social.telegram!.isNotEmpty) ||
-        (social.whatsapp != null && social.whatsapp!.isNotEmpty);
+        (social.whatsapp != null && social.whatsapp!.isNotEmpty) ||
+        (social.linkedin != null && social.linkedin!.isNotEmpty);
   }
 
   /// Check if contact info exists - sadece telefon numarası kontrol et
@@ -272,7 +338,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
         _isFavorite = result;
       });
     } catch (e) {
-      print('[CompanyDetailScreen] Error toggling favorite: $e');
+      debugPrint('[CompanyDetailScreen] Error toggling favorite: $e');
       // Error handling is already done in the controller
     } finally {
       if (mounted) {

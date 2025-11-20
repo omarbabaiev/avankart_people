@@ -1,5 +1,6 @@
 import 'package:avankart_people/models/schedule_model.dart';
 import 'package:avankart_people/models/location_point_model.dart';
+import 'package:flutter/material.dart';
 
 class CompaniesResponse {
   final int page;
@@ -45,6 +46,8 @@ class CompanyInListModel {
   final ScheduleModel schedule;
   final double distance;
   final bool isFavorite;
+  final double averageRating;
+  final int totalVotes;
 
   CompanyInListModel({
     required this.id,
@@ -57,6 +60,8 @@ class CompanyInListModel {
     required this.schedule,
     required this.distance,
     required this.isFavorite,
+    required this.averageRating,
+    required this.totalVotes,
   });
 
   factory CompanyInListModel.fromJson(Map<String, dynamic> json) {
@@ -95,6 +100,10 @@ class CompanyInListModel {
           : ScheduleModel.empty(),
       distance: (json['distance'] ?? 0).toDouble(),
       isFavorite: json['isFavorite'] ?? false,
+      averageRating: (json['average_rating'] ?? 0).toDouble(),
+      totalVotes: (json['total_votes'] ?? 0) is int
+          ? (json['total_votes'] ?? 0)
+          : int.tryParse('${json['total_votes'] ?? 0}') ?? 0,
     );
   }
 
@@ -173,7 +182,7 @@ class CompanyInListModel {
 
       return hour * 60 + minute;
     } catch (e) {
-      print('[ERROR] Failed to parse time: $time, error: $e');
+      debugPrint('[ERROR] Failed to parse time: $time, error: $e');
       return 0;
     }
   }

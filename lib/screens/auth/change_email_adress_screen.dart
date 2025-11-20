@@ -234,15 +234,9 @@ class _ChangeEmailAdressScreenState extends State<ChangeEmailAdressScreen> {
       subtitle:
           '${controller.profile.value?.email} email adresinə göndərilən 6 rəqəmli şifrəni daxil edin',
       showTimer: true,
+      successMessage: 'email_change_success'.tr,
       onVerify: (otp) async {
-        final success = await controller.submitEmailChangeOTP(otp);
-        if (success) {
-          await Future.delayed(const Duration(
-              milliseconds:
-                  100)); // Snackbar'ın gösterilmesi için kısa bir bekleme
-          Get.close(
-              2); // Hem verification sheet'i hem de email değiştirme ekranını kapat
-        }
+        return await controller.submitEmailChangeOTP(otp);
       },
       onResend: () async {
         await controller.requestEmailChange();

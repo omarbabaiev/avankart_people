@@ -1,5 +1,6 @@
 import 'package:avankart_people/services/query_service.dart';
 import 'package:avankart_people/utils/toast_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class QueryController extends GetxController {
@@ -42,11 +43,11 @@ class QueryController extends GetxController {
 
         // Debug: Sorgu sayısını ve sıralamayı göster
         if (data.isNotEmpty) {
-          print('==================== QUERY DEBUG ====================');
-          print('Total queries fetched: ${data.length}');
-          print('First query date: ${data.first['date']}');
-          print('Last query date: ${data.last['date']}');
-          print('=====================================================');
+          debugPrint('==================== QUERY DEBUG ====================');
+          debugPrint('Total queries fetched: ${data.length}');
+          debugPrint('First query date: ${data.first['date']}');
+          debugPrint('Last query date: ${data.last['date']}');
+          debugPrint('=====================================================');
         }
 
         // API'den gelen data formatını UI'ya uygun formata çevir
@@ -91,7 +92,7 @@ class QueryController extends GetxController {
         // Toast mesajını kaldırdık - sadece errorMessage'ı set ediyoruz
       }
     } catch (error) {
-      print('Error fetching queries: $error');
+      debugPrint('Error fetching queries: $error');
       final errorMsg = error.toString();
       errorMessage.value = errorMsg;
       // Toast mesajını kaldırdık - sadece errorMessage'ı set ediyoruz
@@ -151,7 +152,7 @@ class QueryController extends GetxController {
         return false;
       }
     } catch (error) {
-      print('Error creating query: $error');
+      debugPrint('Error creating query: $error');
       ToastUtils.showErrorToast('error_occurred'.tr);
       return false;
     }

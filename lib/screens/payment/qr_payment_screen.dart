@@ -1,5 +1,6 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/qr_payment_controller.dart';
+import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -12,38 +13,85 @@ class QrPaymentScreen extends StatefulWidget {
   State<QrPaymentScreen> createState() => _QrPaymentScreenState();
 }
 
-class _QrPaymentScreenState extends State<QrPaymentScreen> {
+class _QrPaymentScreenState extends State<QrPaymentScreen> with WidgetsBindingObserver {
   MobileScannerController? scannerController;
   bool isFlashOn = false;
   bool isScanning = true;
+  late QrPaymentController qrPaymentController;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
     // Controller'ı başlat
-    Get.put(QrPaymentController());
+    qrPaymentController = Get.put(QrPaymentController());
     scannerController = MobileScannerController();
 
     // Flash state'ini controller ile senkronize et
-    final qrPaymentController = Get.find<QrPaymentController>();
     isFlashOn = qrPaymentController.isFlashOn.value;
+    
+    // Scanner'ı yeniden başlatma isteğini dinle
+    ever(qrPaymentController.shouldRestartScanning, (bool _) {
+      if (mounted) {
+        _restartScanning();
+      }
+    });
+    
+    // Route değişikliklerini dinle - ekrana geri döndüğünde scanner'ı başlat
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndRestartScanner();
+    });
+  }
+  
+  void _checkAndRestartScanner() {
+    // Eğer scanner durmuşsa ve QR status pending ise, yeniden başlat
+    if (!isScanning && qrPaymentController.qrStatus.value == 'pending') {
+      _restartScanning();
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     scannerController?.dispose();
     super.dispose();
   }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Uygulama ön plana döndüğünde scanner'ı yeniden başlat
+    if (state == AppLifecycleState.resumed) {
+      _restartScanning();
+    }
+  }
+  
+  void _restartScanning() {
+    if (mounted) {
+      setState(() {
+        isScanning = true;
+      });
+      // Scanner controller'ı yeniden başlat
+      scannerController?.stop();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted && scannerController != null) {
+          scannerController!.start();
+        }
+      });
+      debugPrint('[QR PAYMENT SCREEN] Scanning restarted');
+    }
+  }
 
   void _toggleFlash() async {
-    print('[QR PAYMENT SCREEN] ===== TOGGLE FLASH =====');
-    print('[QR PAYMENT SCREEN] scannerController: $scannerController');
-    print('[QR PAYMENT SCREEN] Current isFlashOn: $isFlashOn');
+    debugPrint('[QR PAYMENT SCREEN] ===== TOGGLE FLASH =====');
+    debugPrint('[QR PAYMENT SCREEN] scannerController: $scannerController');
+    debugPrint('[QR PAYMENT SCREEN] Current isFlashOn: $isFlashOn');
 
     if (scannerController != null) {
       try {
         await scannerController!.toggleTorch();
-        print(
+        debugPrint(
             '[QR PAYMENT SCREEN] Scanner Controller flash toggled successfully');
 
         setState(() {
@@ -54,16 +102,16 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
         final controller = Get.find<QrPaymentController>();
         controller.isFlashOn.value = isFlashOn;
 
-        print('[QR PAYMENT SCREEN] Flash toggled: $isFlashOn');
-        print(
+        debugPrint('[QR PAYMENT SCREEN] Flash toggled: $isFlashOn');
+        debugPrint(
             '[QR PAYMENT SCREEN] Controller flash state: ${controller.isFlashOn.value}');
       } catch (e) {
-        print('[QR PAYMENT SCREEN] Error toggling flash: $e');
+        debugPrint('[QR PAYMENT SCREEN] Error toggling flash: $e');
       }
     } else {
-      print('[QR PAYMENT SCREEN] QR Controller is null!');
+      debugPrint('[QR PAYMENT SCREEN] QR Controller is null!');
     }
-    print('[QR PAYMENT SCREEN] =========================');
+    debugPrint('[QR PAYMENT SCREEN] =========================');
   }
 
   @override
@@ -83,7 +131,7 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                   if (isScanning && capture.barcodes.isNotEmpty) {
                     final barcode = capture.barcodes.first;
                     if (barcode.rawValue != null) {
-                      print(
+                      debugPrint(
                           '[QR PAYMENT SCREEN] QR Code scanned: ${barcode.rawValue}');
 
                       setState(() {
@@ -91,8 +139,6 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
                       });
 
                       // QR kod tespit edildi, controller'a gönder
-                      final qrPaymentController =
-                          Get.find<QrPaymentController>();
                       qrPaymentController
                           .checkQrCode(barcode.rawValue!.toUpperCase());
                     }
@@ -130,7 +176,7 @@ class _QrPaymentScreenState extends State<QrPaymentScreen> {
 
                     // Bakiye
                     Obx(() => Text(
-                          '${controller.balance.value.toStringAsFixed(2)} ₼',
+                          '${controller.balance.value.toStringAsFixed(2)} ${AppTheme.currencySymbol}',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 22,

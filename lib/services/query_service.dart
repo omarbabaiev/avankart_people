@@ -7,6 +7,7 @@ import 'package:dio/dio.dart' as dio show FormData, MultipartFile;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'auth_service.dart';
+import 'package:flutter/material.dart';
 
 class QueryService {
   final Dio _dio = Dio(
@@ -166,7 +167,7 @@ class QueryService {
       DebugLogger.apiResponse('/sorgu/reasons', response.data);
 
       // API response format'ını kontrol et
-      print('[DEBUG] Reasons response: ${response.data}');
+      debugPrint('[DEBUG] Reasons response: ${response.data}');
 
       // Eğer response sadece {status: ok} format'ındaysa, mock data döndür
       if (response.data is Map<String, dynamic>) {

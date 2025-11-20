@@ -6,7 +6,7 @@ import 'package:avankart_people/utils/vibration_util.dart';
 
 class AppTheme {
   // Color Palette - Light & Dark
-  static const String currencySymbol = '₼';
+  static const String currencySymbol = '+';
 
   // Primary Colors
   static const Color primaryColor = Color(0xFF745086); // Primary

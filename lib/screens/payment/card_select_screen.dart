@@ -118,7 +118,7 @@ class CardSelectScreen extends StatelessWidget {
 
                           final card = cards[index];
 
-                          // Print log for each card
+                          // debugPrint log for each card
                           debugPrint('📱 Kart Yüklendi:');
                           debugPrint('   İsim: ${card.name}');
                           debugPrint('   isActive: ${card.isActive}');
@@ -163,7 +163,7 @@ class CardSelectScreen extends StatelessWidget {
 
                       final card = cards[index];
 
-                      // Print log for each card
+                      // debugPrint log for each card
                       debugPrint('📱 Kart Yüklendi:');
                       debugPrint('   İsim: ${card.name}');
                       debugPrint('   isActive: ${card.isActive}');
@@ -200,15 +200,14 @@ class CardSelectScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height: 100),
             Image.asset(
-              ImageAssets.cardholder,
-              width: 80,
-              height: 80,
-              color: Theme.of(context).unselectedWidgetColor,
+              ImageAssets.walletEmpty,
+              width: 200,
+              height: 200,
             ),
-            const SizedBox(height: 16),
             Text(
               'no_cards_found'.tr,
               style: TextStyle(
@@ -229,22 +228,12 @@ class CardSelectScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            CupertinoButton(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              color: AppTheme.primaryColor,
-              borderRadius: BorderRadius.circular(8),
+            ElevatedButton(
+              style: AppTheme.primaryButtonStyle(),
               onPressed: () async {
                 await cardManagerController.loadAllCards(refresh: true);
               },
-              child: Text(
-                'refresh'.tr,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
-              ),
+              child: Text('refresh'.tr, style: AppTheme.buttonTextStyle),
             ),
           ],
         ),

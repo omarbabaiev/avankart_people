@@ -113,7 +113,7 @@ class CompanyContactWidget extends StatelessWidget {
 
       // Eğer numara boşsa veya çok kısaysa atla
       if (fullNumber.isEmpty || fullNumber.length < 7) {
-        print('[PHONE CALL] Skipping invalid phone number: $fullNumber');
+        debugPrint('[PHONE CALL] Skipping invalid phone number: $fullNumber');
         continue;
       }
 
@@ -199,43 +199,43 @@ class CompanyContactWidget extends StatelessWidget {
 
       // Geçerli telefon numarası kontrolü
       if (cleanNumber.isEmpty || cleanNumber.length < 7) {
-        print('[PHONE CALL] Invalid phone number: $cleanNumber');
+        debugPrint('[PHONE CALL] Invalid phone number: $cleanNumber');
         return;
       }
 
-      print('[PHONE CALL] Original: $phoneNumber, Clean: $cleanNumber');
+      debugPrint('[PHONE CALL] Original: $phoneNumber, Clean: $cleanNumber');
 
       // iOS için tel scheme kullan
       final Uri phoneUri = Uri(scheme: 'tel', path: cleanNumber);
 
-      print('[PHONE CALL] Attempting to call: $cleanNumber');
+      debugPrint('[PHONE CALL] Attempting to call: $cleanNumber');
 
       // canLaunchUrl kontrolü
       if (await canLaunchUrl(phoneUri)) {
-        print('[PHONE CALL] Can launch URL, launching...');
+        debugPrint('[PHONE CALL] Can launch URL, launching...');
         await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
-        print('[PHONE CALL] URL launched successfully');
+        debugPrint('[PHONE CALL] URL launched successfully');
       } else {
-        print('[PHONE CALL] Cannot launch URL for: $cleanNumber');
+        debugPrint('[PHONE CALL] Cannot launch URL for: $cleanNumber');
         // Alternatif olarak telprompt scheme'ini dene (iOS'ta daha iyi çalışabilir)
         final Uri telPromptUri = Uri(scheme: 'telprompt', path: cleanNumber);
         if (await canLaunchUrl(telPromptUri)) {
-          print('[PHONE CALL] Using telprompt scheme...');
+          debugPrint('[PHONE CALL] Using telprompt scheme...');
           await launchUrl(telPromptUri, mode: LaunchMode.externalApplication);
         } else {
-          print(
+          debugPrint(
               '[PHONE CALL] Both tel and telprompt schemes failed for: $cleanNumber');
         }
       }
     } catch (e) {
-      print('[PHONE CALL] Error making phone call: $e');
+      debugPrint('[PHONE CALL] Error making phone call: $e');
     }
   }
 
   Future<void> _openWhatsApp(String phoneNumber) async {
     try {
       if (phoneNumber.isEmpty) {
-        print('[WHATSAPP] No WhatsApp number available');
+        debugPrint('[WHATSAPP] No WhatsApp number available');
         return;
       }
 
@@ -243,20 +243,20 @@ class CompanyContactWidget extends StatelessWidget {
       final Uri androidUri = Uri.parse('whatsapp://send?phone=$cleanNumber');
       final Uri webUri = Uri.parse('https://wa.me/$cleanNumber');
 
-      print('[WHATSAPP] Trying to open for: $cleanNumber');
+      debugPrint('[WHATSAPP] Trying to open for: $cleanNumber');
       if (await canLaunchUrl(androidUri)) {
         await launchUrl(androidUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] Opened via whatsapp://');
+        debugPrint('[WHATSAPP] Opened via whatsapp://');
         return;
       }
       if (await canLaunchUrl(webUri)) {
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
-        print('[WHATSAPP] Opened via wa.me');
+        debugPrint('[WHATSAPP] Opened via wa.me');
         return;
       }
-      print('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
+      debugPrint('[WHATSAPP] Cannot launch WhatsApp for: $cleanNumber');
     } catch (e) {
-      print('[WHATSAPP] Error opening WhatsApp: $e');
+      debugPrint('[WHATSAPP] Error opening WhatsApp: $e');
     }
   }
 
@@ -264,7 +264,7 @@ class CompanyContactWidget extends StatelessWidget {
     try {
       await UrlUtils.launchWeb(url);
     } catch (e) {
-      print('[RESTAURANT CONTACT] Error launching URL: $e');
+      debugPrint('[RESTAURANT CONTACT] Error launching URL: $e');
     }
   }
 }

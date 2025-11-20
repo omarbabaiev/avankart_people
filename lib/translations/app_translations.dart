@@ -48,6 +48,9 @@ class AppTranslations extends Translations {
           'no_cards_found': 'Kart tapılmadı',
           'no_cards_available_message':
               'Hazırda heç bir kart mövcud deyil. Zəhmət olmasa yenidən yoxlayın.',
+          'no_imtiyaz_card_found': 'İmtiyaz kartı tapılmadı',
+          'no_imtiyaz_card_found_description':
+              'Hələ heç bir imtiyaz kartınız yoxdur. İmtiyaz kartı əldə etmək üçün aşağıdakı düyməyə basın.',
           'refresh': 'Yenilə',
 
           // Security Screen
@@ -56,9 +59,15 @@ class AppTranslations extends Translations {
           'password': 'Şifrə',
           'reset_password': 'Şifrəni Sıfırla',
           'freeze_account': 'Hesabı Dondur',
-          'finger_print': 'Barmaq izi',
+          'freeze_account_confirm_title':
+              'Hesabı dondurmaq istədiyinizə əminsiniz?',
+          'freeze_account_confirm_subtitle':
+              'Hesabınızı dondurduqda, xidmətlərimizdən müvəqqəti istifadə edə bilməyəcəksiniz. İstədiyiniz zaman hesabınızı yenidən aktivləşdirə bilərsiniz.',
+          'finger_debugPrint': 'Barmaq izi',
           'pin_code': 'PIN kod',
           'set_pin_code': 'PIN kod ayarla',
+          'set_pin_code_for_face_id': 'Face ID üçün PIN kod ayarla',
+          'set_pin_code_for_fingerdebugPrint': 'Barmaq izi üçün PIN kod ayarla',
           'two_step_verification': '2 addımlı doğrulama',
           'two_factor_authentication': '2 Faktorlu Təsdiqləmə',
           'two_factor_authentication_description':
@@ -76,6 +85,9 @@ class AppTranslations extends Translations {
           'clear_filters': 'Filterləri təmizlə',
           'apply_filter': 'Filterlə',
           'filter_category_hint': 'Filter, kategoriya',
+          'no_filter_categories': 'Filter kateqoriyaları tapılmadı',
+          'no_filter_categories_description':
+              'Hazırda heç bir filter kateqoriyası mövcud deyil.',
 
           // Search Company Screen
           'searching': 'Axtarılır',
@@ -262,9 +274,22 @@ class AppTranslations extends Translations {
           'payment_success_description': 'Ödənişiniz uğurla həyata keçirildi.',
           'payment_failed_description': 'Ödənişiniz uğursuz oldu.',
           'transaction_id': 'Tranzaksiya ID',
+          'transaction_detail': 'Tranzaksiya detalları',
+          'transaction_info': 'Tranzaksiya məlumatları',
+          'transaction_type': 'Tranzaksiya növü',
+          'transaction_detail_not_found': 'Tranzaksiya detalları tapılmadı',
+          'transaction_detail_load_error':
+              'Tranzaksiya detalları yüklənərkən xəta baş verdi',
+          'transactions_load_error':
+              'Əməliyyatlar yüklənilərkən xəta baş verdi',
           'card_type': 'Kart növü',
+          'merchant': 'Müəssisə',
           'merchant_name': 'Ödənişi alan müəssisə',
           'merchant_id': 'Ödənişi alan ID',
+          'income': 'Gəlir',
+          'expense': 'Xərc',
+          'destination': 'Təyinat',
+          'commission': 'Komissiya',
           'completed': 'Tamamlandı',
           'share': 'Paylaş',
           'successful': 'Uğurlu',
@@ -429,8 +454,11 @@ class AppTranslations extends Translations {
               'OTP artıq təsdiqlənib. Zəhmət olmasa daxil olun.',
           'error.invalid_otp':
               'Yanlış OTP. Zəhmət olmasa yoxlayın və yenidən cəhd edin.',
+          'error.otp_not_verified':
+              'OTP doğrulanmayıb. Zəhmət olmasa düzgün OTP kodunu daxil edin.',
           'error.old_password_required': 'Köhnə şifrə tələb olunur.',
           'error.passwords_dont_match': 'Şifrələr uyğun gəlmir.',
+          'profile.old_password_incorrect': 'Köhnə şifrə yanlışdır.',
 
           // Terms of Use Screen
           'general_terms': 'Ümumi Şərtlər',
@@ -530,6 +558,8 @@ class AppTranslations extends Translations {
           'verification_code_sent': 'Doğrulama kodu göndərildi',
           'verification_code_resent': 'Doğrulama kodu yenidən göndərildi',
           'profile_updated_successfully': 'Profil uğurla yeniləndi',
+          'profile_updated_redirect_login':
+              'Profil uğurla dəyişdirildi və giriş ekranına yönləndirilirsiniz',
           'password_change_verification_sent':
               'Şifrə dəyişikliyi üçün doğrulama kodu göndərildi',
           'please_complete_password_otp_verification':
@@ -574,6 +604,8 @@ class AppTranslations extends Translations {
           'error.cannot_send_otp':
               'OTP göndərilə bilmədi. İstifadəçinin qeydiyyatlı email və ya telefon nömrəsi yoxdur',
           'error.internal_server_error': 'Daxili server xətası',
+          'error.connection_timeout':
+              'Bağlantı zaman aşımına uğradı. Zəhmət olmasa yenidən cəhd edin.',
           'otp.not_found_for_email': 'Bu email üçün OTP tapılmadı',
           'qr_code_info_missing': 'QR kod məlumatları tapılmadı',
           'qr_code_generation_failed': 'QR kod yaradılması uğursuz oldu',
@@ -650,9 +682,21 @@ class AppTranslations extends Translations {
           'payment_success_description': 'Ödənişiniz uğurla həyata keçirildi',
           'payment_failed_description': 'Ödənişiniz uğursuz oldu',
           'transaction_id': 'Tranzaksiya ID',
+          'transaction_detail': 'Tranzaksiya detalları',
+          'transaction_info': 'Tranzaksiya məlumatları',
+          'transaction_type': 'Tranzaksiya növü',
+          'transaction_detail_not_found': 'Tranzaksiya detalları tapılmadı',
+          'transaction_detail_load_error':
+              'Tranzaksiya detalları yüklənərkən xəta baş verdi',
           'card_type': 'Kart növü',
+          'merchant': 'Müəssisə',
           'merchant_name': 'Ödənişi alan müəssisə',
           'merchant_id': 'Ödənişi alan ID',
+          'income': 'Gəlir',
+          'expense': 'Xərc',
+          'destination': 'Təyinat',
+          'commission': 'Komissiya',
+          'cashback': 'Keşbek',
           'completed': 'Tamamlandı',
           'date': 'Tarix',
           'back_to_home': 'Ana Səhifəyə Qayıt',
@@ -910,6 +954,12 @@ class AppTranslations extends Translations {
           'working_hours_not_available': 'İş saatları mövcud deyil',
           'no_description_available': 'Təsvir mövcud deyil',
           'address_not_available': 'Ünvan mövcud deyil',
+          'address': 'Ünvan',
+          'open_in_maps': 'Xəritədə aç',
+          'get_directions': 'Yol göstər',
+          'call': 'Zəng et',
+          'working_hours': 'İş saatları',
+          's': 'saat',
           'feature_not_active': 'Bu funksiya aktiv deyil',
           'usage_rules': 'İstifadə qaydaları',
           'categories': 'Kateqoriyalar',
@@ -951,14 +1001,22 @@ class AppTranslations extends Translations {
           'biometric_error': 'Biometrik xəta',
           'face_id': 'Face ID',
           'face_id_verify': 'Face ID təsdiqlə',
-          'fingerprint_disabled': 'Barmaq izi deaktiv edildi',
-          'fingerprint_enabled': 'Barmaq izi aktiv edildi',
-          'fingerprint_verify': 'Barmaq izi təsdiqlə',
+          'face_id_disabled': 'Face ID deaktiv edildi',
+          'face_id_enabled': 'Face ID aktiv edildi',
+          'fingerdebugPrint_disabled': 'Barmaq izi deaktiv edildi',
+          'fingerdebugPrint_enabled': 'Barmaq izi aktiv edildi',
+          'fingerdebugPrint_verify': 'Barmaq izi təsdiqlə',
           'touch_id_verify': 'Touch ID təsdiqlə',
           'pin_code_disabled': 'PIN kod deaktiv edildi',
           'pin_code_enter': 'PIN kod daxil et',
-          'pin_code_error': 'PIN kod xətası',
+          'pin_code_enter_for_face_id': 'Face ID üçün PIN kod daxil et',
+          'pin_code_enter_for_fingerdebugPrint':
+              'Barmaq izi üçün PIN kod daxil et',
+          'pin_code_error': 'Yanlış PIN kod',
           'pin_code_repeat': 'PIN kod təkrar et',
+          'pin_code_repeat_for_face_id': 'Face ID üçün PIN kod təkrar et',
+          'pin_code_repeat_for_fingerdebugPrint':
+              'Barmaq izi üçün PIN kodu təkrar et',
           'pin_code_save_error': 'PIN kod saxlanıla bilmədi',
           'pin_code_saved_successfully': 'PIN kod uğurla saxlandı',
           'pin_code_verified': 'PIN kod təsdiqləndi',
@@ -1023,6 +1081,9 @@ class AppTranslations extends Translations {
           'no_cards_found': 'No cards found',
           'no_cards_available_message':
               'No cards are currently available. Please try again.',
+          'no_imtiyaz_card_found': 'No privilege card found',
+          'no_imtiyaz_card_found_description':
+              'You don\'t have any privilege cards yet. Press the button below to get a privilege card.',
           'refresh': 'Refresh',
           'new_account': 'New Account',
           'first_name': 'First name',
@@ -1118,9 +1179,16 @@ class AppTranslations extends Translations {
           'password': 'Password',
           'reset_password': 'Reset Password',
           'freeze_account': 'Freeze Account',
-          'finger_print': 'Fingerprint',
+          'freeze_account_confirm_title':
+              'Are you sure you want to freeze the account?',
+          'freeze_account_confirm_subtitle':
+              'When you freeze your account, you will temporarily be unable to use our services. You can reactivate your account whenever you want.',
+          'finger_debugPrint': 'FingerdebugPrint',
           'pin_code': 'PIN Code',
           'set_pin_code': 'Set PIN Code',
+          'set_pin_code_for_face_id': 'Set PIN Code for Face ID',
+          'set_pin_code_for_fingerdebugPrint':
+              'Set PIN Code for FingerdebugPrint',
           'two_step_verification': '2-Step Verification',
           'two_factor_authentication': 'Two-Factor Authentication',
           'two_factor_authentication_description':
@@ -1138,6 +1206,9 @@ class AppTranslations extends Translations {
           'clear_filters': 'Clear Filters',
           'apply_filter': 'Apply',
           'filter_category_hint': 'Filter, category',
+          'no_filter_categories': 'No filter categories found',
+          'no_filter_categories_description':
+              'Currently no filter categories are available.',
 
           // Search Company Screen
           'searching': 'Searching',
@@ -1189,9 +1260,21 @@ class AppTranslations extends Translations {
               'Your payment has been successfully completed.',
           'payment_failed_description': 'Your payment was not successful.',
           'transaction_id': 'Transaction ID',
+          'transaction_detail': 'Transaction Details',
+          'transaction_info': 'Transaction Information',
+          'transaction_type': 'Transaction Type',
+          'transaction_detail_not_found': 'Transaction details not found',
+          'transaction_detail_load_error': 'Error loading transaction details',
+          'transactions_load_error': 'Error loading transactions',
           'card_type': 'Card type',
+          'merchant': 'Merchant',
           'merchant_name': 'Receiving business',
           'merchant_id': 'Receiver ID',
+          'income': 'Income',
+          'expense': 'Expense',
+          'destination': 'Destination',
+          'commission': 'Commission',
+          'cashback': 'Cashback',
           'completed': 'Completed',
           'share': 'Share',
           'successful': 'Successful',
@@ -1339,6 +1422,8 @@ class AppTranslations extends Translations {
           'error.user_not_found': 'User not found. Please sign in again.',
           'error.otp_already_verified': 'OTP already verified. Please sign in.',
           'error.invalid_otp': 'Wrong OTP. Please check and try again.',
+          'error.otp_not_verified':
+              'OTP not verified. Please enter the correct OTP code.',
           'error.old_password_required': 'Old password is required.',
           'error.passwords_dont_match': "Passwords don't match.",
           'general_terms': 'General Terms',
@@ -1418,6 +1503,8 @@ class AppTranslations extends Translations {
           'verification_code_sent': 'Verification code sent',
           'verification_code_resent': 'Verification code resent',
           'profile_updated_successfully': 'Profile updated successfully',
+          'profile_updated_redirect_login':
+              'Profile updated successfully and you will be redirected to login screen',
           'password_change_verification_sent':
               'Verification code sent for password change',
           'please_complete_password_otp_verification':
@@ -1452,6 +1539,7 @@ class AppTranslations extends Translations {
           'error.cannot_send_otp':
               'Cannot send OTP. User has no registered email or phone number',
           'error.internal_server_error': 'Internal server error',
+          'error.connection_timeout': 'Connection timeout. Please try again.',
           'qr_code_info_missing': 'QR code information missing',
           'qr_code_generation_failed': 'QR code generation failed',
           'qr_code_cancellation_failed': 'QR code cancellation failed',
@@ -1665,6 +1753,9 @@ class AppTranslations extends Translations {
           'working_hours_not_available': 'Working hours not available',
           'no_description_available': 'Description not available',
           'address_not_available': 'Address not available',
+          'address': 'Address',
+          'working_hours': 'Working hours',
+          's': 'hours',
           'feature_not_active': 'This feature is not active',
           'usage_rules': 'Usage Rules',
           'categories': 'Categories',
@@ -1706,14 +1797,20 @@ class AppTranslations extends Translations {
           'biometric_error': 'Biometric error',
           'face_id': 'Face ID',
           'face_id_verify': 'Face ID verify',
-          'fingerprint_disabled': 'Fingerprint disabled',
-          'fingerprint_enabled': 'Fingerprint enabled',
-          'fingerprint_verify': 'Fingerprint verify',
+          'fingerdebugPrint_disabled': 'FingerdebugPrint disabled',
+          'fingerdebugPrint_enabled': 'FingerdebugPrint enabled',
+          'fingerdebugPrint_verify': 'FingerdebugPrint verify',
           'touch_id_verify': 'Touch ID verify',
           'pin_code_disabled': 'PIN code disabled',
           'pin_code_enter': 'Enter PIN code',
-          'pin_code_error': 'PIN code error',
+          'pin_code_enter_for_face_id': 'Enter PIN code for Face ID',
+          'pin_code_enter_for_fingerdebugPrint':
+              'Enter PIN code for FingerdebugPrint',
+          'pin_code_error': 'Incorrect PIN code',
           'pin_code_repeat': 'Repeat PIN code',
+          'pin_code_repeat_for_face_id': 'Repeat PIN code for Face ID',
+          'pin_code_repeat_for_fingerdebugPrint':
+              'Repeat PIN code for FingerdebugPrint',
           'pin_code_save_error': 'PIN code save error',
           'pin_code_saved_successfully': 'PIN code saved successfully',
           'pin_code_verified': 'PIN code verified',
@@ -1878,10 +1975,10 @@ class AppTranslations extends Translations {
           'female': 'Female',
           'files_selected': 'Files selected',
           'fill_all_fields': 'Fill all fields',
-          'finger_print': 'Fingerprint',
-          'fingerprint_disabled': 'Fingerprint disabled',
-          'fingerprint_enabled': 'Fingerprint enabled',
-          'fingerprint_verify': 'Fingerprint verify',
+          'finger_debugPrint': 'FingerdebugPrint',
+          'fingerdebugPrint_disabled': 'FingerdebugPrint disabled',
+          'fingerdebugPrint_enabled': 'FingerdebugPrint enabled',
+          'fingerdebugPrint_verify': 'FingerdebugPrint verify',
           'first_name': 'First Name',
           'first_name_empty': 'First name is empty',
           'food_card': 'Food Card',
@@ -2200,6 +2297,9 @@ class AppTranslations extends Translations {
           'no_cards_found': 'Kart bulunamadı',
           'no_cards_available_message':
               'Şu anda hiçbir kart mevcut değil. Lütfen tekrar deneyin.',
+          'no_imtiyaz_card_found': 'İmtiyaz kartı bulunamadı',
+          'no_imtiyaz_card_found_description':
+              'Henüz hiç imtiyaz kartınız yok. İmtiyaz kartı almak için aşağıdaki düğmeye basın.',
           'refresh': 'Yenile',
           'new_account': 'Yeni Hesap',
           'first_name': 'Ad',
@@ -2295,9 +2395,16 @@ class AppTranslations extends Translations {
           'password': 'Şifre',
           'reset_password': 'Şifreyi Sıfırla',
           'freeze_account': 'Hesabı Dondur',
-          'finger_print': 'Parmak İzi',
+          'freeze_account_confirm_title':
+              'Hesabı dondurmak istediğinize emin misiniz?',
+          'freeze_account_confirm_subtitle':
+              'Hesabınızı dondurduğunuzda hizmetlerimizden geçici olarak yararlanamazsınız. İstediğiniz zaman hesabınızı yeniden aktifleştirebilirsiniz.',
+          'finger_debugPrint': 'Parmak İzi',
           'pin_code': 'PIN Kodu',
           'set_pin_code': 'PIN Kodu Ayarla',
+          'set_pin_code_for_face_id': 'Face ID için PIN Kodu Ayarla',
+          'set_pin_code_for_fingerdebugPrint':
+              'Parmak İzi için PIN Kodu Ayarla',
           'two_step_verification': '2 Adımlı Doğrulama',
           'two_factor_authentication': 'İki Faktörlü Kimlik Doğrulama',
           'two_factor_authentication_description':
@@ -2315,6 +2422,9 @@ class AppTranslations extends Translations {
           'clear_filters': 'Filtreleri Temizle',
           'apply_filter': 'Uygula',
           'filter_category_hint': 'Filtre, kategori',
+          'no_filter_categories': 'Filtre kategorileri bulunamadı',
+          'no_filter_categories_description':
+              'Şu anda filtre kategorisi mevcut değil.',
 
           // Search Company Screen
           'searching': 'Aranıyor',
@@ -2365,9 +2475,22 @@ class AppTranslations extends Translations {
           'payment_success_description': 'Ödemeniz başarıyla tamamlandı.',
           'payment_failed_description': 'Ödemeniz gerçekleştirilemedi.',
           'transaction_id': 'İşlem ID',
+          'transaction_detail': 'İşlem Detayları',
+          'transaction_info': 'İşlem Bilgileri',
+          'transaction_type': 'İşlem Türü',
+          'transaction_detail_not_found': 'İşlem detayları bulunamadı',
+          'transaction_detail_load_error':
+              'İşlem detayları yüklenirken hata oluştu',
+          'transactions_load_error': 'İşlemler yüklenirken hata oluştu',
           'card_type': 'Kart türü',
+          'merchant': 'İşletme',
           'merchant_name': 'Ödemeyi alan işletme',
           'merchant_id': 'Alıcı ID',
+          'income': 'Gelir',
+          'expense': 'Gider',
+          'destination': 'Hedef',
+          'commission': 'Komisyon',
+          'cashback': 'Nakit İade',
           'completed': 'Tamamlandı',
           'share': 'Paylaş',
           'successful': 'Başarılı',
@@ -2518,6 +2641,8 @@ class AppTranslations extends Translations {
               'OTP zaten doğrulandı. Lütfen giriş yapın.',
           'error.invalid_otp':
               'Yanlış OTP. Lütfen kontrol edin ve tekrar deneyin.',
+          'error.otp_not_verified':
+              'OTP doğrulanmadı. Lütfen doğru OTP kodunu girin.',
           'error.old_password_required': 'Eski şifre gerekli.',
           'error.passwords_dont_match': 'Şifreler eşleşmiyor.',
           'general_terms': 'Genel Koşullar',
@@ -2597,6 +2722,8 @@ class AppTranslations extends Translations {
           'verification_code_sent': 'Doğrulama kodu gönderildi',
           'verification_code_resent': 'Doğrulama kodu tekrar gönderildi',
           'profile_updated_successfully': 'Profil başarıyla güncellendi',
+          'profile_updated_redirect_login':
+              'Profil başarıyla güncellendi ve giriş ekranına yönlendiriliyorsunuz',
           'password_change_verification_sent':
               'Şifre değişikliği için doğrulama kodu gönderildi',
           'please_complete_password_otp_verification':
@@ -2630,6 +2757,8 @@ class AppTranslations extends Translations {
           'error.cannot_send_otp':
               'OTP gönderilemiyor. Kullanıcının kayıtlı e-posta veya telefon numarası yok',
           'error.internal_server_error': 'İç sunucu hatası',
+          'error.connection_timeout':
+              'Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.',
           'qr_code_info_missing': 'QR kod bilgisi eksik',
           'qr_code_generation_failed': 'QR kod oluşturma başarısız',
           'qr_code_cancellation_failed': 'QR kod iptal başarısız',
@@ -2843,6 +2972,12 @@ class AppTranslations extends Translations {
           'working_hours_not_available': 'Çalışma saatları mevcut değil',
           'no_description_available': 'Açıklama mevcut değil',
           'address_not_available': 'Adres mevcut değil',
+          'address': 'Adres',
+          'open_in_maps': 'Haritada aç',
+          'get_directions': 'Yol tarifi al',
+          'call': 'Ara',
+          'working_hours': 'Çalışma saatları',
+          's': 'saat',
           'feature_not_active': 'Bu özellik aktif değil',
           'usage_rules': 'Kullanım Kuralları',
           'categories': 'Kategoriler',
@@ -2883,14 +3018,19 @@ class AppTranslations extends Translations {
           'biometric_error': 'Biyometrik hata',
           'face_id': 'Face ID',
           'face_id_verify': 'Face ID doğrula',
-          'fingerprint_disabled': 'Parmak izi devre dışı',
-          'fingerprint_enabled': 'Parmak izi etkin',
-          'fingerprint_verify': 'Parmak izi doğrula',
+          'fingerdebugPrint_disabled': 'Parmak izi devre dışı',
+          'fingerdebugPrint_enabled': 'Parmak izi etkin',
+          'fingerdebugPrint_verify': 'Parmak izi doğrula',
           'touch_id_verify': 'Touch ID doğrula',
           'pin_code_disabled': 'PIN kod devre dışı',
           'pin_code_enter': 'PIN kod gir',
-          'pin_code_error': 'PIN kod hatası',
+          'pin_code_enter_for_face_id': 'Face ID için PIN kod gir',
+          'pin_code_enter_for_fingerdebugPrint': 'Parmak izi için PIN kod gir',
+          'pin_code_error': 'Yanlış PIN kodu',
           'pin_code_repeat': 'PIN kod tekrarla',
+          'pin_code_repeat_for_face_id': 'Face ID için PIN kod tekrarla',
+          'pin_code_repeat_for_fingerdebugPrint':
+              'Parmak izi için PIN kod tekrarla',
           'pin_code_save_error': 'PIN kod kaydedilemedi',
           'pin_code_saved_successfully': 'PIN kod başarıyla kaydedildi',
           'pin_code_verified': 'PIN kod doğrulandı',
@@ -3020,6 +3160,8 @@ class AppTranslations extends Translations {
           'error.email_already_exists': 'E-posta zaten mevcut',
           'error.email_required': 'E-posta gerekli',
           'error.internal_server_error': 'Sunucu hatası',
+          'error.connection_timeout':
+              'Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.',
           'error.invalid_otp': 'Geçersiz OTP',
           'error.name_required': 'İsim gerekli',
           'error.not_delete_request': 'Silme isteği değil',
@@ -3058,10 +3200,10 @@ class AppTranslations extends Translations {
           'female': 'Kadın',
           'files_selected': 'Dosyalar seçildi',
           'fill_all_fields': 'Tüm alanları doldurun',
-          'finger_print': 'Parmak İzi',
-          'fingerprint_disabled': 'Parmak izi devre dışı',
-          'fingerprint_enabled': 'Parmak izi aktif',
-          'fingerprint_verify': 'Parmak izi doğrula',
+          'finger_debugPrint': 'Parmak İzi',
+          'fingerdebugPrint_disabled': 'Parmak izi devre dışı',
+          'fingerdebugPrint_enabled': 'Parmak izi aktif',
+          'fingerdebugPrint_verify': 'Parmak izi doğrula',
           'first_name': 'Ad',
           'first_name_empty': 'Ad boş',
           'food_card': 'Yemek Kartı',
@@ -3197,7 +3339,7 @@ class AppTranslations extends Translations {
           'pin_code': 'PIN Kodu',
           'pin_code_disabled': 'PIN kodu devre dışı',
           'pin_code_enter': 'PIN Kodu Gir',
-          'pin_code_error': 'PIN kodu hatası',
+          'pin_code_error': 'Yanlış PIN kodu',
           'pin_code_repeat': 'PIN Kodu Tekrarla',
           'pin_code_save_error': 'PIN kodu kaydetme hatası',
           'pin_code_saved_successfully': 'PIN kodu başarıyla kaydedildi',
@@ -3379,6 +3521,9 @@ class AppTranslations extends Translations {
           'no_cards_found': 'Карты не найдены',
           'no_cards_available_message':
               'В настоящее время карты недоступны. Пожалуйста, попробуйте снова.',
+          'no_imtiyaz_card_found': 'Привилегированная карта не найдена',
+          'no_imtiyaz_card_found_description':
+              'У вас еще нет привилегированных карт. Нажмите кнопку ниже, чтобы получить привилегированную карту.',
           'refresh': 'Обновить',
           'new_account': 'Новый аккаунт',
           'first_name': 'Имя',
@@ -3477,9 +3622,16 @@ class AppTranslations extends Translations {
           'password': 'Пароль',
           'reset_password': 'Сбросить пароль',
           'freeze_account': 'Заморозить аккаунт',
-          'finger_print': 'Отпечаток пальца',
+          'freeze_account_confirm_title':
+              'Вы уверены, что хотите заморозить аккаунт?',
+          'freeze_account_confirm_subtitle':
+              'После заморозки аккаунта вы временно не сможете пользоваться нашими услугами. Вы сможете повторно активировать аккаунт в любое время.',
+          'finger_debugPrint': 'Отпечаток пальца',
           'pin_code': 'PIN код',
           'set_pin_code': 'Установить PIN код',
+          'set_pin_code_for_face_id': 'Установить PIN код для Face ID',
+          'set_pin_code_for_fingerdebugPrint':
+              'Установить PIN код для отпечатка пальца',
           'two_step_verification': 'Двухэтапная проверка',
           'two_factor_authentication': 'Двухфакторная аутентификация',
           'two_factor_authentication_description':
@@ -3497,6 +3649,9 @@ class AppTranslations extends Translations {
           'clear_filters': 'Очистить фильтры',
           'apply_filter': 'Применить',
           'filter_category_hint': 'Фильтр, категория',
+          'no_filter_categories': 'Категории фильтров не найдены',
+          'no_filter_categories_description':
+              'В настоящее время категории фильтров недоступны.',
 
           // Search Company Screen
           'searching': 'Поиск',
@@ -3547,9 +3702,22 @@ class AppTranslations extends Translations {
           'payment_success_description': 'Ваш платеж был успешно завершен.',
           'payment_failed_description': 'Ваш платеж не был выполнен.',
           'transaction_id': 'ID транзакции',
+          'transaction_detail': 'Детали транзакции',
+          'transaction_info': 'Информация о транзакции',
+          'transaction_type': 'Тип транзакции',
+          'transaction_detail_not_found': 'Детали транзакции не найдены',
+          'transaction_detail_load_error':
+              'Ошибка при загрузке деталей транзакции',
+          'transactions_load_error': 'Ошибка загрузки транзакций',
           'card_type': 'Тип карты',
+          'merchant': 'Торговец',
           'merchant_name': 'Получающий бизнес',
           'merchant_id': 'ID получателя',
+          'income': 'Доход',
+          'expense': 'Расход',
+          'destination': 'Назначение',
+          'commission': 'Комиссия',
+          'cashback': 'Кэшбэк',
           'completed': 'Завершено',
           'share': 'Поделиться',
           'successful': 'Успешно',
@@ -3782,6 +3950,8 @@ class AppTranslations extends Translations {
           'verification_code_sent': 'Код подтверждения отправлен',
           'verification_code_resent': 'Код подтверждения отправлен повторно',
           'profile_updated_successfully': 'Профиль успешно обновлен',
+          'profile_updated_redirect_login':
+              'Профиль успешно обновлен, и вы будете перенаправлены на экран входа',
           'password_change_verification_sent':
               'Код подтверждения отправлен для изменения пароля',
           'please_complete_password_otp_verification':
@@ -3816,6 +3986,10 @@ class AppTranslations extends Translations {
           'error.cannot_send_otp':
               'Не удается отправить OTP. У пользователя нет зарегистрированной электронной почты или номера телефона',
           'error.internal_server_error': 'Внутренняя ошибка сервера',
+          'error.connection_timeout':
+              'Истекло время ожидания соединения. Пожалуйста, попробуйте снова.',
+          'error.connection_timeout':
+              'Истекло время ожидания соединения. Пожалуйста, попробуйте снова.',
           'qr_code_info_missing': 'Информация о QR-коде отсутствует',
           'qr_code_generation_failed': 'Создание QR-кода не удалось',
           'qr_code_cancellation_failed': 'Отмена QR-кода не удалась',
@@ -4063,6 +4237,9 @@ class AppTranslations extends Translations {
           'working_hours_not_available': 'Рабочие часы недоступны',
           'no_description_available': 'Описание недоступно',
           'address_not_available': 'Адрес недоступен',
+          'address': 'Адрес',
+          'working_hours': 'Часы работы',
+          's': 'часы',
           'feature_not_active': 'Эта функция неактивна',
           'usage_rules': 'Правила использования',
           'categories': 'Категории',
@@ -4105,14 +4282,20 @@ class AppTranslations extends Translations {
           'biometric_error': 'Биометрическая ошибка',
           'face_id': 'Face ID',
           'face_id_verify': 'Подтвердить Face ID',
-          'fingerprint_disabled': 'Отпечаток пальца отключен',
-          'fingerprint_enabled': 'Отпечаток пальца включен',
-          'fingerprint_verify': 'Подтвердить отпечаток пальца',
+          'fingerdebugPrint_disabled': 'Отпечаток пальца отключен',
+          'fingerdebugPrint_enabled': 'Отпечаток пальца включен',
+          'fingerdebugPrint_verify': 'Подтвердить отпечаток пальца',
           'touch_id_verify': 'Подтвердить Touch ID',
           'pin_code_disabled': 'PIN код отключен',
           'pin_code_enter': 'Введите PIN код',
-          'pin_code_error': 'Ошибка PIN кода',
+          'pin_code_enter_for_face_id': 'Введите PIN код для Face ID',
+          'pin_code_enter_for_fingerdebugPrint':
+              'Введите PIN код для отпечатка пальца',
+          'pin_code_error': 'Неверный PIN код',
           'pin_code_repeat': 'Повторите PIN код',
+          'pin_code_repeat_for_face_id': 'Повторите PIN код для Face ID',
+          'pin_code_repeat_for_fingerdebugPrint':
+              'Повторите PIN код для отпечатка пальца',
           'pin_code_save_error': 'Ошибка сохранения PIN кода',
           'pin_code_saved_successfully': 'PIN код успешно сохранен',
           'pin_code_verified': 'PIN код подтвержден',
@@ -4240,7 +4423,11 @@ class AppTranslations extends Translations {
           'error.email_already_exists': 'Email уже существует',
           'error.email_required': 'Требуется email',
           'error.internal_server_error': 'Внутренняя ошибка сервера',
+          'error.connection_timeout':
+              'Истекло время ожидания соединения. Пожалуйста, попробуйте снова.',
           'error.invalid_otp': 'Недействительный OTP',
+          'error.otp_not_verified':
+              'OTP не подтвержден. Пожалуйста, введите правильный код OTP.',
           'error.name_required': 'Требуется имя',
           'error.not_delete_request': 'Не запрос на удаление',
           'error.old_password_required': 'Требуется старый пароль',
@@ -4279,10 +4466,10 @@ class AppTranslations extends Translations {
           'female': 'Женский',
           'files_selected': 'Файлы выбраны',
           'fill_all_fields': 'Заполните все поля',
-          'finger_print': 'Отпечаток пальца',
-          'fingerprint_disabled': 'Отпечаток пальца отключен',
-          'fingerprint_enabled': 'Отпечаток пальца включен',
-          'fingerprint_verify': 'Подтвердить отпечаток пальца',
+          'finger_debugPrint': 'Отпечаток пальца',
+          'fingerdebugPrint_disabled': 'Отпечаток пальца отключен',
+          'fingerdebugPrint_enabled': 'Отпечаток пальца включен',
+          'fingerdebugPrint_verify': 'Подтвердить отпечаток пальца',
           'first_name': 'Имя',
           'first_name_empty': 'Имя пусто',
           'food_card': 'Продовольственная карта',

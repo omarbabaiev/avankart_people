@@ -93,7 +93,12 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
   bool _isDayOpen(WorkingHours? workingHours) {
     if (workingHours == null) return false;
 
-    // Check if the day is closed
+    // Check enabled field first (new API format)
+    if (workingHours.enabled != null) {
+      return workingHours.enabled!;
+    }
+
+    // Legacy support: check if the day is closed
     if (workingHours.open == "closed" || workingHours.close == "closed") {
       return false;
     }
@@ -138,17 +143,27 @@ class CompanyWorkingHoursWidget extends StatelessWidget {
         break;
     }
 
-    if (currentDayHours == null ||
-        currentDayHours.open == null ||
-        currentDayHours.close == null) {
+    if (currentDayHours == null) {
       return 'working_hours_not_available'.tr;
     }
 
-    // Check if the day is closed
-    if (currentDayHours.open == "closed" || currentDayHours.close == "closed") {
+    // Check if day is enabled
+    final isEnabled = currentDayHours.enabled ??
+        (currentDayHours.open != null &&
+            currentDayHours.close != null &&
+            currentDayHours.open != "closed" &&
+            currentDayHours.close != "closed");
+
+    // If not enabled or closed, show "Bağlıdır" (closed)
+    if (!isEnabled ||
+        currentDayHours.open == null ||
+        currentDayHours.close == null ||
+        currentDayHours.open == "closed" ||
+        currentDayHours.close == "closed") {
       return 'closed'.tr;
     }
 
+    // Show today's working hours
     return '${currentDayHours.open} - ${currentDayHours.close}';
   }
 }

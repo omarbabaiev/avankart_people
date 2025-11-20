@@ -236,6 +236,10 @@ class SettingsSection extends StatelessWidget {
                         }
                       },
                     ),
+                    Divider(
+                      height: 0.5,
+                      color: Theme.of(context).dividerColor,
+                    ),
                     SettingsRadioItem<Locale>(
                       title: 'russian_language'.tr,
                       value: Locale('ru', 'RU'),

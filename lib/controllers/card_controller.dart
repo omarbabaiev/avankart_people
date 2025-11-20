@@ -3,6 +3,8 @@ import 'package:avankart_people/utils/vibration_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../services/cards_service.dart';
+import '../routes/app_routes.dart';
+import '../utils/api_response_parser.dart';
 import 'home_controller.dart';
 
 class CardController extends GetxController with SingleGetTickerProviderMixin {
@@ -26,11 +28,18 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   final RxBool hasTransactions = true.obs; // Transaction var mı?
   final RxString emptyTransactionMessage = ''.obs; // Boş transaction mesajı
 
+  // Pagination state
+  final RxInt currentPage = 1.obs; // Mevcut sayfa
+  final RxInt limit = 10.obs; // Sayfa başına kayıt sayısı
+  final RxBool hasMore = true.obs; // Daha fazla transaction var mı?
+  final RxBool isLoadingMore = false.obs; // Daha fazla yükleniyor mu?
+
   late DraggableScrollableController dragController;
   late AnimationController animationController;
   late Animation<double> sizeAnimation;
   late Animation<double> textSizeAnimation;
   late Animation<double> fadeAnimation;
+  double bottomSheetMinSize = 0.65; // Dynamic olarak güncellenecek
 
   @override
   void onInit() {
@@ -72,10 +81,11 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   }
 
   void _onDragUpdate() {
-    final bool shouldExpand = dragController.size > 0.75;
-    isBottomSheetExpanded.value = shouldExpand;
+    // Bottom sheet yukarı kaydırıldığında (minimum size'dan büyükse) butonları gizle
+    final bool shouldHideButtons = dragController.size > bottomSheetMinSize + 0.01;
+    isBottomSheetExpanded.value = shouldHideButtons;
 
-    if (shouldExpand) {
+    if (shouldHideButtons) {
       animationController.forward();
     } else {
       animationController.reverse();
@@ -98,7 +108,8 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
         finalSirketId = homeController.user?.sirketId?.id;
       }
 
-      print('[CARD CONTROLLER] Loading cards with sirketId: $finalSirketId');
+      debugPrint(
+          '[CARD CONTROLLER] Loading cards with sirketId: $finalSirketId');
 
       final response = await _cardsService.getMyCards(sirketId: finalSirketId);
 
@@ -108,13 +119,13 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
           final parsedColor = _parseColor(card.backgroundColor);
           final iconPath = _getIconPath(card.icon);
 
-          print('[CARD CONTROLLER] ===== CARD DATA DEBUG =====');
-          print('[CARD CONTROLLER] Card Name: ${card.name}');
-          print('[CARD CONTROLLER] Card Icon: ${card.icon} -> $iconPath');
-          print(
+          debugPrint('[CARD CONTROLLER] ===== CARD DATA DEBUG =====');
+          debugPrint('[CARD CONTROLLER] Card Name: ${card.name}');
+          debugPrint('[CARD CONTROLLER] Card Icon: ${card.icon} -> $iconPath');
+          debugPrint(
               '[CARD CONTROLLER] Card Color: ${card.backgroundColor} -> $parsedColor');
-          print('[CARD CONTROLLER] Card Balance: ${card.balance}');
-          print('[CARD CONTROLLER] ===========================');
+          debugPrint('[CARD CONTROLLER] Card Balance: ${card.balance}');
+          debugPrint('[CARD CONTROLLER] ===========================');
 
           return {
             'title': card.name,
@@ -135,7 +146,7 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
           if (selectedCardIndex.value < 0 ||
               selectedCardIndex.value >= apiCards.length) {
             selectedCardIndex.value = 0;
-            print(
+            debugPrint(
                 '[CARD CONTROLLER] Fixed invalid selectedCardIndex, set to 0');
           }
 
@@ -144,7 +155,8 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
             final cardIndex =
                 selectedCardIndex.value.clamp(0, apiCards.length - 1);
             loadCardTransactions(
-                cardId: apiCards[cardIndex]['cardId'] as String?);
+                cardId: apiCards[cardIndex]['cardId'] as String?,
+                refresh: true);
           });
         }
       }
@@ -170,7 +182,8 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
   }
 
   // API'den kart işlemlerini yükle
-  Future<void> loadCardTransactions({String? cardId}) async {
+  Future<void> loadCardTransactions(
+      {String? cardId, bool refresh = false}) async {
     try {
       // Eğer cardId verilmezse, seçili kartın ID'sini kullan
       final currentCardId = cardId ??
@@ -178,104 +191,171 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
               ? cards[selectedCardIndex.value]['cardId'] as String?
               : null);
 
-      print('[CARD CONTROLLER] ===== LOAD TRANSACTIONS DEBUG =====');
-      print('[CARD CONTROLLER] Requested cardId: $cardId');
-      print(
+      debugPrint('[CARD CONTROLLER] ===== LOAD TRANSACTIONS DEBUG =====');
+      debugPrint('[CARD CONTROLLER] Requested cardId: $cardId');
+      debugPrint('[CARD CONTROLLER] Refresh: $refresh');
+      debugPrint(
           '[CARD CONTROLLER] Current selectedCardIndex: ${selectedCardIndex.value}');
-      print('[CARD CONTROLLER] Cards length: ${cards.length}');
-      print('[CARD CONTROLLER] Final currentCardId: $currentCardId');
-      print('[CARD CONTROLLER] ====================================');
+      debugPrint('[CARD CONTROLLER] Cards length: ${cards.length}');
+      debugPrint('[CARD CONTROLLER] Final currentCardId: $currentCardId');
+      debugPrint('[CARD CONTROLLER] ====================================');
 
       if (currentCardId == null) {
-        print(
+        debugPrint(
             '[CARD CONTROLLER] No cardId available, skipping transaction load');
         return;
       }
 
+      // Refresh ise pagination state'i sıfırla
+      if (refresh) {
+        currentPage.value = 1;
+        hasMore.value = true;
+        transactions.value = [];
+      }
+
+      // Eğer daha fazla veri yoksa ve refresh değilse, yükleme yapma
+      if (!hasMore.value && !refresh) {
+        debugPrint('[CARD CONTROLLER] No more transactions to load');
+        return;
+      }
+
+      // Refresh ise normal loading, değilse loading more
+      if (refresh) {
       isTransactionLoading.value = true;
-      final response =
-          await _cardsService.getCardTransactions(cardId: currentCardId);
+      } else {
+        isLoadingMore.value = true;
+      }
+
+      final response = await _cardsService.getCardTransactions(
+        cardId: currentCardId,
+        page: currentPage.value,
+        limit: limit.value,
+      );
 
       if (response?.success == true && response?.transactions != null) {
-        print('[CARD CONTROLLER] ===== TRANSACTIONS API RESPONSE =====');
-        print('[CARD CONTROLLER] Success: ${response!.success}');
-        print('[CARD CONTROLLER] Page: ${response.page}');
-        print('[CARD CONTROLLER] Skip: ${response.skip}');
-        print('[CARD CONTROLLER] Limit: ${response.limit}');
-        print(
+        debugPrint('[CARD CONTROLLER] ===== TRANSACTIONS API RESPONSE =====');
+        debugPrint('[CARD CONTROLLER] Success: ${response!.success}');
+        debugPrint('[CARD CONTROLLER] Page: ${response.page}');
+        debugPrint('[CARD CONTROLLER] Skip: ${response.skip}');
+        debugPrint('[CARD CONTROLLER] Limit: ${response.limit}');
+        debugPrint(
             '[CARD CONTROLLER] Transactions count: ${response.transactions!.length}');
 
         // Her transaction için debug bilgisi
         for (int i = 0; i < response.transactions!.length; i++) {
           final transaction = response.transactions![i];
-          print('[CARD CONTROLLER] Transaction $i:');
-          print('[CARD CONTROLLER]   ID: ${transaction.id}');
-          print('[CARD CONTROLLER]   Amount: ${transaction.amount}');
-          print('[CARD CONTROLLER]   Status: ${transaction.status}');
-          print(
+          debugPrint('[CARD CONTROLLER] Transaction $i:');
+          debugPrint('[CARD CONTROLLER]   ID: ${transaction.id}');
+          debugPrint('[CARD CONTROLLER]   Amount: ${transaction.amount}');
+          debugPrint('[CARD CONTROLLER]   Status: ${transaction.status}');
+          debugPrint(
               '[CARD CONTROLLER]   Muessise Name: ${transaction.muessiseName}');
-          print(
+          debugPrint(
               '[CARD CONTROLLER]   Muessise Category: ${transaction.muessiseCategory}');
-          print('[CARD CONTROLLER]   Category: ${transaction.category}');
-          print('[CARD CONTROLLER]   Created At: ${transaction.createdAt}');
+          debugPrint('[CARD CONTROLLER]   Category: ${transaction.category}');
+          debugPrint(
+              '[CARD CONTROLLER]   Created At: ${transaction.createdAt}');
         }
-        print('[CARD CONTROLLER] ======================================');
+        debugPrint('[CARD CONTROLLER] ======================================');
 
         // API'den gelen işlemleri mevcut format'a dönüştür
         final apiTransactions = response.transactions!
             .map((transaction) => {
                   'type': transaction.category,
-                  'title': transaction.muessiseName ?? 'İşlem',
-                  'subtitle': transaction.muessiseCategory ?? 'Genel',
+                  'title': transaction.muessiseName ?? 'no_available'.tr,
+                  'subtitle': transaction.muessiseCategory ?? '',
                   'amount': transaction.amount.toStringAsFixed(2),
                   'date': _formatDate(transaction.createdAt),
                   'icon': _getTransactionIcon(
                       transaction.category), // Kategoriye göre icon
-                  'isPositive': transaction.amount > 0,
                   'transactionId': transaction.id,
                   'status': transaction.status,
+                  'category': transaction.category, // Detail için gerekli
                 })
             .toList();
 
-        print('[CARD CONTROLLER] ===== TRANSACTIONS CONVERTED =====');
-        print(
+        debugPrint('[CARD CONTROLLER] ===== TRANSACTIONS CONVERTED =====');
+        debugPrint(
             '[CARD CONTROLLER] Converted transactions count: ${apiTransactions.length}');
-        print('[CARD CONTROLLER] ==================================');
+        debugPrint('[CARD CONTROLLER] ==================================');
 
-        // Eğer API'den işlem gelmezse, mevcut işlemleri koru
+        // Pagination kontrolü
+        final totalTransactions = response.total ?? 0;
+        // Refresh durumunda transactions.length 0 olacak, bu yüzden doğru hesaplama yapıyoruz
+        final currentLoadedCount = refresh
+            ? apiTransactions.length
+            : transactions.length + apiTransactions.length;
+        hasMore.value = currentLoadedCount < totalTransactions;
+
+        // Eğer API'den işlem gelirse
         if (apiTransactions.isNotEmpty) {
+          // Refresh ise değiştir, değilse ekle
+          if (refresh) {
           transactions.value = apiTransactions;
+          } else {
+            transactions.addAll(apiTransactions);
+          }
+
+          // Eğer daha fazla sayfa varsa, page'i artır
+          if (hasMore.value) {
+            currentPage.value++;
+          }
+
           hasTransactions.value = true;
           emptyTransactionMessage.value = '';
-          print('[CARD CONTROLLER] Transactions updated successfully');
+          debugPrint('[CARD CONTROLLER] Transactions updated successfully');
+          debugPrint(
+              '[CARD CONTROLLER] Total: $totalTransactions, Loaded: $currentLoadedCount, Has More: ${hasMore.value}');
         } else {
-          // Boş transaction durumu
+          // İlk yüklemede boş transaction durumu
+          if (refresh || transactions.isEmpty) {
           hasTransactions.value = false;
           emptyTransactionMessage.value = 'no_transactions_found'.tr;
           transactions.value = []; // Boş liste
-          print('[CARD CONTROLLER] No transactions found for this card');
+          debugPrint('[CARD CONTROLLER] No transactions found for this card');
+          }
+          hasMore.value = false;
         }
       } else {
         // API response başarısız
         hasTransactions.value = false;
-        emptyTransactionMessage.value = 'İşlemler yüklenemedi';
+        emptyTransactionMessage.value = 'transactions_load_error'.tr;
         transactions.value = []; // Boş liste
 
-        print(
+        debugPrint(
             '[CARD CONTROLLER] Failed to load transactions - API response: ${response?.success}');
       }
     } catch (e) {
       // Hata durumunda boş transaction mesajı göster
       hasTransactions.value = false;
-      emptyTransactionMessage.value = 'İşlemler yüklenirken hata oluştu';
+      emptyTransactionMessage.value = 'transactions_load_error'.tr;
       transactions.value = []; // Boş liste
 
-      print('[CARD CONTROLLER] Error loading transactions: $e');
+      debugPrint('[CARD CONTROLLER] Error loading transactions: $e');
 
       // Toast göster
       SnackbarUtils.showErrorSnackbar('transactions_load_error'.tr);
     } finally {
       isTransactionLoading.value = false;
+      isLoadingMore.value = false;
+    }
+  }
+
+  // Daha fazla transaction yükle (pagination)
+  Future<void> loadMoreTransactions() async {
+    if (hasMore.value && !isLoadingMore.value && !isTransactionLoading.value) {
+      debugPrint('[CARD CONTROLLER] Loading more transactions...');
+      await loadCardTransactions(refresh: false);
+    }
+  }
+
+  // Transaction listesini yenile
+  Future<void> refreshTransactions() async {
+    final currentCardId = cards.isNotEmpty
+        ? cards[selectedCardIndex.value]['cardId'] as String?
+        : null;
+    if (currentCardId != null) {
+      await loadCardTransactions(cardId: currentCardId, refresh: true);
     }
   }
 
@@ -284,39 +364,40 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
     // Kart değişimi - haptic feedback
     VibrationUtil.selectionVibrate();
 
-    print('[CARD CONTROLLER] ===== CARD CHANGED DEBUG =====');
-    print('[CARD CONTROLLER] Method called with index: $index');
-    print(
+    debugPrint('[CARD CONTROLLER] ===== CARD CHANGED DEBUG =====');
+    debugPrint('[CARD CONTROLLER] Method called with index: $index');
+    debugPrint(
         '[CARD CONTROLLER] Current selectedCardIndex: ${selectedCardIndex.value}');
-    print('[CARD CONTROLLER] Cards length: ${cards.length}');
+    debugPrint('[CARD CONTROLLER] Cards length: ${cards.length}');
 
     // Index'in geçerli olduğundan emin ol
     if (index >= 0 && index < cards.length) {
       // selectedCardIndex'i güncelle (eğer henüz güncellenmemişse)
       if (selectedCardIndex.value != index) {
         selectedCardIndex.value = index;
-        print('[CARD CONTROLLER] Updated selectedCardIndex to: $index');
+        debugPrint('[CARD CONTROLLER] Updated selectedCardIndex to: $index');
       }
 
       // Animasyonu kaldırdık - butonlar artık slide ederken kaybolmayacak
       // animationController.forward(from: 0);
 
-      // Yeni kartın işlemlerini yükle
+      // Yeni kartın işlemlerini yükle (refresh ile)
       final newCardId = cards[index]['cardId'] as String?;
-      print('[CARD CONTROLLER] New card ID: $newCardId');
-      print('[CARD CONTROLLER] Card title: ${cards[index]['title']}');
+      debugPrint('[CARD CONTROLLER] New card ID: $newCardId');
+      debugPrint('[CARD CONTROLLER] Card title: ${cards[index]['title']}');
 
       if (newCardId != null) {
-        print('[CARD CONTROLLER] Loading transactions for card: $newCardId');
-        loadCardTransactions(cardId: newCardId);
+        debugPrint(
+            '[CARD CONTROLLER] Loading transactions for card: $newCardId');
+        loadCardTransactions(cardId: newCardId, refresh: true);
       } else {
-        print('[CARD CONTROLLER] No cardId found for index $index');
+        debugPrint('[CARD CONTROLLER] No cardId found for index $index');
       }
     } else {
-      print(
+      debugPrint(
           '[CARD CONTROLLER] Invalid index: $index (cards length: ${cards.length})');
     }
-    print('[CARD CONTROLLER] =============================');
+    debugPrint('[CARD CONTROLLER] =============================');
   }
 
   // Tarihi formatla
@@ -395,6 +476,53 @@ class CardController extends GetxController with SingleGetTickerProviderMixin {
     };
 
     return iconMap[category.toLowerCase()] ?? 'assets/images/Silver.png';
+  }
+
+  // Transaction detail yükle ve detail screen'e git
+  Future<void> loadTransactionDetailAndNavigate(
+      String transactionId, String category) async {
+    try {
+      debugPrint(
+          '[CARD CONTROLLER] Loading transaction detail: $transactionId, category: $category');
+
+      final response = await _cardsService.getCardTransactionDetails(
+        transactionId: transactionId,
+        category: category,
+      );
+
+      if (response?.success == true && response?.transactionDetails != null) {
+        debugPrint('[CARD CONTROLLER] Transaction detail loaded successfully');
+
+        // Seçili kartın bilgilerini al
+        final currentCard =
+            cards.isNotEmpty && selectedCardIndex.value < cards.length
+                ? cards[selectedCardIndex.value]
+                : null;
+
+        // Navigation'dan önce loading state'ini false yap (skeletonizer'ın enabled olmaması için)
+        isTransactionLoading.value = false;
+
+        // Transaction detail screen'e git
+        Get.toNamed(AppRoutes.transactionDetail, arguments: {
+          'transactionDetail': response!.transactionDetails,
+          'heroTag': 'card_header',
+          'cardColor': currentCard?['color'],
+          'cardTitle': currentCard?['title'],
+          'cardIcon': currentCard?['icon'],
+          'cardDescription': currentCard?['description'],
+        });
+      } else {
+        SnackbarUtils.showErrorSnackbar(
+            response?.message ?? 'transaction_detail_load_error'.tr);
+      }
+    } catch (e) {
+      debugPrint('[CARD CONTROLLER] Error loading transaction detail: $e');
+      final errorMessage = ApiResponseParser.parseDioError(e);
+      SnackbarUtils.showErrorSnackbar(errorMessage);
+    } finally {
+      // Navigation sonrası da false yap (güvenlik için)
+      isTransactionLoading.value = false;
+    }
   }
 
   @override

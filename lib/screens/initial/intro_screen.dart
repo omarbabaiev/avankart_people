@@ -175,9 +175,9 @@ class _IntroScreenState extends State<IntroScreen> {
   void _markIntroAsSeen() {
     try {
       _getStorage.write('hasSeenIntro', true);
-      print('[INTRO] Intro marked as seen');
+      debugPrint('[INTRO] Intro marked as seen');
     } catch (e) {
-      print('[INTRO] Error marking intro as seen: $e');
+      debugPrint('[INTRO] Error marking intro as seen: $e');
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:avankart_people/controllers/profile_controller.dart';
 import 'package:avankart_people/controllers/notifications_controller.dart';
 import 'package:avankart_people/controllers/card_controller.dart';
 import 'package:avankart_people/controllers/map_controller.dart';
+import 'package:avankart_people/controllers/filter_controller.dart';
 import 'package:avankart_people/screens/main/card_screen.dart';
 import 'package:avankart_people/screens/main/home_screen.dart';
 import 'package:avankart_people/screens/main/settings_screen.dart';
@@ -11,6 +12,7 @@ import 'package:avankart_people/screens/support/faq_screen.dart';
 import 'package:avankart_people/screens/payment/qr_payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../utils/vibration_util.dart';
 import '../utils/auth_utils.dart';
 import '../utils/api_response_parser.dart';
@@ -67,6 +69,11 @@ class HomeController extends GetxController
   final AuthService _authService = AuthService();
   final CompaniesService _companiesService = CompaniesService();
   final LocationService _locationService = LocationService();
+  final GetStorage _storage = GetStorage();
+  
+  // Filter type
+  final _filterType = 'name'.obs; // Default: 'name' (ada göre), 'distance' (distans'a göre)
+  static const String _filterTypeKey = 'home_filter_type';
 
   // Animasyon controller
   late AnimationController _animationController;
@@ -106,6 +113,9 @@ class HomeController extends GetxController
   int get totalPagesCompanies => _totalPagesCompanies.value;
   int get totalItemsCompanies => _totalItemsCompanies.value;
   bool get hasMoreDataCompanies => _hasMoreDataCompanies.value;
+  
+  // Filter getter
+  String get filterType => _filterType.value;
 
   // Controller başlatıldığında gerekli ayarları yapar
   @override
@@ -128,14 +138,21 @@ class HomeController extends GetxController
     // Hot reload kontrolü
     if (_user.value != null) {
       _isHotReload = true;
-      print('[HOME CONTROLLER] Hot reload detected, skipping data loading');
+      debugPrint(
+          '[HOME CONTROLLER] Hot reload detected, skipping data loading');
     }
 
     // Sadece hot reload değilse ve ilk açılış değilse data yükle
 
     // Başlangıçta ana sayfayı göster (getProfile request olmadan)
+    // Main screen açıldığında her zaman ilk sayfaya (index 0) git
+    _selectedIndex.value = 0;
+    _previousIndex.value = 0;
     _changePageWithAnimation(0, skipProfileRequest: true);
     _isSpecialPage.value = false;
+
+    // Load filter type from storage
+    _loadFilterType();
 
     // İlk açılışta önce user data'yı yükle, sonra companies'leri yükle
     if (!_isHotReload) {
@@ -146,23 +163,24 @@ class HomeController extends GetxController
   /// Uygulama başlangıcında data yükleme
   Future<void> _initializeAppData() async {
     try {
-      print('[HOME CONTROLLER] Initializing app data...');
+      debugPrint('[HOME CONTROLLER] Initializing app data...');
 
       // Önce user data'yı yükle
       await _loadUserData();
 
       // User data başarılıysa companies'leri yükle
       if (_user.value != null) {
-        print(
+        debugPrint(
             '[HOME CONTROLLER] User data loaded successfully, loading companies...');
         await loadCompanies();
       } else {
-        print('[HOME CONTROLLER] User data failed to load, skipping companies');
+        debugPrint(
+            '[HOME CONTROLLER] User data failed to load, skipping companies');
       }
 
-      print('[HOME CONTROLLER] App data initialization completed');
+      debugPrint('[HOME CONTROLLER] App data initialization completed');
     } catch (e) {
-      print('[HOME CONTROLLER] Error during app data initialization: $e');
+      debugPrint('[HOME CONTROLLER] Error during app data initialization: $e');
       // Hata durumunda sadece companies'i yükle
       await loadCompanies();
     }
@@ -190,7 +208,7 @@ class HomeController extends GetxController
         await _globalRetryCallback.value!();
       }
     } catch (e) {
-      print('[HOME CONTROLLER] Global retry failed: $e');
+      debugPrint('[HOME CONTROLLER] Global retry failed: $e');
       _globalShowRetryButton.value = true;
       _globalRetryMessage.value = _extractErrorMessage(e);
     } finally {
@@ -237,9 +255,9 @@ class HomeController extends GetxController
         await Get.find<NotificationsController>().refreshNotifications();
       }
 
-      print('[HOME CONTROLLER] All data retry completed successfully');
+      debugPrint('[HOME CONTROLLER] All data retry completed successfully');
     } catch (e) {
-      print('[HOME CONTROLLER] Retry failed: $e');
+      debugPrint('[HOME CONTROLLER] Retry failed: $e');
       _showRetryButton.value = true;
       _retryMessage.value = _extractErrorMessage(e);
     } finally {
@@ -270,38 +288,87 @@ class HomeController extends GetxController
     String? filterType,
     String? search,
     String? cardId,
+    List<String>? cards,
     List<String>? muessiseCategory,
     int page = 1,
-    int limit = 10,
+    int limit = 20,
     bool isRefresh = false,
   }) async {
     if (isRefresh) {
       _currentPageCompanies.value = 1;
       _hasMoreDataCompanies.value = true;
+      _companies.value = []; // Refresh'te listeyi temizle
     }
 
-    if (!_hasMoreDataCompanies.value && !isRefresh) return;
+    if (!_hasMoreDataCompanies.value && !isRefresh) {
+      debugPrint('[HOME CONTROLLER] No more data to load');
+      return;
+    }
+
+    if (_isLoadingCompanies.value) {
+      debugPrint('[HOME CONTROLLER] Already loading, skipping');
+      return;
+    }
 
     try {
       _isLoadingCompanies.value = true;
       _companiesError.value = '';
 
-      print(
-          '[HOME CONTROLLER] Loading companies... Page: ${_currentPageCompanies.value}');
+      debugPrint(
+          '[HOME CONTROLLER] Loading companies... Page: ${_currentPageCompanies.value}, Limit: $limit');
 
       // Kullanıcının konumunu al
       final position = await _locationService.getCurrentLocation();
       double? lat = position?.latitude;
       double? lng = position?.longitude;
 
-      print('[HOME CONTROLLER] Location: lat=$lat, lng=$lng');
+      debugPrint('[HOME CONTROLLER] Location: lat=$lat, lng=$lng');
+
+      // Use saved filter type if filterType is not provided
+      final finalFilterType = filterType ?? _filterType.value;
+      
+      // Filter controller'dan seçilen kart ID'lerini al
+      List<String>? selectedCardIds;
+      
+      // Önce FilterController'dan seçimleri almaya çalış
+      if (Get.isRegistered<FilterController>()) {
+        try {
+          final filterController = Get.find<FilterController>();
+          final ids = filterController.getSelectedCardIds();
+          if (ids.isNotEmpty) {
+            selectedCardIds = ids;
+            debugPrint('[HOME CONTROLLER] Selected card IDs from filter controller: $selectedCardIds');
+          }
+        } catch (e) {
+          debugPrint('[HOME CONTROLLER] Error getting filter from controller: $e');
+        }
+      }
+      
+      // Eğer FilterController'dan seçim alınamadıysa, storage'dan direkt oku
+      if (selectedCardIds == null || selectedCardIds.isEmpty) {
+        try {
+          final savedIds = _storage.read<List>(FilterController.selectedFiltersKey);
+          if (savedIds != null && savedIds.isNotEmpty) {
+            selectedCardIds = savedIds.cast<String>();
+            debugPrint('[HOME CONTROLLER] Selected card IDs from storage: $selectedCardIds');
+          }
+        } catch (e) {
+          debugPrint('[HOME CONTROLLER] Error reading filter from storage: $e');
+        }
+      }
+      
+      // cards parametresi verilmişse onu kullan, yoksa filter'dan seçilen kartları kullan
+      final finalCards = cards ?? selectedCardIds;
+      
+      debugPrint('[HOME CONTROLLER] Using cards: $finalCards');
 
       final response = await _companiesService.getCompanies(
         lat: lat,
         lng: lng,
-        filterType: filterType,
-        search: search,
+        filterType: finalFilterType,
+        search: search ?? '',
         cardId: cardId,
+        cards: finalCards,
         muessiseCategory: muessiseCategory,
         page: _currentPageCompanies.value,
         limit: limit,
@@ -317,23 +384,44 @@ class HomeController extends GetxController
         // Pagination bilgilerini güncelle
         _totalPagesCompanies.value = response.totalPages;
         _totalItemsCompanies.value = response.total;
-        _hasMoreDataCompanies.value =
-            _currentPageCompanies.value < _totalPagesCompanies.value;
+        
+        // Daha fazla veri var mı kontrolü
+        // API'den gelen item sayısı limit'e eşitse, muhtemelen daha fazla veri var
+        // Eğer gelen item sayısı limit'ten azsa, son sayfadayız demektir
+        final receivedItemsCount = response.muessises.length;
+        final hasMore = receivedItemsCount >= limit; // Gelen item sayısı limit'e eşit veya fazlaysa, daha fazla veri var
+        
+        _hasMoreDataCompanies.value = hasMore;
 
+        debugPrint(
+            '[HOME CONTROLLER] Companies loaded successfully: $receivedItemsCount items');
+        debugPrint(
+            '[HOME CONTROLLER] Current page: ${_currentPageCompanies.value}, Total pages: ${_totalPagesCompanies.value}');
+        debugPrint(
+            '[HOME CONTROLLER] Current loaded: ${_companies.length}, Response total: ${response.total}');
+        debugPrint(
+            '[HOME CONTROLLER] Received items: $receivedItemsCount, Limit: $limit');
+        debugPrint(
+            '[HOME CONTROLLER] Has more data: $_hasMoreDataCompanies (based on received items >= limit)');
+
+        // Eğer daha fazla veri varsa bir sonraki sayfaya geç
         if (_hasMoreDataCompanies.value) {
           _currentPageCompanies.value++;
+          debugPrint(
+              '[HOME CONTROLLER] Next page will be: ${_currentPageCompanies.value}');
+        } else {
+          debugPrint('[HOME CONTROLLER] No more data to load (received items < limit)');
         }
 
-        print(
-            '[HOME CONTROLLER] Companies loaded successfully: ${response.muessises.length} items, Total: ${_totalItemsCompanies.value}');
         update();
       } else {
         _companiesError.value = 'failed_to_load_companies'.tr;
-        print('[HOME CONTROLLER] Failed to load companies - response is null');
+        debugPrint(
+            '[HOME CONTROLLER] Failed to load companies - response is null');
       }
     } catch (e) {
       _companiesError.value = _extractErrorMessage(e);
-      print('[HOME CONTROLLER] Error loading companies: $e');
+      debugPrint('[HOME CONTROLLER] Error loading companies: $e');
     } finally {
       _isLoadingCompanies.value = false;
     }
@@ -357,69 +445,69 @@ class HomeController extends GetxController
       _isLoading.value = true;
       _showRetryButton.value = false;
       _retryMessage.value = '';
-      print('[HOME CONTROLLER] Loading user data...');
+      debugPrint('[HOME CONTROLLER] Loading user data...');
 
       final homeResponse = await _authService.home();
 
       // Eğer null döndüyse (token geçersiz veya logout gerekli), force logout yap
       if (homeResponse == null) {
-        print('[HOME CONTROLLER] Token invalid or logout required');
+        debugPrint('[HOME CONTROLLER] Token invalid or logout required');
         await AuthUtils.forceLogout();
         return;
       }
 
       // Check if logout is required (status 2) - UserModel'den status kontrol et
       if (homeResponse.user != null && homeResponse.user!.status == 2) {
-        print(
+        debugPrint(
             '[HOME CONTROLLER] Status 2 detected in user model, force logging out user');
         await AuthUtils.forceLogout();
         return;
       }
 
-      print('[HOME CONTROLLER] ===== FULL HOME RESPONSE =====');
-      print('[HOME CONTROLLER] Success: ${homeResponse.success}');
-      print('[HOME CONTROLLER] Message: ${homeResponse.message}');
-      print('[HOME CONTROLLER] Token: ${homeResponse.token}');
+      debugPrint('[HOME CONTROLLER] ===== FULL HOME RESPONSE =====');
+      debugPrint('[HOME CONTROLLER] Success: ${homeResponse.success}');
+      debugPrint('[HOME CONTROLLER] Message: ${homeResponse.message}');
+      debugPrint('[HOME CONTROLLER] Token: ${homeResponse.token}');
 
       if (homeResponse.user != null) {
-        // print('[HOME CONTROLLER] ===== USER DETAILS =====');
-        // print('[HOME CONTROLLER] ID: ${homeResponse.user?.id}');
-        // print('[HOME CONTROLLER] Name: ${homeResponse.user?.name}');
-        // print('[HOME CONTROLLER] Surname: ${homeResponse.user?.surname}');
-        // print('[HOME CONTROLLER] People ID: ${homeResponse.user?.peopleId}');
-        // print(
+        // debugPrint('[HOME CONTROLLER] ===== USER DETAILS =====');
+        // debugPrint('[HOME CONTROLLER] ID: ${homeResponse.user?.id}');
+        // debugPrint('[HOME CONTROLLER] Name: ${homeResponse.user?.name}');
+        // debugPrint('[HOME CONTROLLER] Surname: ${homeResponse.user?.surname}');
+        // debugPrint('[HOME CONTROLLER] People ID: ${homeResponse.user?.peopleId}');
+        // debugPrint(
         //     '[HOME CONTROLLER] Sirket Name: ${homeResponse.user?.sirketId?.sirketName}');
 
-        // print('[HOME CONTROLLER] Email: ${homeResponse.user?.email}');
+        // debugPrint('[HOME CONTROLLER] Email: ${homeResponse.user?.email}');
 
-        // print('[HOME CONTROLLER] Phone: ${homeResponse.user?.phone}');
-        // print('[HOME CONTROLLER] Birth Date: ${homeResponse.user?.birthDate}');
-        // print(
+        // debugPrint('[HOME CONTROLLER] Phone: ${homeResponse.user?.phone}');
+        // debugPrint('[HOME CONTROLLER] Birth Date: ${homeResponse.user?.birthDate}');
+        // debugPrint(
         //     '[HOME CONTROLLER] Total QR Codes: ${homeResponse.user?.totalQrCodes}');
-        // print(
+        // debugPrint(
         //     '[HOME CONTROLLER] Today QR Codes: ${homeResponse.user?.todayQrCodes}');
-        // print('[HOME CONTROLLER] Status: ${homeResponse.user?.status}');
-        // print('[HOME CONTROLLER] ===== END USER DETAILS =====');
+        // debugPrint('[HOME CONTROLLER] Status: ${homeResponse.user?.status}');
+        // debugPrint('[HOME CONTROLLER] ===== END USER DETAILS =====');
       } else {
-        print('[HOME CONTROLLER] User is null!');
+        debugPrint('[HOME CONTROLLER] User is null!');
       }
 
-      print('[HOME CONTROLLER] ===== END FULL HOME RESPONSE =====');
+      debugPrint('[HOME CONTROLLER] ===== END FULL HOME RESPONSE =====');
 
       if (homeResponse.success == true && homeResponse.user != null) {
         _user.value = homeResponse.user;
-        print('[HOME CONTROLLER] User data loaded successfully');
+        debugPrint('[HOME CONTROLLER] User data loaded successfully');
         // UI'ı güncellemek için update() çağır
         update();
       } else {
-        print('[HOME CONTROLLER] Failed to load user data');
+        debugPrint('[HOME CONTROLLER] Failed to load user data');
         _showRetryButton.value = true;
         _retryMessage.value = 'failed_to_load_data'.tr;
       }
     } catch (e) {
-      print('[HOME CONTROLLER] Error loading user data: $e');
+      debugPrint('[HOME CONTROLLER] Error loading user data: $e');
       // AuthService'den gelen tüm hatalar retry edilebilir (sadece token geçersiz ve status 2 logout yapar)
-      print('[HOME CONTROLLER] Showing retry button for error');
+      debugPrint('[HOME CONTROLLER] Showing retry button for error');
       _showRetryButton.value = true;
       _retryMessage.value = _extractErrorMessage(e);
     } finally {
@@ -507,19 +595,21 @@ class HomeController extends GetxController
       final cardController = Get.find<CardController>();
 
       // Debug: User ve sirket bilgilerini kontrol et
-      print('[HOME CONTROLLER] ===== CARD DATA DEBUG =====');
-      print('[HOME CONTROLLER] User: ${_user.value != null}');
+      debugPrint('[HOME CONTROLLER] ===== CARD DATA DEBUG =====');
+      debugPrint('[HOME CONTROLLER] User: ${_user.value != null}');
       if (_user.value != null) {
-        print('[HOME CONTROLLER] User ID: ${_user.value!.id}');
-        print('[HOME CONTROLLER] User Name: ${_user.value!.name}');
-        print('[HOME CONTROLLER] SirketId: ${_user.value!.sirketId != null}');
+        debugPrint('[HOME CONTROLLER] User ID: ${_user.value!.id}');
+        debugPrint('[HOME CONTROLLER] User Name: ${_user.value!.name}');
+        debugPrint(
+            '[HOME CONTROLLER] SirketId: ${_user.value!.sirketId != null}');
         if (_user.value!.sirketId != null) {
-          print('[HOME CONTROLLER] Sirket ID: ${_user.value!.sirketId!.id}');
-          print(
+          debugPrint(
+              '[HOME CONTROLLER] Sirket ID: ${_user.value!.sirketId!.id}');
+          debugPrint(
               '[HOME CONTROLLER] Sirket Name: ${_user.value!.sirketId!.sirketName}');
         }
       }
-      print('[HOME CONTROLLER] ===========================');
+      debugPrint('[HOME CONTROLLER] ===========================');
 
       // Her My Cards açıldığında kartları yeniden yükle
       // User'dan sirket_id'yi al
@@ -531,15 +621,16 @@ class HomeController extends GetxController
       // Geçici test için statik sirket_id
       if (sirketId == null || sirketId.isEmpty) {
         sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
-        print('[HOME CONTROLLER] Using static sirketId for test: $sirketId');
+        debugPrint(
+            '[HOME CONTROLLER] Using static sirketId for test: $sirketId');
       }
 
-      print('[HOME CONTROLLER] Final sirketId for API: $sirketId');
+      debugPrint('[HOME CONTROLLER] Final sirketId for API: $sirketId');
 
       // API request'i yap
       cardController.loadMyCards(sirketId: sirketId);
     } catch (e) {
-      print('[HOME CONTROLLER] Error loading card data: $e');
+      debugPrint('[HOME CONTROLLER] Error loading card data: $e');
       // CardController bulunamazsa oluştur
       final cardController = Get.put(CardController());
 
@@ -552,11 +643,11 @@ class HomeController extends GetxController
       // Geçici test için statik sirket_id
       if (sirketId == null || sirketId.isEmpty) {
         sirketId = "68a1f8fdecf9649c26454a66"; // Test sirket_id
-        print(
+        debugPrint(
             '[HOME CONTROLLER] Using static sirketId for test (fallback): $sirketId');
       }
 
-      print('[HOME CONTROLLER] Fallback sirketId for API: $sirketId');
+      debugPrint('[HOME CONTROLLER] Fallback sirketId for API: $sirketId');
 
       // API request'i yap
       cardController.loadMyCards(sirketId: sirketId);
@@ -700,29 +791,57 @@ class HomeController extends GetxController
         mapController.refreshCompanies();
       }
     } catch (e) {
-      print('[HOME CONTROLLER] MapController güncellenirken hata: $e');
+      debugPrint('[HOME CONTROLLER] MapController güncellenirken hata: $e');
     }
   }
 
   // Search results'ı home screen'de göster
   void showSearchResults(List<CompanyInListModel> searchResults,
       {String? searchQuery}) {
-    print('[HOME CONTROLLER] Showing ${searchResults.length} search results');
+    debugPrint(
+        '[HOME CONTROLLER] Showing ${searchResults.length} search results');
     _companies.value = searchResults;
     _isLoadingCompanies.value = false;
     _companiesError.value = '';
     if (searchQuery != null) {
       _currentSearchQuery.value = searchQuery;
     }
-    print('[HOME CONTROLLER] Search results assigned to companies list');
+    debugPrint('[HOME CONTROLLER] Search results assigned to companies list');
   }
 
   // Search'i temizle ve normal companies'leri yükle
   void clearSearchResults() {
-    print('[HOME CONTROLLER] clearSearchResults called');
+    debugPrint('[HOME CONTROLLER] clearSearchResults called');
     _currentSearchQuery.value = '';
-    print(
+    debugPrint(
         '[HOME CONTROLLER] Calling loadCompanies() to reload normal companies');
     loadCompanies(isRefresh: true);
+  }
+
+  /// Load filter type from storage
+  void _loadFilterType() {
+    final savedFilterType = _storage.read(_filterTypeKey);
+    if (savedFilterType != null && savedFilterType is String) {
+      _filterType.value = savedFilterType;
+      debugPrint('[HOME CONTROLLER] Loaded filter type from storage: $savedFilterType');
+    } else {
+      _filterType.value = 'name'; // Default
+      debugPrint('[HOME CONTROLLER] Using default filter type: name');
+    }
+  }
+
+  /// Set filter type and save to storage
+  void setFilterType(String filterType) {
+    if (filterType != 'name' && filterType != 'distance') {
+      debugPrint('[HOME CONTROLLER] Invalid filter type: $filterType');
+      return;
+    }
+    
+    _filterType.value = filterType;
+    _storage.write(_filterTypeKey, filterType);
+    debugPrint('[HOME CONTROLLER] Filter type set and saved: $filterType');
+    
+    // Reload companies with new filter
+    loadCompanies(filterType: filterType, isRefresh: true);
   }
 }

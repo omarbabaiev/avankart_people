@@ -4,6 +4,7 @@ import 'package:avankart_people/models/message_model.dart';
 import 'package:avankart_people/utils/conts_texts.dart';
 import 'package:avankart_people/utils/secure_storage_config.dart';
 import 'package:avankart_people/utils/debug_logger.dart';
+import 'package:flutter/material.dart';
 
 class QueryChatService {
   final Dio _dio = Dio(
@@ -52,8 +53,8 @@ class QueryChatService {
       DebugLogger.apiResponse('/messages/$ticketId', response.data);
 
       // API response format'ını kontrol et
-      print('[DEBUG] Raw response: ${response.data}');
-      print('[DEBUG] Response type: ${response.data.runtimeType}');
+      debugPrint('[DEBUG] Raw response: ${response.data}');
+      debugPrint('[DEBUG] Response type: ${response.data.runtimeType}');
 
       // Eğer response sadece {status: ok} format'ındaysa, boş data döndür
       if (response.data is Map<String, dynamic>) {
@@ -103,7 +104,7 @@ class QueryChatService {
       DebugLogger.apiResponse('/messages/send', response.data);
 
       // API response format'ını kontrol et
-      print('[DEBUG] Send response: ${response.data}');
+      debugPrint('[DEBUG] Send response: ${response.data}');
 
       // Eğer response sadece {status: ok} format'ındaysa, mock response döndür
       if (response.data is Map<String, dynamic>) {

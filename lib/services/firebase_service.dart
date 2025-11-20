@@ -2,11 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_storage/get_storage.dart';
 import '../utils/snackbar_utils.dart';
+import 'package:flutter/material.dart';
+
 
 // Background message handler - top level function olmalı
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print(
+  debugPrint(
       '[FIREBASE] Background message received: ${message.notification?.title}');
   // Background'da notification otomatik gösterilir
 }
@@ -26,7 +28,7 @@ class FirebaseService {
       try {
         _messaging = FirebaseMessaging.instance;
       } catch (e) {
-        print('[FIREBASE] Error getting FirebaseMessaging instance: $e');
+        debugPrint('[FIREBASE] Error getting FirebaseMessaging instance: $e');
         return null;
       }
     }
@@ -39,11 +41,11 @@ class FirebaseService {
   /// Firebase'i initialize et
   Future<void> initialize() async {
     try {
-      print('[FIREBASE] Initializing Firebase Messaging...');
+      debugPrint('[FIREBASE] Initializing Firebase Messaging...');
 
       // Check if Firebase is initialized
       if (_messagingInstance == null) {
-        print('[FIREBASE] Firebase not initialized yet, skipping...');
+        debugPrint('[FIREBASE] Firebase not initialized yet, skipping...');
         return;
       }
 
@@ -59,7 +61,8 @@ class FirebaseService {
         sound: true,
       );
 
-      print('[FIREBASE] Permission granted: ${settings.authorizationStatus}');
+      debugPrint(
+          '[FIREBASE] Permission granted: ${settings.authorizationStatus}');
 
       // Background message handler'ı set et
       FirebaseMessaging.onBackgroundMessage(
@@ -77,12 +80,12 @@ class FirebaseService {
         // Initial token al
         await getAndSaveToken();
       } else {
-        print('[FIREBASE] Notifications disabled, skipping initial token');
+        debugPrint('[FIREBASE] Notifications disabled, skipping initial token');
       }
 
-      print('[FIREBASE] Firebase Messaging initialized successfully');
+      debugPrint('[FIREBASE] Firebase Messaging initialized successfully');
     } catch (e) {
-      print('[FIREBASE] Error initializing: $e');
+      debugPrint('[FIREBASE] Error initializing: $e');
     }
   }
 
@@ -90,27 +93,27 @@ class FirebaseService {
   Future<String?> getAndSaveToken() async {
     try {
       if (_messagingInstance == null) {
-        print('[FIREBASE] Firebase not initialized, cannot get token');
+        debugPrint('[FIREBASE] Firebase not initialized, cannot get token');
         return null;
       }
 
       // GetStorage'dan notification ayarını kontrol et
       final notificationEnabled = _storage.read('notification_enabled') ?? true;
       if (!notificationEnabled) {
-        print('[FIREBASE] Notifications disabled, not getting token');
+        debugPrint('[FIREBASE] Notifications disabled, not getting token');
         return null;
       }
 
       String? token = await _messagingInstance!.getToken();
       if (token != null) {
         await _secureStorage.write(key: 'firebase_token', value: token);
-        print('[FIREBASE] Token saved: ${token.substring(0, 20)}...');
+        debugPrint('[FIREBASE] Token saved: ${token.substring(0, 20)}...');
       } else {
-        print('[FIREBASE] Failed to get token');
+        debugPrint('[FIREBASE] Failed to get token');
       }
       return token;
     } catch (e) {
-      print('[FIREBASE] Error getting token: $e');
+      debugPrint('[FIREBASE] Error getting token: $e');
       return null;
     }
   }
@@ -125,7 +128,7 @@ class FirebaseService {
       }
       return token;
     } catch (e) {
-      print('[FIREBASE] Error getting stored token: $e');
+      debugPrint('[FIREBASE] Error getting stored token: $e');
       return null;
     }
   }
@@ -133,7 +136,8 @@ class FirebaseService {
   /// Token refresh listener
   void setupTokenRefresh() {
     if (_messagingInstance == null) {
-      print('[FIREBASE] Firebase not initialized, cannot setup token refresh');
+      debugPrint(
+          '[FIREBASE] Firebase not initialized, cannot setup token refresh');
       return;
     }
 
@@ -143,17 +147,19 @@ class FirebaseService {
         final notificationEnabled =
             _storage.read('notification_enabled') ?? true;
         if (!notificationEnabled) {
-          print('[FIREBASE] Notifications disabled, ignoring token refresh');
+          debugPrint(
+              '[FIREBASE] Notifications disabled, ignoring token refresh');
           return;
         }
 
         await _secureStorage.write(key: 'firebase_token', value: newToken);
-        print('[FIREBASE] Token refreshed: ${newToken.substring(0, 20)}...');
+        debugPrint(
+            '[FIREBASE] Token refreshed: ${newToken.substring(0, 20)}...');
 
         // Backend'e yeni token'ı gönder (opsiyonel)
         await _updateTokenOnBackend(newToken);
       } catch (e) {
-        print('[FIREBASE] Error handling token refresh: $e');
+        debugPrint('[FIREBASE] Error handling token refresh: $e');
       }
     });
   }
@@ -163,10 +169,10 @@ class FirebaseService {
     try {
       // Burada backend'e token güncelleme API'si çağrılabilir
       // Şimdilik sadece log atıyoruz
-      print(
+      debugPrint(
           '[FIREBASE] Token updated on backend: ${newToken.substring(0, 20)}...');
     } catch (e) {
-      print('[FIREBASE] Error updating token on backend: $e');
+      debugPrint('[FIREBASE] Error updating token on backend: $e');
     }
   }
 
@@ -174,7 +180,7 @@ class FirebaseService {
   void setupNotificationHandling() {
     // Foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
+      debugPrint(
           '[FIREBASE] Foreground message received: ${message.notification?.title}');
 
       // Notification göster
@@ -183,7 +189,7 @@ class FirebaseService {
 
     // Background/Terminated app opened from notification
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print(
+      debugPrint(
           '[FIREBASE] App opened from notification: ${message.notification?.title}');
 
       // Navigate to specific screen based on notification data
@@ -194,7 +200,7 @@ class FirebaseService {
     if (_messagingInstance != null) {
       _messagingInstance!.getInitialMessage().then((RemoteMessage? message) {
         if (message != null) {
-          print(
+          debugPrint(
               '[FIREBASE] App opened from terminated state: ${message.notification?.title}');
           _handleNotificationNavigation(message);
         }
@@ -208,7 +214,7 @@ class FirebaseService {
       // Notification kontrolü yap
       final shouldShow = await _shouldShowNotification();
       if (!shouldShow) {
-        print(
+        debugPrint(
             '[FIREBASE] Notification disabled, not showing foreground notification');
         return;
       }
@@ -219,7 +225,7 @@ class FirebaseService {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      print('[FIREBASE] Error showing foreground notification: $e');
+      debugPrint('[FIREBASE] Error showing foreground notification: $e');
     }
   }
 
@@ -230,7 +236,7 @@ class FirebaseService {
       final notificationEnabled = _storage.read('notification_enabled') ?? true;
       return notificationEnabled;
     } catch (e) {
-      print('[FIREBASE] Error checking notification status: $e');
+      debugPrint('[FIREBASE] Error checking notification status: $e');
       return true; // Hata durumunda varsayılan olarak göster
     }
   }
@@ -261,13 +267,14 @@ class FirebaseService {
   Future<void> subscribeToTopic(String topic) async {
     try {
       if (_messagingInstance == null) {
-        print('[FIREBASE] Firebase not initialized, cannot subscribe to topic');
+        debugPrint(
+            '[FIREBASE] Firebase not initialized, cannot subscribe to topic');
         return;
       }
       await _messagingInstance!.subscribeToTopic(topic);
-      print('[FIREBASE] Subscribed to topic: $topic');
+      debugPrint('[FIREBASE] Subscribed to topic: $topic');
     } catch (e) {
-      print('[FIREBASE] Error subscribing to topic: $e');
+      debugPrint('[FIREBASE] Error subscribing to topic: $e');
     }
   }
 
@@ -275,14 +282,14 @@ class FirebaseService {
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
       if (_messagingInstance == null) {
-        print(
+        debugPrint(
             '[FIREBASE] Firebase not initialized, cannot unsubscribe from topic');
         return;
       }
       await _messagingInstance!.unsubscribeFromTopic(topic);
-      print('[FIREBASE] Unsubscribed from topic: $topic');
+      debugPrint('[FIREBASE] Unsubscribed from topic: $topic');
     } catch (e) {
-      print('[FIREBASE] Error unsubscribing from topic: $e');
+      debugPrint('[FIREBASE] Error unsubscribing from topic: $e');
     }
   }
 
@@ -290,9 +297,9 @@ class FirebaseService {
   Future<void> clearToken() async {
     try {
       await _secureStorage.delete(key: 'firebase_token');
-      print('[FIREBASE] Token cleared');
+      debugPrint('[FIREBASE] Token cleared');
     } catch (e) {
-      print('[FIREBASE] Error clearing token: $e');
+      debugPrint('[FIREBASE] Error clearing token: $e');
     }
   }
 
@@ -301,9 +308,9 @@ class FirebaseService {
     try {
       // iOS için badge temizleme - şimdilik boş bırakıyoruz
       // await _messaging.setBadge(0);
-      print('[FIREBASE] Badge cleared');
+      debugPrint('[FIREBASE] Badge cleared');
     } catch (e) {
-      print('[FIREBASE] Error clearing badge: $e');
+      debugPrint('[FIREBASE] Error clearing badge: $e');
     }
   }
 
@@ -311,7 +318,7 @@ class FirebaseService {
   Future<void> enableNotifications() async {
     try {
       if (_messagingInstance == null) {
-        print(
+        debugPrint(
             '[FIREBASE] Firebase not initialized, cannot enable notifications');
         return;
       }
@@ -335,13 +342,13 @@ class FirebaseService {
         // Varsayılan topic'e subscribe ol
         await subscribeToTopic('general');
 
-        print('[FIREBASE] Notifications enabled successfully');
+        debugPrint('[FIREBASE] Notifications enabled successfully');
       } else {
-        print('[FIREBASE] Notification permission denied');
+        debugPrint('[FIREBASE] Notification permission denied');
         throw Exception('Notification permission denied');
       }
     } catch (e) {
-      print('[FIREBASE] Error enabling notifications: $e');
+      debugPrint('[FIREBASE] Error enabling notifications: $e');
       throw e;
     }
   }
@@ -350,7 +357,7 @@ class FirebaseService {
   Future<void> disableNotifications() async {
     try {
       if (_messagingInstance == null) {
-        print(
+        debugPrint(
             '[FIREBASE] Firebase not initialized, cannot disable notifications');
         return;
       }
@@ -361,9 +368,9 @@ class FirebaseService {
       // Topic'ten unsubscribe ol
       await unsubscribeFromTopic('general');
 
-      print('[FIREBASE] Notifications disabled successfully');
+      debugPrint('[FIREBASE] Notifications disabled successfully');
     } catch (e) {
-      print('[FIREBASE] Error disabling notifications: $e');
+      debugPrint('[FIREBASE] Error disabling notifications: $e');
       throw e;
     }
   }

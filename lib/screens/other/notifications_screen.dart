@@ -48,6 +48,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
             ),
           ),
         ),
+        centerTitle: false,
         actions: [
           // IconButton.filledTonal(
           //   icon: Image.asset(
@@ -65,22 +66,22 @@ class NotificationsScreen extends GetView<NotificationsController> {
           //   ),
           // ),
           // SizedBox(width: 4),
-          IconButton.filledTonal(
-            icon: Image.asset(
-              ImageAssets.heartStraight,
-              width: 24,
-              height: 24,
-              color: Theme.of(context).colorScheme.onBackground,
-            ),
-            onPressed: () {
-              Get.toNamed(AppRoutes.favorites);
-            },
-            style: IconButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              fixedSize: Size(44, 44),
-            ),
-          ),
-          SizedBox(width: 15),
+          // IconButton.filledTonal(
+          //   icon: Image.asset(
+          //     ImageAssets.heartStraight,
+          //     width: 24,
+          //     height: 24,
+          //     color: Theme.of(context).colorScheme.onBackground,
+          //   ),
+          //   onPressed: () {
+          //     Get.toNamed(AppRoutes.favorites);
+          //   },
+          //   style: IconButton.styleFrom(
+          //     backgroundColor: Theme.of(context).colorScheme.secondary,
+          //     fixedSize: Size(44, 44),
+          //   ),
+          // ),
+          // SizedBox(width: 15),
         ],
       ),
       body: Obx(() {

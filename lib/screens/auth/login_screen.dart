@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
 import 'forgot_password_screen.dart';
-import 'register_screen.dart';
-import '../main/main_screen.dart';
 import '../../controllers/login_controller.dart';
 import '../../utils/secure_storage_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   late final LoginController controller;
   bool _obscurePassword = true;
-  bool _rememberMe = false;
   final FlutterSecureStorage _storage = SecureStorageConfig.storage;
 
   @override
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Login ekranı açıldığında tüm storage'ı temizle (Flutter Secure Storage bug'ı için)
     _storage.deleteAll();
-    print('[LOGIN SCREEN] All storage cleared');
+    debugPrint('[LOGIN SCREEN] All storage cleared');
 
     // Password field'ını da temizle (güvenlik için)
     controller.passwordController.clear();
@@ -196,11 +195,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                         style: AppTheme.primaryButtonStyle(),
                         child: controller.isLoading.value
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 24,
                                 height: 24,
                                 child:
-                                    CircularProgressIndicator(strokeWidth: 2),
+                                    // Platform-a xüsusi loading
+                                    // iOS: CupertinoActivityIndicator, Android: CircularProgressIndicator
+                                    // Eyni ölçü üçün containerdə saxlanılır
+                                    (Platform.isIOS
+                                        ? CupertinoActivityIndicator(radius: 12)
+                                        : CircularProgressIndicator(
+                                            strokeWidth: 2)),
                               )
                             : Text('login'.tr, style: AppTheme.buttonTextStyle),
                       )),

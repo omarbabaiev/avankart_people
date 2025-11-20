@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/companies_response.dart';
@@ -58,14 +59,14 @@ class SearchController extends GetxController {
     _noResultsFound.value = false;
 
     try {
-      print('[SEARCH CONTROLLER] Searching for: $query');
+      debugPrint('[SEARCH CONTROLLER] Searching for: $query');
 
       // Kullanıcının konumunu al
       final position = await _locationService.getCurrentLocation();
       double? lat = position?.latitude;
       double? lng = position?.longitude;
 
-      print('[SEARCH CONTROLLER] Location: lat=$lat, lng=$lng');
+      debugPrint('[SEARCH CONTROLLER] Location: lat=$lat, lng=$lng');
 
       // Companies service'den search yap
       final response = await _companiesService.searchCompanies(
@@ -77,23 +78,24 @@ class SearchController extends GetxController {
       if (response != null && response.isNotEmpty) {
         _searchResults.value = response.muessises;
         _noResultsFound.value = false;
-        print('[SEARCH CONTROLLER] Found ${_searchResults.length} results');
+        debugPrint(
+            '[SEARCH CONTROLLER] Found ${_searchResults.length} results');
 
         // Home screen'e dön ve search results'ı göster
         _navigateToHomeWithResults(response.muessises);
       } else {
         _searchResults.clear();
         _noResultsFound.value = true;
-        print('[SEARCH CONTROLLER] No results found');
+        debugPrint('[SEARCH CONTROLLER] No results found');
       }
     } catch (e) {
-      print('[SEARCH CONTROLLER] Search error: $e');
+      debugPrint('[SEARCH CONTROLLER] Search error: $e');
       _searchResults.clear();
       _noResultsFound.value = true;
 
       // Eğer sadece "status: ok" response'u geliyorsa, bu normal bir durum
       if (e.toString().contains('status: ok')) {
-        print('[SEARCH CONTROLLER] No results found for query: $query');
+        debugPrint('[SEARCH CONTROLLER] No results found for query: $query');
       }
     } finally {
       _isSearching.value = false;
@@ -137,7 +139,7 @@ class SearchController extends GetxController {
       final history = _storage.read<List>('search_history') ?? [];
       _searchHistory.value = history.cast<String>();
     } catch (e) {
-      print('[SEARCH CONTROLLER] Error loading search history: $e');
+      debugPrint('[SEARCH CONTROLLER] Error loading search history: $e');
       _searchHistory.clear();
     }
   }
@@ -147,7 +149,7 @@ class SearchController extends GetxController {
     try {
       _storage.write('search_history', _searchHistory);
     } catch (e) {
-      print('[SEARCH CONTROLLER] Error saving search history: $e');
+      debugPrint('[SEARCH CONTROLLER] Error saving search history: $e');
     }
   }
 
@@ -161,7 +163,7 @@ class SearchController extends GetxController {
   // Home screen'e dön ve search results'ı göster
   void _navigateToHomeWithResults(List<CompanyInListModel> results) {
     try {
-      print(
+      debugPrint(
           '[SEARCH CONTROLLER] Navigating to home with ${results.length} results');
 
       // HomeController'ı bul
@@ -170,16 +172,17 @@ class SearchController extends GetxController {
         // Search results'ı home screen'de göster ve search query'yi de gönder
         homeController.showSearchResults(results,
             searchQuery: _searchQuery.value);
-        print('[SEARCH CONTROLLER] Search results assigned to home companies');
+        debugPrint(
+            '[SEARCH CONTROLLER] Search results assigned to home companies');
       } else {
-        print('[SEARCH CONTROLLER] HomeController not found');
+        debugPrint('[SEARCH CONTROLLER] HomeController not found');
       }
 
       // Search screen'den çık
       Get.back();
-      print('[SEARCH CONTROLLER] Returned to home screen');
+      debugPrint('[SEARCH CONTROLLER] Returned to home screen');
     } catch (e) {
-      print('[SEARCH CONTROLLER] Error navigating to home: $e');
+      debugPrint('[SEARCH CONTROLLER] Error navigating to home: $e');
     }
   }
 
@@ -188,7 +191,7 @@ class SearchController extends GetxController {
     try {
       // Eğer search query boş ise sadece çık, request atma
       if (_searchQuery.value.trim().isEmpty) {
-        print(
+        debugPrint(
             '[SEARCH CONTROLLER] Search query is empty, just closing without request');
         clearSearchQuery();
         Get.back();
@@ -203,14 +206,14 @@ class SearchController extends GetxController {
         final homeController = Get.find<HomeController>();
         // clearSearchResults zaten search null ile home request atıyor
         homeController.clearSearchResults();
-        print(
+        debugPrint(
             '[SEARCH CONTROLLER] Search cleared and home request sent with null search');
       }
 
       // Search screen'den çık
       Get.back();
     } catch (e) {
-      print('[SEARCH CONTROLLER] Error on cancel: $e');
+      debugPrint('[SEARCH CONTROLLER] Error on cancel: $e');
     }
   }
 }

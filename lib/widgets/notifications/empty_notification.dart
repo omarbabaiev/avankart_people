@@ -13,7 +13,6 @@ class EmptyNotification extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 150),
           Get.isDarkMode
               ? Image.asset(ImageAssets.bellIcon, width: 80, height: 80)
               : Image.asset(ImageAssets.bellIconDark, width: 80, height: 80),

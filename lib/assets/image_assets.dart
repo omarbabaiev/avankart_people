@@ -26,7 +26,7 @@ class ImageAssets {
   static const sendIcon = "assets/icons/TelegramLogo.png";
   static const pepIcon = "assets/icons/pepicons-pop_bank.png";
   static const passwordCopy = "assets/icons/Password copy.png";
-  static const fingerprint = "assets/icons/FingerprintSimple.png";
+  static const fingerdebugPrint = "assets/icons/FingerdebugPrintSimple.png";
   static const markerIcon = "assets/icons/marker_icon.png";
   static const locationIcon = "assets/icons/Crosshair.png";
   static const searchfavoriteicon = "assets/icons/Group.png";
@@ -50,11 +50,12 @@ class ImageAssets {
   static const cardholder = "assets/icons/Cardholder.png";
   static const faceId = "assets/icons/Face ID.png";
   static const telegram = "assets/icons/logos_telegram.png";
-  static const fingerprintSimple = "assets/icons/FingerprintSimple.png";
+  static const fingerdebugPrintSimple = "assets/icons/FingerprintSimple.png";
   static const hourglassMedium = "assets/icons/HourglassMedium.png";
   static const lockKeyOpen = "assets/icons/LockKeyOpen.png";
   static const password = "assets/icons/Password.png";
   static const trash = "assets/icons/Trash.png";
+  static const stamp = "assets/images/avankart-2.png";
 
   static const bell = "assets/icons/BellP.png";
   static const funnel = "assets/icons/FunnelP.png";

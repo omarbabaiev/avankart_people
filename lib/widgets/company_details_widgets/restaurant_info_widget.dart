@@ -7,6 +7,7 @@ class CompanyInfoWidget extends StatelessWidget {
   final String name;
   final String description;
   final String? rating;
+  final int? totalVotes;
   final ScheduleModel? schedule;
 
   const CompanyInfoWidget({
@@ -14,6 +15,7 @@ class CompanyInfoWidget extends StatelessWidget {
     required this.name,
     required this.description,
     this.rating,
+    this.totalVotes,
     this.schedule,
   }) : super(key: key);
 
@@ -53,7 +55,7 @@ class CompanyInfoWidget extends StatelessWidget {
                           color: Color(0xFFFFC107), height: 24),
                       SizedBox(width: 4),
                       Text(
-                        rating ?? "5",
+                        rating ?? "0",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,

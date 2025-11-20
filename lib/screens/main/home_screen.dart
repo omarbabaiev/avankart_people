@@ -1,6 +1,7 @@
 import 'package:avankart_people/assets/image_assets.dart';
 import 'package:avankart_people/controllers/home_controller.dart';
 import 'package:avankart_people/controllers/notifications_controller.dart';
+import 'package:avankart_people/controllers/filter_controller.dart';
 import 'package:avankart_people/routes/app_routes.dart';
 import 'package:avankart_people/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,19 +24,55 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late ScrollController _scrollController;
+  FilterController? _filterController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addObserver(this);
+
+    // FilterController'ı başlat (varsa kullan, yoksa oluştur)
+    try {
+      _filterController = Get.isRegistered<FilterController>()
+          ? Get.find<FilterController>()
+          : Get.put(FilterController());
+    } catch (e) {
+      _filterController = Get.put(FilterController());
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // Scroll listener - kullanıcı aşağı scroll ettiğinde daha fazla veri yükle
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    final threshold = maxScroll - 200; // Son 200 piksel kaldığında
+
+    if (currentScroll >= threshold) {
+      final controller = Get.find<HomeController>();
+      if (controller.hasMoreDataCompanies && !controller.isLoadingCompanies) {
+        debugPrint('[HOME SCREEN] ===== LOAD MORE TRIGGERED =====');
+        debugPrint('[HOME SCREEN] Current scroll: $currentScroll');
+        debugPrint('[HOME SCREEN] Max scroll: $maxScroll');
+        debugPrint('[HOME SCREEN] Threshold: $threshold');
+        debugPrint(
+            '[HOME SCREEN] Has more: ${controller.hasMoreDataCompanies}');
+        debugPrint(
+            '[HOME SCREEN] Is loading: ${controller.isLoadingCompanies}');
+        controller.loadMoreCompanies();
+      }
+    }
   }
 
   @override
@@ -44,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     // Uygulama ön plana geldiğinde home screen'i refresh et
     if (state == AppLifecycleState.resumed) {
-      print('[HOME SCREEN] 🔄 App resumed, refreshing companies...');
+      debugPrint('[HOME SCREEN] 🔄 App resumed, refreshing companies...');
       final controller = Get.find<HomeController>();
       controller.refreshCompanies();
     }
@@ -210,26 +247,47 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               ),
                             ),
                             SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () {
-                                Get.toNamed(AppRoutes.filterSearch);
-                              },
-                              child: Container(
-                                height: 44,
-                                width: 44,
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  shape: BoxShape.circle,
+                            Stack(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.toNamed(AppRoutes.filterSearch);
+                                  },
+                                  child: Container(
+                                    height: 44,
+                                    width: 44,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset(
+                                      ImageAssets.funnel,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
+                                    ),
+                                  ),
                                 ),
-                                child: Image.asset(
-                                  ImageAssets.funnel,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground,
-                                ),
-                              ),
+                                Obx(() {
+                                  return !_filterController!.hasSelectedFilters
+                                      ? const SizedBox.shrink()
+                                      : Positioned(
+                                          right: 4,
+                                          top: 4,
+                                          child: Container(
+                                            width: 12,
+                                            height: 12,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        );
+                                }),
+                              ],
                             ),
                           ],
                         ),
@@ -254,64 +312,102 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
                         ),
-                        TextButton.icon(
-                          onPressed: () {
-                            showMenu(
-                              menuPadding: EdgeInsets.all(5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              color: Theme.of(context).colorScheme.secondary,
-                              context: context,
-                              position: RelativeRect.fromLTRB(1, 250, 0, 0),
-                              items: [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Text(
-                                    'a_to_z'.tr,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onBackground,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                        Obx(() {
+                          final currentFilterType = controller.filterType;
+                          return TextButton.icon(
+                            onPressed: () {
+                              showMenu(
+                                menuPadding: EdgeInsets.all(5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: Text(
-                                    'by_distance'.tr,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onBackground,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.secondary,
+                                context: context,
+                                position: RelativeRect.fromLTRB(1, 250, 0, 0),
+                                items: [
+                                  PopupMenuItem(
+                                    value: 'name',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'a_to_z'.tr,
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        if (currentFilterType == 'name')
+                                          Icon(
+                                            Icons.check,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            size: 20,
+                                          ),
+                                      ],
                                     ),
+                                    onTap: () {
+                                      controller.setFilterType('name');
+                                    },
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                          icon: Image.asset(
-                            ImageAssets.sortAscending,
-                            width: 24,
-                            height: 24,
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                          label: Text(
-                            'sort'.tr,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
+                                  PopupMenuItem(
+                                    value: 'distance',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'by_distance'.tr,
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        if (currentFilterType == 'distance')
+                                          Icon(
+                                            Icons.check,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            size: 20,
+                                          ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      controller.setFilterType('distance');
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                            icon: Image.asset(
+                              ImageAssets.sortAscending,
+                              width: 24,
+                              height: 24,
                               color: Theme.of(context).colorScheme.onBackground,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                        ),
+                            label: Text(
+                              'sort'.tr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ),
@@ -345,7 +441,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       crossAxisSpacing: 0,
                       childAspectRatio: 0.68,
                     ),
-                    itemCount: companies.isEmpty ? 6 : companies.length,
+                    itemCount: companies.isEmpty
+                        ? 6
+                        : companies.length +
+                            (controller.hasMoreDataCompanies ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (companies.isEmpty) {
                         // Skeleton card
@@ -353,20 +452,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           effects: [
                             FadeEffect(duration: 700.ms),
                           ],
-                          child: Skeletonizer(
-                            enabled: true,
-                            enableSwitchAnimation: true,
-                            child: CompanyCard(
-                              name: 'Company Name',
-                              location: 'Company Location',
-                              distance: '0.0 km',
-                              imageUrl: 'assets/images/image.png',
-                              isOpen: true,
-                              hasGift: false,
-                              type: 'business',
-                              index: index,
-                              companyId: '0',
-                            ),
+                          child: CompanyCard(
+                            name: 'Company Name',
+                            location: 'Company Location',
+                            distance: '0.0 km',
+                            imageUrl: 'assets/images/image.png',
+                            isOpen: true,
+                            hasGift: false,
+                            type: 'business',
+                            index: index,
+                            companyId: '0',
+                          ),
+                        );
+                      }
+
+                      // Load more indicator
+                      if (index == companies.length) {
+                        return Container(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(
+                            child: Platform.isIOS
+                                ? CupertinoActivityIndicator(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )
+                                : CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
                           ),
                         );
                       }
@@ -376,22 +490,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         effects: [
                           FadeEffect(duration: 700.ms),
                         ],
-                        child: Skeletonizer(
-                          enabled: isLoading,
-                          child: CompanyCard(
-                            name: company.muessiseName,
-                            location: company.location,
-                            distance: company.displayDistance,
-                            imageUrl: company.profileImagePath ??
-                                'assets/images/image.png',
-                            isOpen: company.isOpen,
-                            hasGift: false, // TODO: Bu bilgiyi API'den al
-                            type: _getCompanyType(
-                                company), // TODO: Bu bilgiyi API'den al
-                            index: index,
-                            companyId: company.id,
-                            isFavorite: company.isFavorite,
-                          ),
+                        child: CompanyCard(
+                          name: company.muessiseName,
+                          location: company.location,
+                          distance: company.displayDistance,
+                          imageUrl: company.xariciCoverImagePath ??
+                              'assets/images/image.png',
+                          isOpen: company.isOpen,
+                          hasGift: false, // TODO: Bu bilgiyi API'den al
+                          // TODO: Bu bilgiyi API'den al
+                          index: index,
+                          companyId: company.id,
+                          isFavorite: company.isFavorite, type: 'business',
                         ),
                       );
                     },
@@ -487,26 +597,49 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                               SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Get.toNamed(AppRoutes.filterSearch);
-                                },
-                                child: Container(
-                                  height: 44,
-                                  width: 44,
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    shape: BoxShape.circle,
+                              Stack(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.toNamed(AppRoutes.filterSearch);
+                                    },
+                                    child: Container(
+                                      height: 44,
+                                      width: 44,
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Image.asset(
+                                        ImageAssets.funnel,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                      ),
+                                    ),
                                   ),
-                                  child: Image.asset(
-                                    ImageAssets.funnel,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
-                                  ),
-                                ),
+                                  Obx(() {
+                                    if (_filterController == null ||
+                                        !_filterController!.hasSelectedFilters)
+                                      return const SizedBox.shrink();
+
+                                    return Positioned(
+                                      right: 4,
+                                      top: 4,
+                                      child: Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primaryColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
                               ),
                             ],
                           ),
@@ -532,65 +665,106 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
-                          TextButton.icon(
-                            onPressed: () {
-                              showMenu(
-                                menuPadding: EdgeInsets.all(5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                color: Theme.of(context).colorScheme.secondary,
-                                context: context,
-                                position: RelativeRect.fromLTRB(1, 250, 0, 0),
-                                items: [
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Text(
-                                      'a_to_z'.tr,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onBackground,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
+                          SizedBox(width: 10),
+                          Obx(() {
+                            final currentFilterType = controller.filterType;
+                            return TextButton.icon(
+                              onPressed: () {
+                                showMenu(
+                                  menuPadding: EdgeInsets.all(5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Text(
-                                      'by_distance'.tr,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onBackground,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(1, 250, 0, 0),
+                                  items: [
+                                    PopupMenuItem(
+                                      value: 'name',
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'a_to_z'.tr,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (currentFilterType == 'name')
+                                            Icon(
+                                              Icons.check,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              size: 20,
+                                            ),
+                                        ],
                                       ),
+                                      onTap: () {
+                                        controller.setFilterType('name');
+                                      },
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
-                            icon: Image.asset(
-                              ImageAssets.sortAscending,
-                              width: 24,
-                              height: 24,
-                              color: Theme.of(context).colorScheme.onBackground,
-                            ),
-                            label: Text(
-                              'sort'.tr,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
+                                    PopupMenuItem(
+                                      value: 'distance',
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'by_distance'.tr,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (currentFilterType == 'distance')
+                                            Icon(
+                                              Icons.check,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              size: 20,
+                                            ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        controller.setFilterType('distance');
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                              icon: Image.asset(
+                                ImageAssets.sortAscending,
+                                width: 24,
+                                height: 24,
                                 color:
                                     Theme.of(context).colorScheme.onBackground,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                          ),
+                              label: Text(
+                                'sort'.tr,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -631,13 +805,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       itemBuilder: (context, index) {
                         if (companies.isEmpty) {
                           // Skeleton card
-                          return Animate(
-                            effects: [
-                              FadeEffect(duration: 700.ms),
-                            ],
-                            child: Skeletonizer(
-                              enabled: true,
-                              enableSwitchAnimation: true,
+                          return Skeletonizer(
+                            enabled: true,
+                            enableSwitchAnimation: true,
+                            child: Animate(
+                              effects: [
+                                FadeEffect(duration: 700.ms),
+                              ],
                               child: CompanyCard(
                                 name: 'Company Name',
                                 location: 'Company Location',
@@ -677,23 +851,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           effects: [
                             FadeEffect(duration: 700.ms),
                           ],
-                          child: Skeletonizer(
-                            enabled: isLoading,
-                            enableSwitchAnimation: true,
-                            child: CompanyCard(
-                              name: company.muessiseName,
-                              location: company.location,
-                              distance: company.displayDistance,
-                              imageUrl: company.profileImagePath ??
-                                  'assets/images/image.png',
-                              isOpen: company.isOpen,
-                              hasGift: false, // TODO: Bu bilgiyi API'den al
-                              type: _getCompanyType(
-                                  company), // TODO: Bu bilgiyi API'den al
-                              index: index,
-                              companyId: company.id,
-                              isFavorite: company.isFavorite,
-                            ),
+                          child: CompanyCard(
+                            name: company.muessiseName,
+                            location: company.location,
+                            distance: company.displayDistance,
+                            imageUrl: company.profileImagePath ??
+                                'assets/images/image.png',
+                            isOpen: company.isOpen,
+                            hasGift: false, // TODO: Bu bilgiyi API'den al
+                            index: index,
+                            companyId: company.id,
+                            isFavorite: company.isFavorite, type: 'business',
                           ),
                         );
                       },
@@ -810,71 +978,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ],
       ),
     );
-  }
-
-  String _getCompanyType(CompanyInListModel company) {
-    final name = company.muessiseName.toLowerCase();
-
-    // Restoran detection
-    if (name.contains('restoran') ||
-        name.contains('restaurant') ||
-        name.contains('kebab') ||
-        name.contains('pizza') ||
-        name.contains('burger')) {
-      return 'restaurant';
-    }
-
-    // Cafe detection
-    if (name.contains('kafe') ||
-        name.contains('cafe') ||
-        name.contains('coffee')) {
-      return 'cafe';
-    }
-
-    // Petrol station detection
-    if (name.contains('benzin') ||
-        name.contains('yanacaq') ||
-        name.contains('fuel') ||
-        name.contains('petrol') ||
-        name.contains('azpetrol')) {
-      return 'petrol';
-    }
-
-    // Hotel detection
-    if (name.contains('hotel') || name.contains('otel')) {
-      return 'hotel';
-    }
-
-    // Market detection
-    if (name.contains('market') ||
-        name.contains('mağaza') ||
-        name.contains('supermarket')) {
-      return 'market';
-    }
-
-    // Gym/Fitness detection
-    if (name.contains('gym') ||
-        name.contains('fitness') ||
-        name.contains('spor')) {
-      return 'gym';
-    }
-
-    // Pharmacy detection
-    if (name.contains('eczane') ||
-        name.contains('pharmacy') ||
-        name.contains('əczanə')) {
-      return 'pharmacy';
-    }
-
-    // Beauty salon detection
-    if (name.contains('beauty') ||
-        name.contains('salon') ||
-        name.contains('güzellik')) {
-      return 'beauty';
-    }
-
-    // Default
-    return 'business';
   }
 
   /// Dinamik lokasyon metni döndür

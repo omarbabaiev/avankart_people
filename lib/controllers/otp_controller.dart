@@ -10,6 +10,7 @@ import '../routes/app_routes.dart';
 import '../utils/secure_storage_config.dart';
 import 'login_controller.dart';
 import 'home_controller.dart';
+import '../services/pin_service.dart';
 
 class OtpController extends GetxController {
   final AuthService _authService = AuthService();
@@ -24,6 +25,7 @@ class OtpController extends GetxController {
   String forgotPasswordToken = ''; // Forgot password'dan alınan orijinal token
   bool isFromRegister = false;
   bool isFromForgotPassword = false;
+  bool isPinReset = false;
 
   @override
   void onInit() {
@@ -37,20 +39,24 @@ class OtpController extends GetxController {
           arguments['forgotPasswordToken'] ?? arguments['token'] ?? '';
       isFromRegister = arguments['isRegister'] ?? false;
       isFromForgotPassword = arguments['isForgotPassword'] ?? false;
+      isPinReset = arguments['isPinReset'] ?? false;
     } else {
       email = '';
       loginToken = '';
       isFromRegister = false;
       isFromForgotPassword = false;
-      print('[OTP CONTROLLER WARNING] Arguments not provided or invalid');
+      isPinReset = false;
+      debugPrint('[OTP CONTROLLER WARNING] Arguments not provided or invalid');
     }
 
-    // Email ve token kontrolü
-    if (email.isEmpty || loginToken.isEmpty) {
-      print('[OTP CONTROLLER ERROR] Email or token is empty');
-      SnackbarUtils.showErrorSnackbar('email_or_token_not_found'.tr);
-      // Ana sayfaya yönlendir
-      Get.offAllNamed(AppRoutes.login);
+    // Email ve token kontrolü (PIN reset modunda gereksiz)
+    if (!isPinReset) {
+      if (email.isEmpty || loginToken.isEmpty) {
+        debugPrint('[OTP CONTROLLER ERROR] Email or token is empty');
+        SnackbarUtils.showErrorSnackbar('email_or_token_not_found'.tr);
+        // Ana sayfaya yönlendir
+        Get.offAllNamed(AppRoutes.login);
+      }
     }
   }
 
@@ -60,12 +66,19 @@ class OtpController extends GetxController {
 
     isLoading.value = true;
     try {
-      final response = await _authService.submitOtp(
-        email: email,
-        otp: otpController.text.trim(),
-        token: loginToken,
-      );
-      print('[OTP SUBMIT FULL RESPONSE] $response');
+      Map<String, dynamic> response;
+      if (isPinReset) {
+        // PIN reset OTP doğrulama ve token alma
+        final pinService = PinService();
+        response = await pinService.submitOtp(otp: otpController.text.trim());
+      } else {
+        response = await _authService.submitOtp(
+          email: email,
+          otp: otpController.text.trim(),
+          token: loginToken,
+        );
+      }
+      debugPrint('[OTP SUBMIT FULL RESPONSE] $response');
 
       // Yeni token response'dan alınır ve saklanır
       final newToken = response['token'];
@@ -86,15 +99,29 @@ class OtpController extends GetxController {
       final isAlreadyVerified =
           (message == null || message == 'OTP already verified');
 
-      if (isSuccessfulOtp || isAlreadyVerified) {
+      if (isPinReset) {
+        // PIN reset OTP successful → set pin screen'e token ile git
+        final pinResetToken = response['token'];
+        if (pinResetToken is String && pinResetToken.isNotEmpty) {
+          Get.offNamed(AppRoutes.setPinCode, arguments: {
+            'allowBack': true,
+            'pinResetToken': pinResetToken,
+          });
+          return;
+        } else {
+          SnackbarUtils.showErrorSnackbar('token_could_not_be_retrieved'.tr);
+          return;
+        }
+      } else if (isSuccessfulOtp || isAlreadyVerified) {
         // Başarılı OTP doğrulama - haptic feedback
         VibrationUtil.mediumVibrate();
 
-        print('[OTP SUCCESS] Token received: ${newToken.substring(0, 20)}...');
+        debugPrint(
+            '[OTP SUCCESS] Token received: ${newToken.substring(0, 20)}...');
 
         // Register'dan geliyorsa login'e yönlendir
         if (isFromRegister) {
-          print('[REGISTER OTP SUCCESS] Navigating to login');
+          debugPrint('[REGISTER OTP SUCCESS] Navigating to login');
           SnackbarUtils.showSuccessSnackbar(
               'registration_completed_login_required'.tr);
           Get.offAllNamed(AppRoutes.login);
@@ -103,19 +130,19 @@ class OtpController extends GetxController {
 
         // Forgot password'dan geliyorsa new password screen'e yönlendir
         if (isFromForgotPassword) {
-          print(
-              '[FORGOT PASSWORD OTP SUCCESS] Navigating to new password with original token');
-          print('[FORGOT PASSWORD] Using original token: $forgotPasswordToken');
+          debugPrint(
+              '[FORGOT PASSWORD OTP SUCCESS] Navigating to new password with OTP verified token');
+          debugPrint(
+              '[FORGOT PASSWORD] Using OTP verified token: ${newToken.substring(0, 20)}...');
           Get.offNamed(AppRoutes.newPassword, arguments: {
             'email': email,
-            'token':
-                forgotPasswordToken, // OTP'den alınan değil, orijinal forgot password token'ı
+            'token': newToken, // OTP doğrulamasından sonra alınan yeni token
           });
           return;
         }
 
         // Login'den geliyorsa token'ı kaydet ve home'a yönlendir
-        print('[LOGIN OTP SUCCESS] Saving token and calling home');
+        debugPrint('[LOGIN OTP SUCCESS] Saving token and calling home');
         await _saveTokenAndProceed(newToken, rememberMe);
       } else {
         // OTP doğrulama hatası - haptic feedback
@@ -126,7 +153,7 @@ class OtpController extends GetxController {
       // OTP submit hatası - haptic feedback
       VibrationUtil.heavyVibrate();
 
-      print('[OTP ERROR] $e');
+      debugPrint('[OTP ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     } finally {
@@ -139,18 +166,18 @@ class OtpController extends GetxController {
     try {
       // Token'ı kaydet ve işlemin tamamlanmasını bekle
       await _storage.write(key: SecureStorageConfig.tokenKey, value: token);
-      print('[TOKEN SAVED FOR HOME CALL] ${token.substring(0, 20)}...');
-      print('[TOKEN SAVED] Full token length: ${token.length}');
+      debugPrint('[TOKEN SAVED FOR HOME CALL] ${token.substring(0, 20)}...');
+      debugPrint('[TOKEN SAVED] Full token length: ${token.length}');
 
       // Token'ın gerçekten kaydedilip kaydedilmediğini kontrol et
       final savedToken = await _storage.read(key: SecureStorageConfig.tokenKey);
-      print(
+      debugPrint(
           '[TOKEN VERIFICATION] Saved token: ${savedToken?.substring(0, 20)}...');
-      print('[TOKEN VERIFICATION] Token matches: ${savedToken == token}');
+      debugPrint('[TOKEN VERIFICATION] Token matches: ${savedToken == token}');
 
       // Eğer token kaydedilemediyse hata ver
       if (savedToken != token) {
-        print('[TOKEN ERROR] Token could not be saved properly!');
+        debugPrint('[TOKEN ERROR] Token could not be saved properly!');
         SnackbarUtils.showErrorSnackbar('token_save_error'.tr);
         return;
       }
@@ -158,10 +185,10 @@ class OtpController extends GetxController {
       // Remember me durumunu GetStorage ile ayarla
       if (rememberMe) {
         GetStorage().write('rememberMe', true);
-        print('[REMEMBER ME SAVED] true');
+        debugPrint('[REMEMBER ME SAVED] true');
       } else {
         GetStorage().write('rememberMe', false);
-        print('[REMEMBER ME SAVED] false');
+        debugPrint('[REMEMBER ME SAVED] false');
       }
 
       // Token storage işleminin tamamlanması için bekleme
@@ -169,14 +196,15 @@ class OtpController extends GetxController {
 
       // Token'ın gerçekten kaydedildiğini tekrar kontrol et
       final finalToken = await _storage.read(key: SecureStorageConfig.tokenKey);
-      print('[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
-      print('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
-      print('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
+      debugPrint(
+          '[FINAL TOKEN CHECK] Token: ${finalToken?.substring(0, 20)}...');
+      debugPrint('[FINAL TOKEN CHECK] Matches: ${finalToken == token}');
+      debugPrint('[FINAL TOKEN CHECK] Token length: ${finalToken?.length}');
 
       // Home endpoint'ini çağır - storage'dan token okunacak
-      print('[CALLING HOME ENDPOINT]');
+      debugPrint('[CALLING HOME ENDPOINT]');
       final homeResponse = await _authService.home();
-      print('[HOME RESPONSE] success: ${homeResponse?.success}');
+      debugPrint('[HOME RESPONSE] success: ${homeResponse?.success}');
 
       if (homeResponse?.success == true) {
         // Başarılı giriş - login controller'daki password'u temizle
@@ -187,23 +215,23 @@ class OtpController extends GetxController {
         // Home controller'ı tamamen temizle ve yeniden oluştur
         if (Get.isRegistered<HomeController>()) {
           Get.delete<HomeController>();
-          print('[OTP] Deleted existing HomeController');
+          debugPrint('[OTP] Deleted existing HomeController');
         }
 
         // Yeni HomeController oluştur ve selectedIndex'i 0'a set et
         final homeController = Get.put(HomeController(), permanent: true);
-        print(
+        debugPrint(
             '[OTP] Created new HomeController with selectedIndex: ${homeController.selectedIndex}');
 
         // Home'a yönlendir
-        print('[HOME SUCCESS] Navigating to home');
+        debugPrint('[HOME SUCCESS] Navigating to home');
         Get.offAllNamed(AppRoutes.main);
       } else {
-        print('[HOME FAILED] success is not true');
+        debugPrint('[HOME FAILED] success is not true');
         SnackbarUtils.showErrorSnackbar('main_page_could_not_load'.tr);
       }
     } catch (homeError) {
-      print('[HOME ERROR] $homeError');
+      debugPrint('[HOME ERROR] $homeError');
       final errorMessage = ApiResponseParser.parseDioError(homeError);
       SnackbarUtils.showErrorSnackbar(errorMessage);
     }
@@ -249,7 +277,7 @@ class OtpController extends GetxController {
       // OTP yeniden gönderme hatası - haptic feedback
       VibrationUtil.heavyVibrate();
 
-      print('[RESEND OTP ERROR] $e');
+      debugPrint('[RESEND OTP ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       SnackbarUtils.showErrorSnackbar(errorMessage);
       return false; // Success deyil

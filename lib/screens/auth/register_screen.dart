@@ -8,12 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
-import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/gestures.dart';
-import '../support/terms_of_use_screen.dart';
-import 'otp_screen.dart';
 import '../../utils/masked_text_formatter.dart';
 import '../../utils/bottom_sheet_extension.dart';
 import '../../controllers/register_controller.dart';
@@ -108,6 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _showMaterialDatePicker(BuildContext context) async {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
@@ -116,10 +114,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppTheme.primaryColor,
-              onPrimary: Theme.of(context).scaffoldBackgroundColor,
-              onSurface: Theme.of(context).colorScheme.onBackground,
+            colorScheme: isDarkMode
+                ? ColorScheme.dark(
+                    primary: AppTheme.primaryColor,
+                    onPrimary: Colors.white,
+                    surface: AppTheme.darkSurface,
+                    onSurface: AppTheme.darkTextColor,
+                    background: AppTheme.darkBackgroundColor,
+                    onBackground: AppTheme.darkTextColor,
+                  )
+                : ColorScheme.light(
+                    primary: AppTheme.primaryColor,
+                    onPrimary: Colors.white,
+                    surface: AppTheme.surfaceColor,
+                    onSurface: AppTheme.primaryTextColor,
+                    background: AppTheme.backgroundColor,
+                    onBackground: AppTheme.primaryTextColor,
+                  ),
+            dialogBackgroundColor:
+                isDarkMode ? AppTheme.darkSurface : AppTheme.surfaceColor,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.primaryColor,
+              ),
             ),
           ),
           child: child!,
@@ -324,7 +341,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildCountryItem(String code, String flag) {
     bool isSelected = code == '+${_selectedCountry.phoneCode}';
-    print(
+    debugPrint(
         '[BUILD COUNTRY ITEM] Code: $code, Selected: +${_selectedCountry.phoneCode}, IsSelected: $isSelected');
     String countryKey = '';
 
@@ -486,7 +503,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return InkWell(
       onTap: () {
-        print('[COUNTRY SELECTION] Code selected: $code');
+        debugPrint('[COUNTRY SELECTION] Code selected: $code');
         setState(() {
           _selectedCountry = Country(
             phoneCode: code.substring(1),
@@ -513,7 +530,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               value: code,
               groupValue: '+${_selectedCountry.phoneCode}',
               onChanged: (value) {
-                print('[RADIO SELECTION] Code selected: $value');
+                debugPrint('[RADIO SELECTION] Code selected: $value');
                 setState(() {
                   _selectedCountry = Country(
                     phoneCode: code.substring(1),
@@ -562,10 +579,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-  }
-
-  bool _isFormValid() {
-    return _controller.isFormValid.value;
   }
 
   @override

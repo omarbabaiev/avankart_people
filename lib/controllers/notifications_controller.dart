@@ -119,10 +119,10 @@ class NotificationsController extends GetxController
         notifications.value = [];
       }
 
-      print(
+      debugPrint(
           '[NOTIFICATIONS CONTROLLER] Loaded ${notifications.length} notifications');
     } on NotificationsException catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] ${e.message}');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] ${e.message}');
       final errorMessage = ApiResponseParser.parseApiMessage(e.message);
 
       // Global retry dialog'u göster
@@ -132,7 +132,7 @@ class NotificationsController extends GetxController
         getNotifications,
       );
     } catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] $e');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
 
       // Global retry dialog'u göster
@@ -161,7 +161,7 @@ class NotificationsController extends GetxController
         status: status ? 'read' : 'unread',
       );
 
-      print(
+      debugPrint(
           '[NOTIFICATIONS CONTROLLER] Notification status updated: ${status ? 'read' : 'unread'}');
 
       // Başarılı response sonrası notifications'ları yenile
@@ -169,10 +169,10 @@ class NotificationsController extends GetxController
 
       return true;
     } on NotificationsException catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] ${e.message}');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] ${e.message}');
       return false;
     } catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] $e');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -186,14 +186,14 @@ class NotificationsController extends GetxController
       final notificationIndex = notifications.indexWhere((n) => n['id'] == id);
 
       if (notificationIndex == -1) {
-        print('[NOTIFICATIONS CONTROLLER] Notification not found: $id');
+        debugPrint('[NOTIFICATIONS CONTROLLER] Notification not found: $id');
         return;
       }
 
       // Eğer notification zaten read ise işlem yapma
       final currentStatus = notifications[notificationIndex]['read'] ?? false;
       if (currentStatus) {
-        print(
+        debugPrint(
             '[NOTIFICATIONS CONTROLLER] Notification already read, skipping toggle: $id');
         return;
       }
@@ -203,9 +203,9 @@ class NotificationsController extends GetxController
         status: true,
       );
 
-      print('[NOTIFICATIONS CONTROLLER] Notification marked as read: $id');
+      debugPrint('[NOTIFICATIONS CONTROLLER] Notification marked as read: $id');
     } catch (e) {
-      print(
+      debugPrint(
           '[NOTIFICATIONS CONTROLLER ERROR] Toggle notification status failed: $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       // Hata durumunda global retry dialog'u göster
@@ -227,10 +227,10 @@ class NotificationsController extends GetxController
         status: isRead,
       );
 
-      print(
+      debugPrint(
           '[NOTIFICATIONS CONTROLLER] Notification status toggled to ${isRead ? "read" : "unread"}: $id');
     } catch (e) {
-      print(
+      debugPrint(
           '[NOTIFICATIONS CONTROLLER ERROR] Toggle notification read status failed: $e');
       final errorMessage = ApiResponseParser.parseDioError(e);
       // Hata durumunda global retry dialog'u göster
@@ -345,9 +345,9 @@ class NotificationsController extends GetxController
         }
       }
 
-      print('[NOTIFICATIONS CONTROLLER] All notifications marked as read');
+      debugPrint('[NOTIFICATIONS CONTROLLER] All notifications marked as read');
     } catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] $e');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] $e');
     } finally {
       isLoading.value = false;
     }
@@ -363,12 +363,12 @@ class NotificationsController extends GetxController
         action: 'accept',
       );
 
-      print('[NOTIFICATIONS CONTROLLER] Invite accepted: $notificationId');
+      debugPrint('[NOTIFICATIONS CONTROLLER] Invite accepted: $notificationId');
 
       // Başarılı response sonrası notifications'ları yenile
       await getNotifications();
     } catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] Accept invite failed: $e');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] Accept invite failed: $e');
       // Hata durumunda global retry dialog'u göster
       final homeController = Get.find<HomeController>();
       homeController.showGlobalRetryDialog(
@@ -390,12 +390,12 @@ class NotificationsController extends GetxController
         action: 'ignore',
       );
 
-      print('[NOTIFICATIONS CONTROLLER] Invite ignored: $notificationId');
+      debugPrint('[NOTIFICATIONS CONTROLLER] Invite ignored: $notificationId');
 
       // Başarılı response sonrası notifications'ları yenile
       await getNotifications();
     } catch (e) {
-      print('[NOTIFICATIONS CONTROLLER ERROR] Ignore invite failed: $e');
+      debugPrint('[NOTIFICATIONS CONTROLLER ERROR] Ignore invite failed: $e');
       // Hata durumunda global retry dialog'u göster
       final homeController = Get.find<HomeController>();
       homeController.showGlobalRetryDialog(

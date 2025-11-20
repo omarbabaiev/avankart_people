@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class MessageModel {
   final String id;
   final String from;
@@ -38,8 +40,8 @@ class MessageModel {
         updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       );
     } catch (e) {
-      print('[ERROR] Failed to parse MessageModel: $e');
-      print('[ERROR] JSON data: $json');
+      debugPrint('[ERROR] Failed to parse MessageModel: $e');
+      debugPrint('[ERROR] JSON data: $json');
       // Default bir message döndür
       return MessageModel(
         id: 'error_${DateTime.now().millisecondsSinceEpoch}',
@@ -103,8 +105,8 @@ class MessagesResponse {
         message: json['message'],
       );
     } catch (e) {
-      print('[ERROR] Failed to parse MessagesResponse: $e');
-      print('[ERROR] JSON data: $json');
+      debugPrint('[ERROR] Failed to parse MessagesResponse: $e');
+      debugPrint('[ERROR] JSON data: $json');
       return MessagesResponse(
         success: false,
         data: [],
@@ -150,8 +152,8 @@ class SendMessageResponse {
         data: MessageModel.fromJson(json['data']),
       );
     } catch (e) {
-      print('[ERROR] Failed to parse SendMessageResponse: $e');
-      print('[ERROR] JSON data: $json');
+      debugPrint('[ERROR] Failed to parse SendMessageResponse: $e');
+      debugPrint('[ERROR] JSON data: $json');
       // Mock bir response döndür
       return SendMessageResponse(
         success: false,
